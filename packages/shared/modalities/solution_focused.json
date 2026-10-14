@@ -1,0 +1,74 @@
+{
+  "id": "solution_focused",
+  "version": "2026-10-draft1",
+  "clinical_review": "DRAFT — written by the engineering team as a starting point. Must be reviewed and approved by the Clinical Lead before use with real clients.",
+  "name": "Solution-focused",
+  "description": "Inspired by solution-focused brief therapy practices (preferred future, exceptions, scaling, strengths). Our own wording.",
+  "scale": {
+    "min": 1,
+    "max": 5,
+    "meaning": "1 = not present in this session, 3 = partly present, 5 = strongly and skilfully present"
+  },
+  "dimensions": [
+    {
+      "id": "preferred_future",
+      "label": "Preferred future",
+      "description": "Inviting a detailed description of the client's preferred future.",
+      "anchors": {
+        "1": "Focus stays on the problem.",
+        "3": "The preferred future is mentioned but not developed.",
+        "5": "A rich, detailed picture of the preferred future is built."
+      }
+    },
+    {
+      "id": "exceptions",
+      "label": "Exceptions and what's working",
+      "description": "Noticing and exploring times when things are already a little better.",
+      "anchors": {
+        "1": "Exceptions are missed.",
+        "3": "Some exceptions noticed.",
+        "5": "Exceptions are actively sought and explored in detail."
+      }
+    },
+    {
+      "id": "scaling",
+      "label": "Scaling",
+      "description": "Using scales to notice progress and identify small next signs.",
+      "anchors": {
+        "1": "No scaling or progress check.",
+        "3": "Scaling used without follow-up.",
+        "5": "Scaling used well to notice progress and small next steps."
+      }
+    },
+    {
+      "id": "strengths",
+      "label": "Strengths and compliments",
+      "description": "Noticing and reflecting back the client's resources and efforts genuinely.",
+      "anchors": {
+        "1": "Strengths go unnoticed.",
+        "3": "Occasional generic praise.",
+        "5": "Specific, genuine acknowledgement of resources and effort."
+      }
+    },
+    {
+      "id": "client_language",
+      "label": "Using the client's language",
+      "description": "Building on the client's own words and meanings.",
+      "anchors": {
+        "1": "The therapist reframes in their own terms.",
+        "3": "Some use of client language.",
+        "5": "Consistently builds on the client's own words."
+      }
+    },
+    {
+      "id": "small_steps",
+      "label": "Small, concrete next steps",
+      "description": "Ending with small, achievable signs or steps chosen by the client.",
+      "anchors": {
+        "1": "No next steps.",
+        "3": "Vague next steps.",
+        "5": "Small, concrete steps chosen by the client."
+      }
+    }
+  ]
+}

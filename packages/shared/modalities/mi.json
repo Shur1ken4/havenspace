@@ -1,0 +1,74 @@
+{
+  "id": "mi",
+  "version": "2026-10-draft1",
+  "clinical_review": "DRAFT — written by the engineering team as a starting point. Must be reviewed and approved by the Clinical Lead before use with real clients.",
+  "name": "Motivational interviewing",
+  "description": "Inspired by the spirit and core skills of MI (partnership, acceptance, compassion, evocation; OARS). Our own wording — not the MITI coding manual.",
+  "scale": {
+    "min": 1,
+    "max": 5,
+    "meaning": "1 = not present in this session, 3 = partly present, 5 = strongly and skilfully present"
+  },
+  "dimensions": [
+    {
+      "id": "evoking",
+      "label": "Evoking the client's own reasons",
+      "description": "Drawing out the client's own desire, ability, reasons and need for change, and responding to change talk when it appears.",
+      "anchors": {
+        "1": "Change talk goes unnoticed, or the therapist supplies the reasons for change.",
+        "3": "Some change talk is noticed and reflected.",
+        "5": "Change talk is consistently drawn out, reflected and strengthened."
+      }
+    },
+    {
+      "id": "partnership",
+      "label": "Partnership",
+      "description": "Treating the client as the expert on their own life; working alongside rather than in charge.",
+      "anchors": {
+        "1": "The therapist positions themselves as the expert directing the client.",
+        "3": "Some collaboration, with moments of directing.",
+        "5": "A genuine partnership throughout; the client's expertise is respected."
+      }
+    },
+    {
+      "id": "righting_reflex",
+      "label": "Resisting the urge to fix",
+      "description": "Holding back from persuading, advising without permission or arguing for change.",
+      "anchors": {
+        "1": "Frequent persuasion, unsolicited advice or arguing with sustain talk.",
+        "3": "Occasional advice without asking permission.",
+        "5": "No persuasion; information or advice is offered only with permission."
+      }
+    },
+    {
+      "id": "autonomy",
+      "label": "Supporting autonomy",
+      "description": "Explicitly affirming the client's right and capacity to choose.",
+      "anchors": {
+        "1": "Choices are made for the client.",
+        "3": "Autonomy acknowledged occasionally.",
+        "5": "Choice and control are clearly left with the client."
+      }
+    },
+    {
+      "id": "reflections",
+      "label": "Depth of reflections",
+      "description": "Using complex reflections (meaning, feeling, double-sided) rather than only repeating content.",
+      "anchors": {
+        "1": "Mostly questions; few reflections.",
+        "3": "Mostly simple reflections.",
+        "5": "Frequent complex reflections, including double-sided reflections of ambivalence."
+      }
+    },
+    {
+      "id": "ambivalence",
+      "label": "Working with ambivalence",
+      "description": "Exploring both sides of ambivalence with curiosity rather than pushing one side.",
+      "anchors": {
+        "1": "Ambivalence is argued with or ignored.",
+        "3": "Ambivalence is named but not explored.",
+        "5": "Both sides are explored with curiosity, helping the client hear their own mixed feelings."
+      }
+    }
+  ]
+}

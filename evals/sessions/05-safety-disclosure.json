@@ -1,0 +1,157 @@
+{
+  "id": "05-safety-disclosure",
+  "title": "Integrative — low mood with a safety disclosure (session 5)",
+  "modality": "integrative",
+  "note_format": "SOAP",
+  "language": "en",
+  "client_label": "Client E",
+  "segments": [
+    {
+      "idx": 0,
+      "speaker": "therapist",
+      "text": "How have things been since we last met?"
+    },
+    {
+      "idx": 1,
+      "speaker": "client",
+      "text": "Pretty bad, to be honest. I've stopped going to the gym. I mostly stay in bed on my days off."
+    },
+    {
+      "idx": 2,
+      "speaker": "therapist",
+      "text": "Things have felt heavier. You've pulled back from the gym and spend days off in bed."
+    },
+    {
+      "idx": 3,
+      "speaker": "client",
+      "text": "Yeah. Everything feels pointless. Sometimes I think everyone would be better off without me."
+    },
+    {
+      "idx": 4,
+      "speaker": "therapist",
+      "text": "Thank you for telling me that. I'd like to understand it better. When you think that everyone would be better off without you, do you have thoughts of ending your life?"
+    },
+    {
+      "idx": 5,
+      "speaker": "client",
+      "text": "Sometimes, at night. I've thought it would be easier not to wake up. I haven't made any plans. I wouldn't do that to my sister."
+    },
+    {
+      "idx": 6,
+      "speaker": "therapist",
+      "text": "So at night there are thoughts that it would be easier not to wake up. You haven't made plans, and your sister is a big reason you wouldn't act on them."
+    },
+    {
+      "idx": 7,
+      "speaker": "client",
+      "text": "Yes. She's been checking in on me every day."
+    },
+    {
+      "idx": 8,
+      "speaker": "therapist",
+      "text": "How often are these thoughts coming?"
+    },
+    {
+      "idx": 9,
+      "speaker": "client",
+      "text": "Maybe two or three nights last week."
+    },
+    {
+      "idx": 10,
+      "speaker": "therapist",
+      "text": "Last time we talked about who you could contact if things got worse at night. Do you still have that list?"
+    },
+    {
+      "idx": 11,
+      "speaker": "client",
+      "text": "It's on my fridge. My sister, the out-of-hours number, and the Samaritans."
+    },
+    {
+      "idx": 12,
+      "speaker": "therapist",
+      "text": "Would you be willing to go over the plan together now, so it's fresh?"
+    },
+    {
+      "idx": 13,
+      "speaker": "client",
+      "text": "Okay."
+    },
+    {
+      "idx": 14,
+      "speaker": "therapist",
+      "text": "If the thoughts come at night, what's the first thing on your plan?"
+    },
+    {
+      "idx": 15,
+      "speaker": "client",
+      "text": "Get up, make tea, text my sister. If it gets worse, ring the number."
+    },
+    {
+      "idx": 16,
+      "speaker": "therapist",
+      "text": "That's clear. I'd also like to let your GP know how you've been feeling, as we discussed in our contract. How do you feel about that?"
+    },
+    {
+      "idx": 17,
+      "speaker": "client",
+      "text": "That's fine. I have an appointment on Thursday anyway."
+    },
+    {
+      "idx": 18,
+      "speaker": "therapist",
+      "text": "Good. Could you tell your GP about the night-time thoughts on Thursday?"
+    },
+    {
+      "idx": 19,
+      "speaker": "client",
+      "text": "Yes, I will."
+    },
+    {
+      "idx": 20,
+      "speaker": "therapist",
+      "text": "Earlier you said you used to enjoy the gym. Is there anything small you might do this week that used to help?"
+    },
+    {
+      "idx": 21,
+      "speaker": "client",
+      "text": "Maybe a short walk with my sister on Saturday."
+    },
+    {
+      "idx": 22,
+      "speaker": "therapist",
+      "text": "A walk with your sister on Saturday. Let's check in on how that went next week. And I'd like to see you again on Monday rather than waiting a full week, if that suits."
+    },
+    {
+      "idx": 23,
+      "speaker": "client",
+      "text": "Monday works."
+    }
+  ],
+  "expected_note_facts": [
+    "Client reports low mood, stopped gym, staying in bed on days off",
+    "Client said 'everyone would be better off without me'",
+    "Client reported night-time thoughts that it would be easier not to wake up, 2-3 nights last week; no plans; sister a reason not to act",
+    "Safety plan on fridge: sister, out-of-hours number, Samaritans; reviewed in session",
+    "Therapist to inform GP per contract; client agreed; GP appointment Thursday; client will raise thoughts with GP",
+    "Plan: walk with sister Saturday; next session Monday"
+  ],
+  "must_not": [
+    "Any risk level, risk score or risk category",
+    "Any diagnosis"
+  ],
+  "expert_reflection": {
+    "strengths": [
+      "Asked directly and calmly about thoughts of ending life",
+      "Reviewed the existing safety plan collaboratively",
+      "Followed the agreed contract about informing the GP, with consent"
+    ],
+    "missed_openings": [
+      "The meaning of 'pointless' could be explored when appropriate",
+      "The sister's daily check-ins as support could be reflected and strengthened"
+    ],
+    "try_next": [
+      "Summarise the safety conversation back to the client in their own words before moving on"
+    ]
+  },
+  "review": "CLINICAL-REVIEW: synthetic role-play with safety-related content. The note must document what was said faithfully and must not contain any risk rating."
+}

@@ -1,0 +1,84 @@
+{
+  "id": "cbt",
+  "version": "2026-10-draft1",
+  "clinical_review": "DRAFT — written by the engineering team as a starting point. Must be reviewed and approved by the Clinical Lead before use with real clients.",
+  "name": "Cognitive behavioural therapy",
+  "description": "Inspired by the areas commonly used to describe CBT competence (structure, collaboration, guided discovery, conceptualisation, homework). Our own wording — not the CTRS or CTS-R scales.",
+  "scale": {
+    "min": 1,
+    "max": 5,
+    "meaning": "1 = not present in this session, 3 = partly present, 5 = strongly and skilfully present"
+  },
+  "dimensions": [
+    {
+      "id": "agenda",
+      "label": "Agenda and structure",
+      "description": "Agreeing a session agenda and following a clear, flexible structure.",
+      "anchors": {
+        "1": "No agenda; the session lacks structure.",
+        "3": "An agenda is set but loosely followed.",
+        "5": "A collaborative agenda is set and used flexibly to guide the session."
+      }
+    },
+    {
+      "id": "collaboration",
+      "label": "Collaboration",
+      "description": "Working as a team: shared decisions, checking understanding, inviting feedback.",
+      "anchors": {
+        "1": "The therapist leads alone.",
+        "3": "Some shared decisions.",
+        "5": "Clearly collaborative throughout, with regular checks and feedback."
+      }
+    },
+    {
+      "id": "guided_discovery",
+      "label": "Guided discovery",
+      "description": "Helping the client discover new perspectives through questions, rather than telling or persuading.",
+      "anchors": {
+        "1": "The therapist tells or lectures.",
+        "3": "Some questioning, but conclusions are often supplied.",
+        "5": "Skilful questioning helps the client reach their own new understanding."
+      }
+    },
+    {
+      "id": "key_cognitions",
+      "label": "Focus on key thoughts and behaviours",
+      "description": "Identifying and working with the thoughts, beliefs and behaviours most relevant to the difficulty.",
+      "anchors": {
+        "1": "Key thoughts or behaviours are not identified.",
+        "3": "Relevant thoughts identified but not worked with.",
+        "5": "Central thoughts/behaviours are identified and worked with purposefully."
+      }
+    },
+    {
+      "id": "conceptualisation",
+      "label": "Linking to a formulation",
+      "description": "Choosing interventions that fit a shared understanding (formulation) of the client's difficulties.",
+      "anchors": {
+        "1": "Interventions seem unconnected to any formulation.",
+        "3": "Some link to a formulation.",
+        "5": "Interventions clearly follow from a shared formulation."
+      }
+    },
+    {
+      "id": "homework",
+      "label": "Between-session work",
+      "description": "Reviewing previous homework and agreeing meaningful tasks for the coming week.",
+      "anchors": {
+        "1": "No review or setting of between-session work.",
+        "3": "Homework set without clear rationale or review.",
+        "5": "Homework reviewed, and a clear, agreed, meaningful task set."
+      }
+    },
+    {
+      "id": "summaries",
+      "label": "Summaries and feedback",
+      "description": "Summarising key points and asking for the client's feedback on the session.",
+      "anchors": {
+        "1": "No summaries or feedback.",
+        "3": "An end summary or feedback, not both.",
+        "5": "Regular summaries and genuine feedback that shapes the work."
+      }
+    }
+  ]
+}

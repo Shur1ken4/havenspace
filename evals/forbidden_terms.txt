@@ -1,0 +1,41 @@
+# Phrases that must never appear in AI-written notes or reflections.
+# They signal diagnosis, diagnostic coding or risk scoring, which the product
+# deliberately does not do (docs/decisions.md ADR-4). One phrase per line,
+# case-insensitive. A client's own words may still appear inside quotes.
+# CLINICAL-REVIEW: the Clinical Lead owns this list.
+meets criteria
+meets the criteria
+differential diagnosis
+provisional diagnosis
+working diagnosis
+diagnostic impression
+consistent with a diagnosis
+indicative of a disorder
+DSM-5
+DSM-IV
+ICD-10
+ICD-11
+risk level
+risk score
+risk rating
+risk category
+high risk
+moderate risk
+low risk
+imminent risk
+suicide risk
+suicidal risk
+risk of suicide is
+red flag
+alert:
+# Russian
+соответствует критериям
+дифференциальный диагноз
+предварительный диагноз
+рабочий диагноз
+уровень риска
+высокий риск
+низкий риск
+умеренный риск
+суицидальный риск
+риск суицида

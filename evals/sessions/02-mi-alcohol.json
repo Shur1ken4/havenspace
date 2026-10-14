@@ -1,0 +1,193 @@
+{
+  "id": "02-mi-alcohol",
+  "title": "Motivational interviewing — drinking (session 2)",
+  "modality": "mi",
+  "note_format": "DAP",
+  "language": "en",
+  "client_label": "Client B",
+  "segments": [
+    {
+      "idx": 0,
+      "speaker": "therapist",
+      "text": "Last time you mentioned you weren't sure whether you wanted to talk about the drinking. Where are you with that today?"
+    },
+    {
+      "idx": 1,
+      "speaker": "client",
+      "text": "Honestly, my partner thinks it's a problem. I'm not convinced. Everyone has a few drinks after work."
+    },
+    {
+      "idx": 2,
+      "speaker": "therapist",
+      "text": "It feels like your partner is more worried than you are."
+    },
+    {
+      "idx": 3,
+      "speaker": "client",
+      "text": "Yeah. I mean, I don't drink in the mornings or anything. I go to work."
+    },
+    {
+      "idx": 4,
+      "speaker": "therapist",
+      "text": "You're holding things together, and that matters to you. And at the same time something brought you back here today."
+    },
+    {
+      "idx": 5,
+      "speaker": "client",
+      "text": "Well, the thing is, last Saturday I don't really remember getting home. That scared me a bit."
+    },
+    {
+      "idx": 6,
+      "speaker": "therapist",
+      "text": "Not remembering getting home scared you."
+    },
+    {
+      "idx": 7,
+      "speaker": "client",
+      "text": "Yeah. And my daughter saw me like that. She's nine."
+    },
+    {
+      "idx": 8,
+      "speaker": "therapist",
+      "text": "What was that like, knowing she saw you?"
+    },
+    {
+      "idx": 9,
+      "speaker": "client",
+      "text": "Awful. She asked me on Sunday if I was sick. I said yes."
+    },
+    {
+      "idx": 10,
+      "speaker": "therapist",
+      "text": "Part of you says it's normal, everyone drinks. Another part of you felt awful when your daughter asked if you were sick."
+    },
+    {
+      "idx": 11,
+      "speaker": "client",
+      "text": "That's it exactly. I don't want her to see me like that."
+    },
+    {
+      "idx": 12,
+      "speaker": "therapist",
+      "text": "Being the kind of parent you want to be is really important to you."
+    },
+    {
+      "idx": 13,
+      "speaker": "client",
+      "text": "It's the most important thing."
+    },
+    {
+      "idx": 14,
+      "speaker": "therapist",
+      "text": "If you decided to make a change, what might that look like? Not what you should do — what you might want."
+    },
+    {
+      "idx": 15,
+      "speaker": "client",
+      "text": "Maybe not drinking at weekends when I have her. That would be a start."
+    },
+    {
+      "idx": 16,
+      "speaker": "therapist",
+      "text": "You'd like to not drink on the weekends you have your daughter."
+    },
+    {
+      "idx": 17,
+      "speaker": "client",
+      "text": "I think I could do that. Weeknights are different, that's my time to relax."
+    },
+    {
+      "idx": 18,
+      "speaker": "therapist",
+      "text": "So weekends with your daughter feel possible, and weeknights still feel like your way of unwinding. That's your call to make."
+    },
+    {
+      "idx": 19,
+      "speaker": "client",
+      "text": "Yeah. Maybe later I'd think about weeknights. Not yet."
+    },
+    {
+      "idx": 20,
+      "speaker": "therapist",
+      "text": "On a scale of zero to ten, how important is it to you to make the weekend change?"
+    },
+    {
+      "idx": 21,
+      "speaker": "client",
+      "text": "Nine."
+    },
+    {
+      "idx": 22,
+      "speaker": "therapist",
+      "text": "And how confident are you that you could do it?"
+    },
+    {
+      "idx": 23,
+      "speaker": "client",
+      "text": "Maybe six."
+    },
+    {
+      "idx": 24,
+      "speaker": "therapist",
+      "text": "Six, not three. What makes it a six?"
+    },
+    {
+      "idx": 25,
+      "speaker": "client",
+      "text": "I've done it before, when I was training for a run. I didn't drink for two months."
+    },
+    {
+      "idx": 26,
+      "speaker": "therapist",
+      "text": "You've already shown you can do it for two months when you had a reason that mattered."
+    },
+    {
+      "idx": 27,
+      "speaker": "client",
+      "text": "I forgot about that, actually."
+    },
+    {
+      "idx": 28,
+      "speaker": "therapist",
+      "text": "What would help take it from six to seven?"
+    },
+    {
+      "idx": 29,
+      "speaker": "client",
+      "text": "Maybe telling my partner the plan. And not having wine in the house on Fridays."
+    },
+    {
+      "idx": 30,
+      "speaker": "therapist",
+      "text": "So the plan you've come to is no drinking on weekends with your daughter, telling your partner, and keeping wine out of the house on Fridays. How does that sound to you?"
+    },
+    {
+      "idx": 31,
+      "speaker": "client",
+      "text": "It sounds like something I could actually do."
+    }
+  ],
+  "expected_note_facts": [
+    "Client reports partner is concerned about drinking; client ambivalent",
+    "Client could not remember getting home last Saturday; found this frightening",
+    "Client's nine-year-old daughter saw client intoxicated and asked if client was sick",
+    "Importance of change 9/10; confidence 6/10",
+    "Previously abstained for two months while training for a run",
+    "Plan: no alcohol on weekends with daughter; tell partner; no wine in house on Fridays"
+  ],
+  "expert_reflection": {
+    "strengths": [
+      "Double-sided reflection of ambivalence (normal vs felt awful)",
+      "Affirmed client's value of being a good parent",
+      "Used importance/confidence scaling and asked 'why six not three'"
+    ],
+    "missed_openings": [
+      "The memory blackout could have been explored a little more with permission",
+      "Weeknight drinking 'to relax' could later be explored for what it does for the client"
+    ],
+    "try_next": [
+      "Ask permission before offering information, e.g. about blackouts"
+    ]
+  },
+  "review": "CLINICAL-REVIEW: synthetic role-play; drafts for the Clinical Lead."
+}

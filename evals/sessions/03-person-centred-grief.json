@@ -1,0 +1,163 @@
+{
+  "id": "03-person-centred-grief",
+  "title": "Person-centred — grief (session 6)",
+  "modality": "person_centred",
+  "note_format": "FREE",
+  "language": "en",
+  "client_label": "Client C",
+  "segments": [
+    {
+      "idx": 0,
+      "speaker": "therapist",
+      "text": "Where would you like to start today?"
+    },
+    {
+      "idx": 1,
+      "speaker": "client",
+      "text": "I'm not sure. It's been six months since Mum died and people keep saying I should be feeling better by now."
+    },
+    {
+      "idx": 2,
+      "speaker": "therapist",
+      "text": "There's a sense that other people have a timetable for your grief."
+    },
+    {
+      "idx": 3,
+      "speaker": "client",
+      "text": "Yes. My brother especially. He's back to normal, he says. And I'm still crying in the supermarket when I see her biscuits."
+    },
+    {
+      "idx": 4,
+      "speaker": "therapist",
+      "text": "Her biscuits."
+    },
+    {
+      "idx": 5,
+      "speaker": "client",
+      "text": "The ones she always bought. Custard creams. Stupid, really."
+    },
+    {
+      "idx": 6,
+      "speaker": "therapist",
+      "text": "It doesn't sound stupid. It sounds like small things carry a lot of her."
+    },
+    {
+      "idx": 7,
+      "speaker": "client",
+      "text": "They do. Everything does. Her coat is still in my hall."
+    },
+    {
+      "idx": 8,
+      "speaker": "client",
+      "text": "I can't move it. My brother says I should give her things to charity."
+    },
+    {
+      "idx": 9,
+      "speaker": "therapist",
+      "text": "Part of you isn't ready to let her coat go."
+    },
+    {
+      "idx": 10,
+      "speaker": "client",
+      "text": "If I move it, it's like she's really gone."
+    },
+    {
+      "idx": 11,
+      "speaker": "therapist",
+      "text": "Keeping it there keeps something of her close."
+    },
+    {
+      "idx": 12,
+      "speaker": "client",
+      "text": "Yes. I talk to it sometimes. Isn't that mad?"
+    },
+    {
+      "idx": 13,
+      "speaker": "therapist",
+      "text": "You're wondering whether I'll think it's mad."
+    },
+    {
+      "idx": 14,
+      "speaker": "client",
+      "text": "A bit, yes."
+    },
+    {
+      "idx": 15,
+      "speaker": "therapist",
+      "text": "I don't. It sounds like a way of staying connected to her."
+    },
+    {
+      "idx": 16,
+      "speaker": "client",
+      "text": "That's a relief to hear, actually."
+    },
+    {
+      "idx": 17,
+      "speaker": "client",
+      "text": "I suppose I'm also angry. With my brother. And with her, for not going to the doctor sooner."
+    },
+    {
+      "idx": 18,
+      "speaker": "therapist",
+      "text": "Angry with her too."
+    },
+    {
+      "idx": 19,
+      "speaker": "client",
+      "text": "Which makes me feel terrible. She's dead and I'm angry at her."
+    },
+    {
+      "idx": 20,
+      "speaker": "therapist",
+      "text": "It's hard to let yourself feel angry with someone you love and miss so much."
+    },
+    {
+      "idx": 21,
+      "speaker": "client",
+      "text": "Yes. I've never said that out loud before."
+    },
+    {
+      "idx": 22,
+      "speaker": "therapist",
+      "text": "You've said it here."
+    },
+    {
+      "idx": 23,
+      "speaker": "client",
+      "text": "I have. It feels a bit lighter, weirdly."
+    },
+    {
+      "idx": 24,
+      "speaker": "therapist",
+      "text": "We're coming towards the end of our time. How are you leaving today?"
+    },
+    {
+      "idx": 25,
+      "speaker": "client",
+      "text": "Tired, but okay. I think I want to talk more about the anger next week."
+    }
+  ],
+  "expected_note_facts": [
+    "Six months since client's mother died",
+    "Client feels pressure from others (especially brother) to be 'better'",
+    "Client cries when seeing reminders, e.g. mother's biscuits",
+    "Mother's coat still in client's hall; client not ready to move it; talks to it",
+    "Client expressed anger with brother and with mother for not seeing doctor sooner; first time saying this aloud",
+    "Client wishes to explore anger next session"
+  ],
+  "expert_reflection": {
+    "strengths": [
+      "Stayed with the client's frame ('Her biscuits')",
+      "Named the client's fear of judgement and responded with acceptance",
+      "Made space for anger without rushing to reassure"
+    ],
+    "missed_openings": [
+      "The relationship with the brother and feeling out of step with him could be explored",
+      "Feeling 'lighter' after naming anger could have been reflected further"
+    ],
+    "try_next": [
+      "Allow a little more silence after significant disclosures"
+    ]
+  },
+  "review": "CLINICAL-REVIEW: synthetic role-play; drafts for the Clinical Lead."
+}

@@ -1,0 +1,74 @@
+{
+  "id": "dbt",
+  "version": "2026-10-draft1",
+  "clinical_review": "DRAFT — written by the engineering team as a starting point. Must be reviewed and approved by the Clinical Lead before use with real clients.",
+  "name": "DBT (individual)",
+  "description": "Inspired by the balance of acceptance and change in DBT individual work. Our own wording. This pack reflects on technique only; it never rates risk.",
+  "scale": {
+    "min": 1,
+    "max": 5,
+    "meaning": "1 = not present in this session, 3 = partly present, 5 = strongly and skilfully present"
+  },
+  "dimensions": [
+    {
+      "id": "validation",
+      "label": "Validation",
+      "description": "Communicating that the client's responses make sense in context, at the level the moment calls for.",
+      "anchors": {
+        "1": "Responses are invalidating or dismissive.",
+        "3": "Some validation of feelings.",
+        "5": "Validation at several levels, well matched to the moment."
+      }
+    },
+    {
+      "id": "balance",
+      "label": "Balancing acceptance and change",
+      "description": "Moving flexibly between acceptance and change strategies.",
+      "anchors": {
+        "1": "Stuck in only acceptance or only change.",
+        "3": "Some movement between the two.",
+        "5": "A fluid, well-timed balance of acceptance and change."
+      }
+    },
+    {
+      "id": "behaviour_focus",
+      "label": "Focus on specific behaviours",
+      "description": "Working with specific, concrete behaviours and their links (e.g. chain analysis) rather than generalities.",
+      "anchors": {
+        "1": "Discussion stays general.",
+        "3": "Some specific focus.",
+        "5": "Specific behaviours and links are explored in useful detail."
+      }
+    },
+    {
+      "id": "skills",
+      "label": "Skills coaching",
+      "description": "Helping the client use or plan to use skills (e.g. distress tolerance, emotion regulation, interpersonal effectiveness, mindfulness).",
+      "anchors": {
+        "1": "No link to skills.",
+        "3": "Skills mentioned.",
+        "5": "Skills are actively coached and linked to the client's situations."
+      }
+    },
+    {
+      "id": "dialectics",
+      "label": "Dialectical stance",
+      "description": "Holding seemingly opposite truths together; avoiding either/or positions.",
+      "anchors": {
+        "1": "Either/or positions dominate.",
+        "3": "Occasional both/and framing.",
+        "5": "A consistent dialectical stance that opens up options."
+      }
+    },
+    {
+      "id": "commitment",
+      "label": "Commitment and collaboration",
+      "description": "Building and checking the client's commitment to agreed goals.",
+      "anchors": {
+        "1": "No attention to commitment.",
+        "3": "Commitment assumed.",
+        "5": "Commitment explored and strengthened collaboratively."
+      }
+    }
+  ]
+}

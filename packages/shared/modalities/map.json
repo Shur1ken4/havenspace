@@ -1,0 +1,11 @@
+{
+  "_comment": "Which reflection pack is used for each modality a therapist can choose. Modalities without their own pack use the common-factors pack.",
+  "cbt": "cbt",
+  "mi": "mi",
+  "dbt": "dbt",
+  "person_centred": "person_centred",
+  "solution_focused": "solution_focused",
+  "integrative": "general",
+  "psychodynamic": "general",
+  "systemic": "general"
+}

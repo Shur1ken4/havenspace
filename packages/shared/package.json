@@ -1,0 +1,10 @@
+{
+  "name": "@psych/shared",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared modality packs and output schemas used by the web app and the worker.",
+  "exports": {
+    "./modalities/*": "./modalities/*",
+    "./schemas/*": "./schemas/*"
+  }
+}

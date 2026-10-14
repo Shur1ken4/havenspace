@@ -1,0 +1,12 @@
+node_modules/
+.data/
+.env
+.env.local
+*.log
+.DS_Store
+evals/reports/
+services/worker/.venv/
+__pycache__/
+.pytest_cache/
+reference/prototype/*
+!reference/prototype/README.md

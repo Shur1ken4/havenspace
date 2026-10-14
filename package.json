@@ -1,0 +1,24 @@
+{
+  "name": "psych-copilot",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "db:start": "node scripts/db.mjs start",
+    "db:migrate": "node scripts/migrate.mjs",
+    "db:seed": "node scripts/seed.mjs",
+    "dev": "npm run dev -w web",
+    "build": "npm run build -w web",
+    "test": "node scripts/migrate.mjs --test && npm run test -w web && npm run test:worker",
+    "test:worker": "cd services/worker && ~/.local/bin/uv run pytest -q",
+    "worker": "cd services/worker && ~/.local/bin/uv run python -m worker",
+    "eval": "cd services/worker && ~/.local/bin/uv run python -m evals_runner",
+    "signups": "node scripts/signups.mjs"
+  },
+  "devDependencies": {
+    "embedded-postgres": "18.4.0-beta.17",
+    "pg": "^8.23.1"
+  }
+}

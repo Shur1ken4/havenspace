@@ -1,0 +1,153 @@
+{
+  "id": "04-couples-communication",
+  "title": "Couples — communication (session 3)",
+  "modality": "solution_focused",
+  "note_format": "BIRP",
+  "language": "en",
+  "client_label": "Couple D",
+  "segments": [
+    {
+      "idx": 0,
+      "speaker": "therapist",
+      "text": "Welcome back, both of you. Since last time, what's been even a little bit better between you?"
+    },
+    {
+      "idx": 1,
+      "speaker": "client",
+      "text": "Honestly, not much. We had a big argument on Thursday about money again."
+    },
+    {
+      "idx": 2,
+      "speaker": "client_2",
+      "text": "Although Tuesday was good. We cooked together, that was nice."
+    },
+    {
+      "idx": 3,
+      "speaker": "therapist",
+      "text": "Tuesday was good. Tell me more about Tuesday. What was different?"
+    },
+    {
+      "idx": 4,
+      "speaker": "client_2",
+      "text": "We both got home early. Nobody was on their phone. We just talked while cooking."
+    },
+    {
+      "idx": 5,
+      "speaker": "client",
+      "text": "Yeah, Tuesday was fine. I'd forgotten about Tuesday."
+    },
+    {
+      "idx": 6,
+      "speaker": "therapist",
+      "text": "What did each of you do on Tuesday that helped it go well?"
+    },
+    {
+      "idx": 7,
+      "speaker": "client",
+      "text": "I suppose I asked about her day and actually listened."
+    },
+    {
+      "idx": 8,
+      "speaker": "client_2",
+      "text": "And I didn't bring up the bills. I wanted to, but I didn't."
+    },
+    {
+      "idx": 9,
+      "speaker": "therapist",
+      "text": "So you listened, and you chose to leave the bills for another time. That sounds like effort from both of you."
+    },
+    {
+      "idx": 10,
+      "speaker": "client",
+      "text": "It's just that the bills need talking about at some point."
+    },
+    {
+      "idx": 11,
+      "speaker": "therapist",
+      "text": "Of course. If the money conversation went the way you'd want it to, what would you notice?"
+    },
+    {
+      "idx": 12,
+      "speaker": "client",
+      "text": "We'd sit down at a set time, not in the middle of something else. And she wouldn't sigh at me."
+    },
+    {
+      "idx": 13,
+      "speaker": "client_2",
+      "text": "And he wouldn't get defensive and walk out."
+    },
+    {
+      "idx": 14,
+      "speaker": "therapist",
+      "text": "So a set time, calm, both staying in the room. On a scale from one to ten, where ten is money talks going the way you both want, where are you now?"
+    },
+    {
+      "idx": 15,
+      "speaker": "client",
+      "text": "Three."
+    },
+    {
+      "idx": 16,
+      "speaker": "client_2",
+      "text": "Maybe four. We did agree the budget in the end on Thursday."
+    },
+    {
+      "idx": 17,
+      "speaker": "therapist",
+      "text": "What would one point higher look like?"
+    },
+    {
+      "idx": 18,
+      "speaker": "client_2",
+      "text": "Maybe a fifteen-minute money check on Sunday evenings. With tea."
+    },
+    {
+      "idx": 19,
+      "speaker": "client",
+      "text": "I could do Sundays. As long as it's fifteen minutes and not two hours."
+    },
+    {
+      "idx": 20,
+      "speaker": "therapist",
+      "text": "A fifteen-minute money check on Sunday with tea. I'm struck by how quickly you both found something you could agree on."
+    },
+    {
+      "idx": 21,
+      "speaker": "client",
+      "text": "We're not always this reasonable."
+    },
+    {
+      "idx": 22,
+      "speaker": "therapist",
+      "text": "Between now and next time, could you each notice the moments when things are working between you, so we can hear about them?"
+    },
+    {
+      "idx": 23,
+      "speaker": "client_2",
+      "text": "Yes, we can do that."
+    }
+  ],
+  "expected_note_facts": [
+    "Couple reported argument about money on Thursday",
+    "Tuesday was a better day: cooked together, no phones, talked",
+    "Partner A listened; partner B chose not to raise bills",
+    "Scaling of money conversations: 3 and 4 out of 10",
+    "Agreed 15-minute money check-in on Sunday evenings",
+    "Task: each notice moments when things are working"
+  ],
+  "expert_reflection": {
+    "strengths": [
+      "Opened with a 'what's better' question and amplified the Tuesday exception",
+      "Built a preferred future for money conversations",
+      "Used scaling and 'one point higher' to reach a small concrete step"
+    ],
+    "missed_openings": [
+      "Partner A's 'I'd forgotten about Tuesday' could have been explored",
+      "The sighing/defensive pattern could be explored in terms of what each would like instead"
+    ],
+    "try_next": [
+      "Ask each partner what they noticed the other doing well"
+    ]
+  },
+  "review": "CLINICAL-REVIEW: synthetic role-play; drafts for the Clinical Lead."
+}

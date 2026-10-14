@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+/*
+  Design tokens — "a quiet room". All colours in the app come from here.
+  Two values differ slightly from the brief for WCAG AA contrast:
+  --muted (#6E7A73 → #66726B) and --primary-strong (added for text on sage).
+*/
+:root {
+  --bg: #FAF8F5;
+  --surface: #FFFFFF;
+  --surface-2: #F3F0EA;
+  --ink: #2F3A35;
+  --muted: #66726B;
+  --primary: #6B8F7B;
+  --primary-strong: #4F7361;
+  --primary-soft: #E6EEE9;
+  --accent: #C9A38A;
+  --accent-soft: #F3E9E1;
+  --calm-blue: #8FA9B8;
+  --calm-blue-soft: #E7EEF2;
+  --attention: #C98A5B;
+  --attention-soft: #F6EADF;
+  --destructive: #B5654A;
+  --border: #E7E2DA;
+  --focus: #4F7361;
+  --shadow: 0 1px 2px rgba(47, 58, 53, 0.04), 0 8px 24px rgba(47, 58, 53, 0.05);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1E2421;
+    --surface: #252C28;
+    --surface-2: #2B332E;
+    --ink: #E4E7E2;
+    --muted: #A2ACA5;
+    --primary: #8AAA97;
+    --primary-strong: #9DBBA9;
+    --primary-soft: #2D3A33;
+    --accent: #BE9C86;
+    --accent-soft: #3A322C;
+    --calm-blue: #8EA5B2;
+    --calm-blue-soft: #2A343A;
+    --attention: #D2A07A;
+    --attention-soft: #3B3129;
+    --destructive: #D08670;
+    --border: #353E39;
+    --focus: #9DBBA9;
+    --shadow: none;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1E2421;
+  --surface: #252C28;
+  --surface-2: #2B332E;
+  --ink: #E4E7E2;
+  --muted: #A2ACA5;
+  --primary: #8AAA97;
+  --primary-strong: #9DBBA9;
+  --primary-soft: #2D3A33;
+  --accent: #BE9C86;
+  --accent-soft: #3A322C;
+  --calm-blue: #8EA5B2;
+  --calm-blue-soft: #2A343A;
+  --attention: #D2A07A;
+  --attention-soft: #3B3129;
+  --destructive: #D08670;
+  --border: #353E39;
+  --focus: #9DBBA9;
+  --shadow: none;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-primary-strong: var(--primary-strong);
+  --color-primary-soft: var(--primary-soft);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-calm-blue: var(--calm-blue);
+  --color-calm-blue-soft: var(--calm-blue-soft);
+  --color-attention: var(--attention);
+  --color-attention-soft: var(--attention-soft);
+  --color-destructive: var(--destructive);
+  --color-line: var(--border);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), ui-serif, Georgia, serif;
+  --radius-soft: 14px;
+  --shadow-soft: var(--shadow);
+  --ease-calm: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@layer base {
+html { background: var(--bg); }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16.5px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, .font-serif { font-family: var(--font-serif); font-weight: 400; letter-spacing: -0.01em; line-height: 1.25; }
+
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 6px; }
+::selection { background: var(--primary-soft); }
+}
+
+/* Gentle transitions everywhere; none for people who prefer reduced motion. */
+a, button, input, select, textarea, [role="tab"] {
+  transition: background-color 250ms var(--ease-calm), color 250ms var(--ease-calm),
+    border-color 250ms var(--ease-calm), box-shadow 250ms var(--ease-calm), opacity 250ms var(--ease-calm);
+}
+
+/* The recording indicator breathes; it never blinks. */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.75; }
+  50% { transform: scale(1.35); opacity: 0.25; }
+}
+.breathing-dot { position: relative; display: inline-block; width: 14px; height: 14px; border-radius: 9999px; background: var(--accent); }
+.breathing-dot::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--accent); animation: breathe 4s ease-in-out infinite; }
+.breathing-dot[data-paused="true"]::after { animation: none; opacity: 0; }
+
+@keyframes fade-up { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.fade-up { animation: fade-up 300ms var(--ease-calm) both; }
+
+.highlight-moment { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: white; }
+}

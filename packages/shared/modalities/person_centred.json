@@ -1,0 +1,74 @@
+{
+  "id": "person_centred",
+  "version": "2026-10-draft1",
+  "clinical_review": "DRAFT — written by the engineering team as a starting point. Must be reviewed and approved by the Clinical Lead before use with real clients.",
+  "name": "Person-centred",
+  "description": "Inspired by the core conditions and the client's own frame of reference. Our own wording.",
+  "scale": {
+    "min": 1,
+    "max": 5,
+    "meaning": "1 = not present in this session, 3 = partly present, 5 = strongly and skilfully present"
+  },
+  "dimensions": [
+    {
+      "id": "empathy",
+      "label": "Empathic understanding",
+      "description": "Sensing and communicating the client's inner world as if it were one's own, without losing the 'as if'.",
+      "anchors": {
+        "1": "Responses come from the therapist's frame, not the client's.",
+        "3": "Accurate understanding of what was said.",
+        "5": "Deep, accurate understanding of felt meaning, communicated tentatively."
+      }
+    },
+    {
+      "id": "acceptance",
+      "label": "Unconditional positive regard",
+      "description": "Warm acceptance of the client as a person, without judgement or conditions.",
+      "anchors": {
+        "1": "Judgement, approval or disapproval is evident.",
+        "3": "Generally accepting, with occasional evaluative moments.",
+        "5": "Consistent warmth and acceptance, including of difficult feelings."
+      }
+    },
+    {
+      "id": "congruence",
+      "label": "Congruence",
+      "description": "Being genuine and present; the therapist's responses feel real rather than technique-driven.",
+      "anchors": {
+        "1": "Responses feel scripted or defensive.",
+        "3": "Mostly genuine.",
+        "5": "Genuinely present; appropriate transparency when it serves the client."
+      }
+    },
+    {
+      "id": "frame",
+      "label": "Following the client's direction",
+      "description": "Letting the client lead; trusting their direction and pace.",
+      "anchors": {
+        "1": "The therapist steers the content.",
+        "3": "Mostly following, with some steering.",
+        "5": "The client clearly leads; the therapist follows closely."
+      }
+    },
+    {
+      "id": "non_directive",
+      "label": "Non-directiveness",
+      "description": "Avoiding advice, interpretation or agenda-setting that takes over the client's process.",
+      "anchors": {
+        "1": "Frequent advice or interpretation.",
+        "3": "Occasional directive moments.",
+        "5": "Non-directive throughout, while staying engaged."
+      }
+    },
+    {
+      "id": "presence",
+      "label": "Presence and space",
+      "description": "Unhurried attention; room for silence and feeling.",
+      "anchors": {
+        "1": "Rushed; silences are filled quickly.",
+        "3": "Some space.",
+        "5": "Calm, attentive presence; silences are allowed to do their work."
+      }
+    }
+  ]
+}

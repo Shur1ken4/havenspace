@@ -1,0 +1,184 @@
+{
+  "id": "01-cbt-sleep-worry",
+  "title": "CBT — worry and sleep (session 4)",
+  "modality": "cbt",
+  "note_format": "SOAP",
+  "language": "en",
+  "client_label": "Client A",
+  "segments": [
+    {
+      "idx": 0,
+      "speaker": "therapist",
+      "text": "Welcome back. Before we start, how has the week been, and what would you like us to make sure we cover today?"
+    },
+    {
+      "idx": 1,
+      "speaker": "client",
+      "text": "It's been up and down. Work was really busy, and I didn't sleep well most nights. I'd like to talk about the sleep, I think."
+    },
+    {
+      "idx": 2,
+      "speaker": "therapist",
+      "text": "Okay, so sleep is one item. Last week we agreed you'd try the worry diary. Shall we look at how that went as well, and then set the agenda from there?"
+    },
+    {
+      "idx": 3,
+      "speaker": "client",
+      "text": "Yes. I did it four nights out of seven. I wrote the worries down but I'm not sure it helped much."
+    },
+    {
+      "idx": 4,
+      "speaker": "therapist",
+      "text": "Four nights is a real effort, especially in a busy week. What did you notice when you looked back over what you'd written?"
+    },
+    {
+      "idx": 5,
+      "speaker": "client",
+      "text": "Most of them were about work. Like, what if I've missed something in the report and my manager thinks I can't cope."
+    },
+    {
+      "idx": 6,
+      "speaker": "therapist",
+      "text": "So a thought like 'I've missed something and my manager will think I can't cope'. When that thought shows up at night, how much do you believe it, from zero to a hundred?"
+    },
+    {
+      "idx": 7,
+      "speaker": "client",
+      "text": "At night, probably eighty. In the morning it's more like thirty."
+    },
+    {
+      "idx": 8,
+      "speaker": "therapist",
+      "text": "That's a big difference between night and morning. What do you make of that?"
+    },
+    {
+      "idx": 9,
+      "speaker": "client",
+      "text": "I suppose at night everything feels worse. In the morning I can see it's probably fine."
+    },
+    {
+      "idx": 10,
+      "speaker": "therapist",
+      "text": "What happens next, after the thought comes at night? What do you do?"
+    },
+    {
+      "idx": 11,
+      "speaker": "client",
+      "text": "I check my emails on my phone. Sometimes for an hour. Then I'm wide awake."
+    },
+    {
+      "idx": 12,
+      "speaker": "therapist",
+      "text": "So the checking is meant to settle the worry, but it seems to keep you awake. Does that fit with the cycle we drew a few weeks ago?"
+    },
+    {
+      "idx": 13,
+      "speaker": "client",
+      "text": "Yes, it's the same loop. Thought, check, more awake, more thoughts."
+    },
+    {
+      "idx": 14,
+      "speaker": "therapist",
+      "text": "What evidence do you have, from the last month, about whether you actually miss things in your reports?"
+    },
+    {
+      "idx": 15,
+      "speaker": "client",
+      "text": "Honestly, nothing major. My manager said the last one was good. One small typo once."
+    },
+    {
+      "idx": 16,
+      "speaker": "therapist",
+      "text": "So one small typo, and positive feedback on the last report. If a friend had that record and was lying awake checking, what would you say to them?"
+    },
+    {
+      "idx": 17,
+      "speaker": "client",
+      "text": "I'd tell them they're doing fine and the emails can wait until morning."
+    },
+    {
+      "idx": 18,
+      "speaker": "therapist",
+      "text": "How does it feel to say that?"
+    },
+    {
+      "idx": 19,
+      "speaker": "client",
+      "text": "A bit strange. True, though."
+    },
+    {
+      "idx": 20,
+      "speaker": "therapist",
+      "text": "For this week, would you be willing to try an experiment? Phone charging in the kitchen, and if the thought comes, you write it in the diary and rate how much you believe it, then rate it again in the morning."
+    },
+    {
+      "idx": 21,
+      "speaker": "client",
+      "text": "The phone in the kitchen is going to be hard. But I can try it on work nights."
+    },
+    {
+      "idx": 22,
+      "speaker": "therapist",
+      "text": "Work nights is a good start. What might get in the way?"
+    },
+    {
+      "idx": 23,
+      "speaker": "client",
+      "text": "If I get an email from my manager late in the evening I'll want to answer it."
+    },
+    {
+      "idx": 24,
+      "speaker": "therapist",
+      "text": "What could you do in that moment instead?"
+    },
+    {
+      "idx": 25,
+      "speaker": "client",
+      "text": "Maybe write down what I'd reply and send it in the morning."
+    },
+    {
+      "idx": 26,
+      "speaker": "therapist",
+      "text": "That sounds workable. Before we finish, can I check how today's session was for you, and anything that wasn't helpful?"
+    },
+    {
+      "idx": 27,
+      "speaker": "client",
+      "text": "It was helpful. The friend question made me think. I'd like to keep working on the night-time thing."
+    },
+    {
+      "idx": 28,
+      "speaker": "therapist",
+      "text": "Let me summarise: the worry diary showed most worries are about work, belief drops from eighty at night to thirty in the morning, and checking keeps you awake. This week, phone in the kitchen on work nights, diary and ratings. We'll review it next time."
+    },
+    {
+      "idx": 29,
+      "speaker": "client",
+      "text": "Sounds good. Thank you."
+    }
+  ],
+  "expected_note_facts": [
+    "Completed worry diary 4 of 7 nights",
+    "Worries mainly about work performance",
+    "Belief in worry ~80/100 at night vs ~30 in morning",
+    "Checks emails on phone at night, which keeps client awake",
+    "Recent positive feedback from manager; one minor typo",
+    "Homework: phone charging in kitchen on work nights; worry diary with belief ratings night and morning",
+    "Plan: review experiment next session"
+  ],
+  "expert_reflection": {
+    "strengths": [
+      "Collaborative agenda setting that included homework review",
+      "Belief ratings used to make the night/morning difference visible",
+      "Linked the checking behaviour to the shared formulation (the cycle)"
+    ],
+    "missed_openings": [
+      "The fear of being seen as 'not coping' could have been explored as a possible underlying belief",
+      "Client said the diary 'didn't help much' — that disappointment wasn't explored"
+    ],
+    "try_next": [
+      "Explore the meaning of 'can't cope' with a downward-arrow question"
+    ]
+  },
+  "review": "CLINICAL-REVIEW: synthetic role-play written by the engineering team; expected facts and reflection are drafts for the Clinical Lead to replace."
+}

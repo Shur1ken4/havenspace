@@ -1,0 +1,74 @@
+{
+  "id": "general",
+  "version": "2026-10-draft1",
+  "clinical_review": "DRAFT — written by the engineering team as a starting point. Must be reviewed and approved by the Clinical Lead before use with real clients.",
+  "name": "Common factors",
+  "description": "Used when no specific modality pack applies (e.g. integrative, psychodynamic, systemic). Focuses on the shared ingredients of good therapy.",
+  "scale": {
+    "min": 1,
+    "max": 5,
+    "meaning": "1 = not present in this session, 3 = partly present, 5 = strongly and skilfully present"
+  },
+  "dimensions": [
+    {
+      "id": "alliance",
+      "label": "Collaboration and alliance",
+      "description": "Working with the client as a partner: checking in, agreeing focus, inviting their view.",
+      "anchors": {
+        "1": "The therapist mostly leads alone; the client's view is rarely sought.",
+        "3": "Some checking in, but focus is mostly set by the therapist.",
+        "5": "Focus and pace are agreed together; the client's view is actively invited and used."
+      }
+    },
+    {
+      "id": "empathy",
+      "label": "Empathic understanding",
+      "description": "Conveying an accurate understanding of the client's experience, including feelings that are not yet said.",
+      "anchors": {
+        "1": "Responses miss or move past what the client is feeling.",
+        "3": "Accurate reflections of what was said; little of the deeper meaning.",
+        "5": "Reflections capture meaning and feeling beyond the words, and the client visibly feels understood."
+      }
+    },
+    {
+      "id": "exploration",
+      "label": "Open exploration",
+      "description": "Using open questions and curiosity to help the client explore, rather than closed or leading questions.",
+      "anchors": {
+        "1": "Mostly closed or leading questions.",
+        "3": "A mix of open and closed questions.",
+        "5": "Open, curious questions that deepen the client's own exploration."
+      }
+    },
+    {
+      "id": "space",
+      "label": "Space and pacing",
+      "description": "Giving the client room to speak and think; tolerating silence; not rushing.",
+      "anchors": {
+        "1": "The therapist talks much more than the client, or rushes past important moments.",
+        "3": "Reasonable balance, with some rushed moments.",
+        "5": "The client has room to think; silences and important moments are given time."
+      }
+    },
+    {
+      "id": "focus",
+      "label": "Clarity of focus",
+      "description": "Keeping the session connected to what matters most to the client and to agreed goals.",
+      "anchors": {
+        "1": "The session drifts without connection to the client's priorities.",
+        "3": "Some connection to goals, some drift.",
+        "5": "The session stays meaningfully connected to what matters to the client."
+      }
+    },
+    {
+      "id": "closing",
+      "label": "Summaries and closing",
+      "description": "Summarising, checking understanding and agreeing next steps.",
+      "anchors": {
+        "1": "No summary or check at the end.",
+        "3": "A brief summary or next step.",
+        "5": "Clear summaries during and at the end, with next steps agreed together."
+      }
+    }
+  ]
+}
