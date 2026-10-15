@@ -18,6 +18,7 @@ the Clinical Lead before real clients. In code, these places are marked
 | 10 | Eval role-plays, expected note facts and "expert" reflections | `evals/sessions/*.json` | Placeholders — please replace with your own role-plays |
 | 11 | Wording shown to therapists about reflection ("supervisor-style", "openings you might revisit") | `apps/web/messages/*.json` → `review.*`, `landing.*` | Draft |
 | 12 | Russian translation of all clinical wording | `apps/web/messages/ru.json` | Draft — please check terminology |
+| 13 | **Live research mode** instructions (in-session reads; experiment only, ADR-10) and the wording on the recording screen | `services/worker/prompts/live_insight.md`; `apps/web/messages/*.json` → `live.*` | Draft — please decide whether the boundaries are right |
 
 ## How to review
 1. Run `npm run eval` (with an AI key in `.env`) and open the report in `evals/reports/`.

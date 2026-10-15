@@ -11,6 +11,7 @@ import { Review } from "./review";
 import { Progress } from "./progress";
 import { Failed } from "./failed";
 import { DeleteSession } from "./delete-session";
+import { LiveInsights, type LiveInsightRow } from "./live-insights";
 
 export async function generateMetadata() {
   return { title: (await getTranslations("meta"))("session") };
@@ -31,8 +32,11 @@ export default async function SessionPage({ params }: PageProps<"/sessions/[id]"
     )).rows;
     const note = (await db.query("select status, approved_at, content_json from notes where session_id = $1", [id])).rows[0];
     const reflection = (await db.query("select modality, content_json, dropped_items from reflections where session_id = $1", [id])).rows[0];
+    const live = s.live_research ? (await db.query<LiveInsightRow>(
+      "select id, offset_ms, content from live_insights where session_id = $1 order by id", [id],
+    )).rows : [];
     await audit(db, therapist.id, "session.view", "session", id);
-    return { s, segments, note, reflection };
+    return { s, segments, note, reflection, live };
   }).catch(() => null);
   if (!data) notFound();
   const { s } = data;
@@ -70,6 +74,7 @@ export default async function SessionPage({ params }: PageProps<"/sessions/[id]"
           } : null}
         />
       )}
+      {data.live.length > 0 && <div className="border-t border-line pt-6"><LiveInsights insights={data.live} /></div>}
       <div className="border-t border-line pt-6"><DeleteSession sessionId={id} /></div>
     </div>
   );

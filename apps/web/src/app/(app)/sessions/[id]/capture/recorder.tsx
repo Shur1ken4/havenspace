@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Pause, Play, Square, Headphones, MonitorSpeaker } from "lucide-react";
@@ -11,6 +11,8 @@ import { Dialog } from "@/components/ui/dialog";
 import { levelMeter, pickMimeType, recordClip } from "@/lib/client/audio";
 import { canCaptureTabAudio, isMac } from "@/lib/client/browser";
 import { UploadQueue, type QueueState } from "@/lib/client/upload-queue";
+import { LiveClipper } from "@/lib/client/live";
+import { LivePanel } from "./live-panel";
 
 type Mode = "online_call" | "in_person";
 type Phase = "setup" | "calibrate" | "recording" | "paused" | "ending" | "error";
@@ -36,12 +38,13 @@ function Meter({ label, value, color }: { label: string; value: number; color: s
   );
 }
 
-export function Recorder({ sessionId, mode, hasSavedVoice, interrupted }: {
-  sessionId: string; mode: Mode; hasSavedVoice: boolean; interrupted: boolean;
+export function Recorder({ sessionId, mode, hasSavedVoice, interrupted, liveAllowed }: {
+  sessionId: string; mode: Mode; hasSavedVoice: boolean; interrupted: boolean; liveAllowed: boolean;
 }) {
   const t = useTranslations("session");
   const tc = useTranslations("common");
   const tk = useTranslations("consent");
+  const tl = useTranslations("live");
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("setup");
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +53,9 @@ export function Recorder({ sessionId, mode, hasSavedVoice, interrupted }: {
   const [queue, setQueue] = useState<QueueState>({ pending: 0, behind: false, fatal: null });
   const [confirmEnd, setConfirmEnd] = useState(false);
   const [calibrating, setCalibrating] = useState(false);
+  const [liveOn, setLiveOn] = useState(false);
+  // Known only in the browser; the server renders without the Mac hint.
+  const onMac = useSyncExternalStore(() => () => {}, isMac, () => false);
 
   const tracks = useRef<Track[]>([]);
   const extraStreams = useRef<MediaStream[]>([]);
@@ -58,6 +64,8 @@ export function Recorder({ sessionId, mode, hasSavedVoice, interrupted }: {
   const segment = useRef(0);
   const wakeLock = useRef<WakeLockSentinel | null>(null);
   const tick = useRef<ReturnType<typeof setInterval> | null>(null);
+  const clippers = useRef<LiveClipper[]>([]);
+  const liveQueue = useRef<UploadQueue | null>(null);
 
   useEffect(() => {
     uploader.current = new UploadQueue(sessionId, (state) => {
@@ -81,6 +89,7 @@ export function Recorder({ sessionId, mode, hasSavedVoice, interrupted }: {
 
   const stopEverything = useCallback(() => {
     if (tick.current) clearInterval(tick.current);
+    clippers.current.forEach((c) => c.stop());
     meters.current.forEach((stop) => stop());
     meters.current = [];
     for (const tr of tracks.current) {
@@ -109,6 +118,9 @@ export function Recorder({ sessionId, mode, hasSavedVoice, interrupted }: {
       uploader.current?.push({ track: name, segment: segment.current, seq: tr.seq++, blob: e.data });
     };
     tracks.current.push(tr);
+    clippers.current.push(new LiveClipper(stream, (blob, seq) => {
+      liveQueue.current?.push({ track: `live_${name}`, segment: segment.current, seq, blob });
+    }));
     meters.current.push(levelMeter(stream, (l) => setLevels((prev) => ({ ...prev, [name]: l }))));
   }
 
@@ -165,8 +177,20 @@ export function Recorder({ sessionId, mode, hasSavedVoice, interrupted }: {
     begin();
   }
 
+  async function startLive() {
+    if (!liveOn) return;
+    const res = await fetch(`/api/sessions/${sessionId}/live`, { method: "POST" }).catch(() => null);
+    if (!res?.ok) { setLiveOn(false); return; }
+    // A separate queue: if live clips fail, the real recording carries on untouched.
+    liveQueue.current = new UploadQueue(sessionId, (state) => {
+      if (state.fatal) { clippers.current.forEach((c) => c.stop()); setLiveOn(false); }
+    });
+    clippers.current.forEach((c) => c.start());
+  }
+
   async function begin() {
     for (const tr of tracks.current) tr.recorder.start(TIMESLICE_MS);
+    void startLive();
     setPhase("recording");
     tick.current = setInterval(() => setElapsed((s) => s + 1), 1000);
     try { wakeLock.current = await navigator.wakeLock?.request("screen"); } catch { /* not supported */ }
@@ -174,12 +198,14 @@ export function Recorder({ sessionId, mode, hasSavedVoice, interrupted }: {
 
   function pause() {
     for (const tr of tracks.current) if (tr.recorder.state === "recording") tr.recorder.pause();
+    clippers.current.forEach((c) => c.stop());
     if (tick.current) clearInterval(tick.current);
     setPhase("paused");
   }
 
   function resume() {
     for (const tr of tracks.current) if (tr.recorder.state === "paused") tr.recorder.resume();
+    if (liveOn) clippers.current.forEach((c) => c.start());
     tick.current = setInterval(() => setElapsed((s) => s + 1), 1000);
     setPhase("recording");
   }
@@ -216,7 +242,7 @@ export function Recorder({ sessionId, mode, hasSavedVoice, interrupted }: {
   // ── Setup ────────────────────────────────────────────────────────────────
   if (phase === "setup") {
     return (
-      <Card className="space-y-5 sm:p-8">
+      <Card className="mx-auto max-w-2xl space-y-5 sm:p-8">
         {interrupted && (
           <Notice tone="attention" title={t("recoverTitle")}>
             <p>{t("recoverBody")}</p>
@@ -231,10 +257,19 @@ export function Recorder({ sessionId, mode, hasSavedVoice, interrupted }: {
               <li><Headphones size={16} className="mr-1 inline" aria-hidden />{t("onlineStep2")}</li>
               <li><MonitorSpeaker size={16} className="mr-1 inline" aria-hidden />{t("onlineStep3")}</li>
             </ol>
-            {isMac() && <p className="text-sm text-muted">{t("macZoomHint")}</p>}
+            {onMac && <p className="text-sm text-muted">{t("macZoomHint")}</p>}
           </>
         ) : (
           <p className="text-muted">{t("mode_in_person_body")}</p>
+        )}
+        {liveAllowed && !interrupted && (
+          <label className="flex cursor-pointer gap-3 rounded-xl border border-line p-4">
+            <input type="checkbox" className="mt-1 h-4 w-4 accent-[var(--primary)]" checked={liveOn} onChange={(e) => setLiveOn(e.target.checked)} />
+            <span className="space-y-1">
+              <span className="flex flex-wrap items-center gap-2 font-medium text-ink">{tl("toggle")} <Chip tone="amber">{tl("badge")}</Chip></span>
+              <span className="block text-sm text-muted">{tl("toggleBody")}</span>
+            </span>
+          </label>
         )}
         {error && <Notice tone="attention">{errorText[error]}</Notice>}
         <Button size="lg" onClick={prepare}>{interrupted ? t("continueRecording") : mode === "online_call" ? t("chooseTab") : t("begin")}</Button>
@@ -245,7 +280,7 @@ export function Recorder({ sessionId, mode, hasSavedVoice, interrupted }: {
   // ── Voice check (in the room) ────────────────────────────────────────────
   if (phase === "calibrate") {
     return (
-      <Card className="space-y-5 sm:p-8">
+      <Card className="mx-auto max-w-2xl space-y-5 sm:p-8">
         <h2 className="text-2xl">{t("calibrateTitle")}</h2>
         <p className="text-muted">{t("calibrateBody")}</p>
         <Meter label={t("room")} value={levels.room ?? 0} color="var(--primary)" />
@@ -259,7 +294,7 @@ export function Recorder({ sessionId, mode, hasSavedVoice, interrupted }: {
 
   if (phase === "error") {
     return (
-      <Card className="space-y-4">
+      <Card className="mx-auto max-w-2xl space-y-4">
         <Notice tone="attention">{errorText[error ?? "rejected"]}</Notice>
         <Button variant="secondary" onClick={() => router.push(`/sessions/${sessionId}`)}>{tc("continue")}</Button>
       </Card>
@@ -267,8 +302,8 @@ export function Recorder({ sessionId, mode, hasSavedVoice, interrupted }: {
   }
 
   // ── Recording ────────────────────────────────────────────────────────────
-  return (
-    <Card className="space-y-8 py-10 text-center sm:p-12">
+  const recording = (
+    <Card className={liveOn ? "space-y-8 py-10 text-center sm:p-10" : "space-y-8 py-10 text-center sm:p-12"}>
       <div className="flex items-center justify-center gap-3">
         <span className="breathing-dot" data-paused={phase !== "recording"} />
         <span className="text-muted" aria-live="polite">{phase === "paused" ? t("paused") : phase === "ending" ? t("uploading") : t("recordingTitle")}</span>
@@ -300,5 +335,12 @@ export function Recorder({ sessionId, mode, hasSavedVoice, interrupted }: {
         </div>
       </Dialog>
     </Card>
+  );
+  if (!liveOn) return <div className="mx-auto max-w-2xl">{recording}</div>;
+  return (
+    <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+      {recording}
+      <LivePanel sessionId={sessionId} active={phase === "recording" || phase === "paused"} />
+    </div>
   );
 }

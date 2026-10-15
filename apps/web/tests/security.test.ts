@@ -102,6 +102,37 @@ describe("consent gate", () => {
   });
 });
 
+describe("live research mode", () => {
+  let sid: string;
+  beforeAll(async () => {
+    const client = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'Client L') returning id", [alice])).rows[0].id;
+    await su.query("insert into consents (therapist_id, client_id, consent_version, method) values ($1, $2, 'v1', 'verbal_in_session')", [alice, client]);
+    sid = (await su.query("insert into sessions (therapist_id, client_id, capture_mode) values ($1, $2, 'online_call') returning id", [alice, client])).rows[0].id;
+  });
+  const liveClip = (seq: number) => asUser(app, alice, () => app.query(
+    "insert into audio_chunks (therapist_id, session_id, track, seq, path, bytes, mime) values ($1, $2, 'live_mic', $3, 'x', 1, 'audio/webm')",
+    [alice, sid, seq],
+  ));
+
+  it("refuses live clips unless live research was switched on for the session", async () => {
+    await expect(liveClip(0)).rejects.toThrow(/live_not_enabled/);
+    await asUser(app, alice, () => app.query("update sessions set live_research = true where id = $1", [sid]));
+    await liveClip(0);
+  });
+
+  it("keeps live lines and suggestions private to their therapist", async () => {
+    await su.query("insert into live_lines (therapist_id, session_id, seq, speaker, offset_ms, text) values ($1, $2, 0, 'client', 0, 'x')", [alice, sid]);
+    await su.query(`insert into live_insights (therapist_id, session_id, upto_line, offset_ms, content, model_id, prompt_version)
+                    values ($1, $2, 1, 0, '{}', 'demo', 'v')`, [alice, sid]);
+    const mine = await asUser(app, alice, () => app.query("select count(*)::int as n from live_lines where session_id = $1", [sid]));
+    expect(mine.rows[0].n).toBe(1);
+    for (const table of ["live_lines", "live_insights"]) {
+      const theirs = await asUser(app, bob, () => app.query(`select count(*)::int as n from ${table}`));
+      expect(theirs.rows[0].n).toBe(0);
+    }
+  });
+});
+
 describe("approved notes", () => {
   it("cannot be edited after approval", async () => {
     const c = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'Client C') returning id", [alice])).rows[0].id;

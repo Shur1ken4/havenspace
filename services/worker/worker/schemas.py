@@ -93,3 +93,15 @@ class PackOut(Strict):
 
 
 Kind = Literal["themes", "goals", "homework", "changes"]
+
+
+# ── live research mode (ADR-10, experiment only) ─────────────────────────────
+class LiveOpening(Strict):
+    point: str = Field(description="One short sentence: something the client said that could be explored")
+    quote: str = Field(description="The client's exact words from the transcript, 3–15 words, copied verbatim")
+
+
+class LiveInsightOut(Strict):
+    now: str = Field(description="One or two short sentences: what is happening in the conversation right now (descriptive)")
+    openings: list[LiveOpening] = Field(description="0–2 openings, most recent first", max_length=2)
+    idea: str = Field(description="One optional idea the therapist could consider, framed in their modality, or an empty string")

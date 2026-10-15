@@ -4,7 +4,7 @@ import { getSession } from "@/lib/session";
 import { storage } from "@/lib/storage";
 
 const MAX_CHUNK = 4 * 1024 * 1024; // stays under hosting request limits
-const TRACKS = new Set(["mic", "tab", "room", "upload", "calibration", "dictation"]);
+const TRACKS = new Set(["mic", "tab", "room", "upload", "calibration", "dictation", "live_mic", "live_tab", "live_room"]);
 const UUID = /^[0-9a-f-]{36}$/;
 
 // Receives one piece of audio. Recording uploads a piece every ~10 seconds, so
@@ -51,6 +51,7 @@ export async function POST(req: Request, ctx: RouteContext<"/api/sessions/[id]/c
   } catch (err) {
     await storage().remove([key]);
     if (isDbError(err, "consent_required")) return NextResponse.json({ error: "consent_required" }, { status: 403 });
+    if (isDbError(err, "live_not_enabled")) return NextResponse.json({ error: "live_not_enabled" }, { status: 409 });
     throw err;
   }
   return NextResponse.json({ ok: true });

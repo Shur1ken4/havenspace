@@ -91,6 +91,23 @@ Before any **real** client data: switch to `LLM_PROVIDER=bedrock` (Claude on AWS
 
 ---
 
+## Live suggestions during a session (research experiment)
+
+An experiment for Shurik and the Clinical Lead only (see `docs/decisions.md`, ADR-10). **Role-play sessions only.**
+
+1. In `.env`, list the sign-in emails allowed to use it: `LIVE_RESEARCH_EMAILS=demo@psych.test,your.dad@example.com`. Restart (`npm run up`).
+2. Start a session (**Online call** or **In the room**). Tick **Live suggestions during the session** before you start.
+3. Every half a minute a short read appears next to the timer. After the session, the reads are listed at the bottom of the session page.
+
+Without an AI key the reads are `[Demo]` placeholders. To try it without a microphone:
+
+```bash
+cd services/worker
+~/.local/bin/uv run python tools/simulate_live.py --email demo@psych.test --client "Client A" --audio .data/roleplay/01-cbt-sleep-worry --mode online_call --seconds 90
+```
+
+---
+
 ## Useful commands
 
 | Command | What it does |

@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from difflib import SequenceMatcher
+import threading
 from functools import lru_cache
 
 import numpy as np
@@ -38,6 +39,9 @@ class Labelled:
     speaker: str
 
 
+_ENCODER_LOCK = threading.Lock()  # the live thread and the job loop share one model
+
+
 @lru_cache(maxsize=1)
 def _encoder():
     from speechbrain.inference.speaker import EncoderClassifier
@@ -53,7 +57,7 @@ def embed(samples: np.ndarray) -> np.ndarray:
     """Voice fingerprint (192 numbers, unit length) for a stretch of audio."""
     import torch
 
-    with torch.no_grad():
+    with _ENCODER_LOCK, torch.no_grad():
         emb = _encoder().encode_batch(torch.from_numpy(samples.astype(np.float32)).unsqueeze(0))
     v = emb.squeeze().cpu().numpy().astype(np.float32)
     return v / (np.linalg.norm(v) + 1e-9)

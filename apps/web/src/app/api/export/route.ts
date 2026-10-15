@@ -32,6 +32,8 @@ export async function GET(req: Request) {
       sessions: await q(`select id, client_id, capture_mode, status, started_at, ended_at, duration_seconds, language, speaker_names, recap_text, audio_deleted_at from sessions ${scope}`),
       transcript_segments: await q(`select session_id, idx, speaker, start_ms, end_ms, text from transcript_segments ${sScope} order by session_id, idx`),
       notes: await q(`select session_id, format, content_json, status, approved_at, model_id, prompt_version from notes ${sScope}`),
+      live_research_insights: await q(`select session_id, offset_ms, content, model_id, prompt_version, created_at from live_insights ${sScope} order by session_id, id`),
+      live_research_lines: await q(`select session_id, speaker, offset_ms, text from live_lines ${sScope} order by session_id, offset_ms, id`),
       reflections: await q(`select session_id, modality, content_json, model_id, prompt_version, created_at from reflections ${sScope}`),
       client_timeline_items: await q(`select * from client_timeline_items ${scope}`),
       supervision_packs: clientId ? undefined : await q("select month, content_json, status, created_at from supervision_packs"),

@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 import signal
+import threading
 import time
 
-from . import db, pipeline, retention
+from . import config, db, pipeline, retention
 from .agent.providers import InvalidOutputError, RefusalError, get_provider
 from .log import log
 
@@ -15,9 +16,13 @@ MAX_ATTEMPTS = 2
 _stop = False
 
 
+_live_stop = threading.Event()
+
+
 def _handle_stop(*_: object) -> None:
     global _stop
     _stop = True
+    _live_stop.set()
 
 
 def handle(conn, job: dict, provider) -> None:
@@ -40,6 +45,10 @@ def main() -> None:
     provider = get_provider()
     conn = db.connect()
     log("worker.start", provider=provider.name)
+    if config.LIVE_RESEARCH:
+        from .live import LiveRunner
+
+        LiveRunner(provider, _live_stop).start()
     last_retention = 0.0
     while not _stop:
         if time.time() - last_retention > RETENTION_EVERY:

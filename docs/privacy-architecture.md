@@ -41,6 +41,7 @@ Therapist reviews, edits, approves ◀── Web app ◀── Postgres
 
 - Only **text** reaches the AI provider, never audio. It carries the pseudonym, never a name.
 - With `ALLOW_REAL_CLIENT_DATA=false` (default) the app shows "Demo mode: role-play only", and the worker refuses to start with real data unless the AI provider is **Bedrock in an EU region**.
+- **Live research mode (ADR-10)** — an experiment for the founders only, switched off whenever `ALLOW_REAL_CLIENT_DATA=true`: short ~8 s clips are transcribed during the session and deleted immediately; the words and the AI's short reads are stored with the session and deleted with it.
 - Recaps can be typed (no audio at all) or dictated; dictation is transcribed by our own speech-to-text, never a browser/cloud dictation service.
 
 ## 4. Protections

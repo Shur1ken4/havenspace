@@ -1,4 +1,5 @@
 "use server";
+import { cookies } from "next/headers";
 import { getLocale } from "next-intl/server";
 import { z } from "zod";
 import { pool } from "@/lib/db";
@@ -43,4 +44,10 @@ export async function joinList(_prev: SignupState, form: FormData): Promise<Sign
     if ((err as { code?: string }).code === "23505") return { status: "ok", interest: d.interest };
     return { status: "error", values };
   }
+}
+
+// Quiet language choice in the landing-page footer. Signed-in therapists keep their Settings language.
+export async function setPublicLocale(form: FormData) {
+  const lang = form.get("lang") === "ru" ? "ru" : "en";
+  (await cookies()).set("locale", lang, { path: "/", sameSite: "lax", maxAge: 60 * 60 * 24 * 365 });
 }

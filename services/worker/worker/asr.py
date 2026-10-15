@@ -2,6 +2,7 @@
 GPU in production). Audio never leaves our infrastructure."""
 from __future__ import annotations
 
+import threading
 from dataclasses import dataclass
 from functools import lru_cache
 
@@ -17,8 +18,11 @@ class AsrSegment:
     text: str
 
 
+_LOAD_LOCK = threading.Lock()  # the live thread and the job loop share one model
+
+
 @lru_cache(maxsize=2)
-def _model(name: str):
+def _load(name: str):
     from faster_whisper import WhisperModel
 
     return WhisperModel(
@@ -27,6 +31,11 @@ def _model(name: str):
         compute_type=config.WHISPER_COMPUTE_TYPE,
         download_root=str(config.MODELS_DIR / "whisper"),
     )
+
+
+def _model(name: str):
+    with _LOAD_LOCK:
+        return _load(name)
 
 
 def transcribe(samples: np.ndarray, model_name: str | None = None, language: str | None = None,

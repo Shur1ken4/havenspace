@@ -112,7 +112,8 @@
     "joinBody": "Book a 20-minute demo with our team, or join the waiting list and we'll let you know when places open.",
     "joinPoint1": "Free during the pilot",
     "joinPoint2": "Built with a practising psychologist in Ireland",
-    "joinPoint3": "Role-play sessions first — real client sessions only after an independent privacy review"
+    "joinPoint3": "Role-play sessions first — real client sessions only after an independent privacy review",
+    "footerLanguage": "Language"
   },
   "professions": {
     "counsellor": "Counsellor",
@@ -611,5 +612,21 @@
     "p6": "Protect data with encryption in transit and at rest, access controls and an audit log.",
     "p7": "Help you respond to your clients' data protection requests (access, correction, deletion).",
     "p8": "Tell you without undue delay if we become aware of a personal data breach."
+  },
+  "live": {
+    "toggle": "Live suggestions during the session",
+    "badge": "Research · role-play only",
+    "toggleBody": "An experiment for our team. Every half a minute you will see a short read of the conversation, openings you might explore and an idea to consider. Not clinical advice: you decide. Use role-play sessions only.",
+    "title": "Live suggestions",
+    "listening": "Listening… the first read appears after about half a minute of conversation.",
+    "openings": "Openings you might explore",
+    "heard": "Heard just now",
+    "earlier": "Earlier reads",
+    "disclaimer": "Experimental research mode. Not clinical advice, and never a risk assessment: you decide.",
+    "you": "You",
+    "client": "Client",
+    "speaker": "Speaker",
+    "reviewTitle": "Live suggestions from this session",
+    "reviewBody": "What the research mode showed during the session, for you and your supervisor to compare with how the session went."
   }
 }

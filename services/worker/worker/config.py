@@ -39,3 +39,11 @@ MODELS_DIR = Path(env("MODELS_DIR", str(REPO_ROOT / ".data" / "models")))
 SHARED_DIR = REPO_ROOT / "packages" / "shared"
 PROMPTS_DIR = WORKER_ROOT / "prompts"
 FORBIDDEN_TERMS_FILE = REPO_ROOT / "evals" / "forbidden_terms.txt"
+
+# Live research mode (ADR-10): experiment only, never with real client data.
+LIVE_RESEARCH = env("LIVE_RESEARCH_EMAILS").strip() != "" and not ALLOW_REAL_CLIENT_DATA
+LIVE_MODEL = env("LIVE_MODEL") or LLM_MODEL_LIGHT
+LIVE_EVERY_SECONDS = int(env("LIVE_EVERY_SECONDS", "30"))
+LIVE_WINDOW_SECONDS = int(env("LIVE_WINDOW_SECONDS", "240"))
+LIVE_WHISPER_MODEL = env("LIVE_WHISPER_MODEL", "small")  # fast enough for real time on a laptop CPU
+LIVE_CLIP_MS = 8000  # must match LIVE_CLIP_MS in apps/web recorder

@@ -65,3 +65,10 @@ export function isFresh(session: { session: { createdAt: Date | string } }, maxA
 }
 
 export const realDataAllowed = () => process.env.ALLOW_REAL_CLIENT_DATA === "true";
+
+/** Live research mode (ADR-10): an experiment for the named founders only, never with real client data. */
+export function liveResearchAllowed(email: string) {
+  if (realDataAllowed()) return false;
+  const allowed = (process.env.LIVE_RESEARCH_EMAILS ?? "").split(",").map((e) => e.trim().toLowerCase()).filter(Boolean);
+  return allowed.includes(email.toLowerCase());
+}

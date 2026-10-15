@@ -22,7 +22,8 @@ def run(conn: psycopg.Connection) -> int:
                (s.audio_delete_after is not null and s.audio_delete_after < now())
             or (s.id is not null and s.status <> 'ready' and a.created_at < now() - interval '48 hours')
             or (a.session_id is null and a.created_at < now() - interval '1 hour')
-            or (a.track = 'dictation' and a.created_at < now() - interval '1 hour'))
+            or (a.track = 'dictation' and a.created_at < now() - interval '1 hour')
+            or (a.track like 'live\\_%%' and a.created_at < now() - interval '10 minutes'))
         """
     ).fetchall()
     if rows:

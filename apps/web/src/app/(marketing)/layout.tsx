@@ -1,10 +1,12 @@
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { LogoMark } from "@/components/illustrations";
 import { buttonClass } from "@/components/ui/button";
+import { setPublicLocale } from "./actions";
 
 export default async function MarketingLayout({ children }: LayoutProps<"/">) {
   const t = await getTranslations();
+  const current = (await getLocale()).startsWith("ru") ? "ru" : "en";
   return (
     <>
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-surface focus:px-4 focus:py-2">
@@ -37,6 +39,20 @@ export default async function MarketingLayout({ children }: LayoutProps<"/">) {
           <div className="flex flex-wrap items-center gap-5">
             <Link href="/privacy" className="hover:text-ink">{t("landing.footerPrivacy")}</Link>
             <Link href="/resources/consent-template" className="hover:text-ink">{t("landing.footerConsent")}</Link>
+            <form action={setPublicLocale} aria-label={t("landing.footerLanguage")} className="flex items-center gap-1">
+              {(["en", "ru"] as const).map((lang, i) => (
+                <span key={lang} className="flex items-center gap-1">
+                  {i > 0 && <span aria-hidden="true">·</span>}
+                  <button
+                    type="submit" name="lang" value={lang} lang={lang}
+                    aria-current={current === lang ? "true" : undefined}
+                    className={current === lang ? "font-medium text-ink" : "hover:text-ink"}
+                  >
+                    {lang === "en" ? "English" : "Русский"}
+                  </button>
+                </span>
+              ))}
+            </form>
           </div>
         </div>
       </footer>

@@ -10,7 +10,7 @@ import sys
 import time
 
 _ALLOWED = {"job", "kind", "session", "stage", "count", "dropped", "seconds", "error", "attempt", "model", "items",
-            "segments", "tracks", "language", "deleted", "provider", "term_hits", "bytes"}
+            "segments", "tracks", "language", "deleted", "provider", "term_hits", "bytes", "lines", "clips"}
 
 
 def log(event: str, **fields: object) -> None:

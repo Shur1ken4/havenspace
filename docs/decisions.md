@@ -130,7 +130,7 @@ How it is enforced:
 1. **Data shape:** the JSON schemas for notes and reflections have **no fields** for risk level, diagnosis or alerts. If the model can't put it anywhere, it can't show up in the product.
 2. **Prompts:** every prompt in `services/worker/prompts/` begins with the same guardrail block; prompt changes are reviewed against this ADR.
 3. **Automated checks:** a list of forbidden terms (`evals/forbidden_terms.txt`, e.g. diagnostic labels, "risk score", "high risk") is checked on every eval run **and** on every generated note before it's shown; a hit sends the note back for one regeneration and is logged (without content).
-4. **No real-time path in code:** the worker only accepts jobs for sessions marked "ended". There is no streaming-analysis endpoint.
+4. **No real-time path in code:** the worker only accepts jobs for sessions marked "ended". There is no streaming-analysis endpoint. *Exception (2026-10-15):* the research-only live mode in ADR-10, limited to named founder accounts and never active with real client data.
 5. **UI and marketing copy:** never "AI detected…", "risk", "diagnosis", "clinically validated", "medical device", "GDPR certified" or "HIPAA". Copy says "You decide." A copy checklist is part of every feature's definition of done.
 6. **Code review:** any pull request touching prompts, schemas or clinical wording is tagged `CLINICAL-REVIEW` and listed in `docs/clinical-review.md` for the Clinical Lead.
 7. The prototype's live-advice loop and risk marker are **not ported**.
@@ -217,7 +217,7 @@ Protects the highest-impact actions without making daily note-writing tiresome. 
 Status: Accepted   Date: 2026-10-15   Deciders: Shurik
 
 ## Decision
-English and Russian. All interface text lives in `apps/web/messages/{en,ru}.json`. The language is chosen **only in Settings → Profile** (no public switcher). It also sets the language of notes and reflections; speech-to-text detects the session language automatically. Ukrainian is dropped for now and can be added later by adding `uk.json` and one line in `src/i18n/request.ts`.
+English and Russian. All interface text lives in `apps/web/messages/{en,ru}.json`. Inside the app the language is chosen **only in Settings → Profile**. Public pages have a quiet "English · Русский" link in the footer (added Oct 2026) that sets the same cookie; a signed-in therapist's Settings choice always wins. It also sets the language of notes and reflections; speech-to-text detects the session language automatically. Ukrainian is dropped for now and can be added later by adding `uk.json` and one line in `src/i18n/request.ts`.
 
 ---
 
@@ -226,3 +226,33 @@ Status: Accepted   Date: 2026-10-15
 
 ## Decision
 Development calls to Anthropic's API use the server-side `fallbacks: "default"` option: if a safety classifier declines a request (rare, but possible with therapy content such as self-harm disclosures), the API re-runs it on Anthropic's recommended fallback model within the same call. This is not available on Bedrock; there, a refusal fails the step and the session shows "couldn't finish — try again". The model that actually ran is stored on every output row.
+
+---
+
+# ADR-10: Live research mode (an experiment, not a product feature)
+Status: Accepted   Date: 2026-10-15   Deciders: Shurik (Clinical Lead to review)
+
+## Context
+Shurik and the Clinical Lead want to find out whether short suggestions *during* a session actually help a therapist, the way the original prototype did. ADR-4 keeps live advice out of the product, because in the EU it is likely a Class IIa medical device and high-risk under the AI Act. The therapist making the final decision does not change that classification; the intended purpose does.
+
+## Decision
+Build live suggestions as a **private research mode** that is never sold, marketed or shown to pilot users:
+- Only sign-in emails listed in `LIVE_RESEARCH_EMAILS` see the switch (on the recording screen). It is **off for everyone** when that list is empty, and **always off** when `ALLOW_REAL_CLIENT_DATA=true`. Role-play sessions only.
+- While recording, the browser also sends short, self-contained ~8 s clips (`live_mic`, `live_tab`, `live_room`). The worker transcribes each one with a fast speech model (`LIVE_WHISPER_MODEL`, `small` on a laptop), **deletes the clip straight away**, and stores the words in `live_lines`.
+- Every `LIVE_EVERY_SECONDS` (30 s) the AI (`LIVE_MODEL`, default Sonnet 5.5) sees the last 4 minutes and writes a short read into `live_insights`: what is happening now, up to two openings (each must quote the client's exact words, or it is dropped), and at most one idea in the therapist's modality.
+- The same boundaries as ADR-4 apply: no diagnosis, no risk scoring or alerts, safety statements described neutrally and left entirely to the therapist; forbidden-terms check on every read. The prompt is marked `CLINICAL-REVIEW`.
+- The database refuses live clips for sessions where live research was not switched on, and the normal consent gate still applies. Live lines and reads are private to the therapist (row-level security), included in data exports and deleted with the session.
+- The usual after-session pipeline is unchanged and ignores live clips. Reads shown during the session are listed afterwards on the session page so they can be compared with how the session went.
+
+## Options considered
+
+| Option | Complexity | Cost | Privacy / EU | Time to build |
+|---|---|---|---|---|
+| **Research mode behind an allow-list (this ADR)** | Medium | ~€0.30–1 of AI per hour of session with Sonnet; more with Opus | Same as development (role-play only, Anthropic API) | ~1 day |
+| Ship live suggestions in the product | Medium | MDR Class IIa + AI Act certification | Higher exposure | Blocks launch 12–24 months |
+| Do nothing | None | None | None | — |
+
+## Consequences
+- Easier: real evidence (with the Clinical Lead) about whether live suggestions are worth certifying later.
+- Harder: one more moving part in the worker; laptop CPU is the limit (two speech streams in real time), which is why live mode uses the smaller speech model.
+- Revisit when: funding for certification exists, or a lawyer advises on the research use. Never enable for pilot therapists or real clients without a new ADR.

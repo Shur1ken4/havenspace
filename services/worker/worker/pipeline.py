@@ -29,7 +29,7 @@ def _load_tracks(conn: psycopg.Connection, session_id: str) -> tuple[dict[str, n
     after a page reload) is decoded separately and appended in order."""
     rows = conn.execute(
         "select track, segment, seq, path from audio_chunks where session_id = %s and deleted_at is null "
-        "order by track, segment, seq",
+        "and track not like 'live\\_%%' order by track, segment, seq",
         (session_id,),
     ).fetchall()
     grouped: dict[str, dict[int, list[str]]] = defaultdict(lambda: defaultdict(list))
