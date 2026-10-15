@@ -13,17 +13,17 @@ export function BuildPack({ month, hasPack, disabled, building }: { month: strin
   const router = useRouter();
   const [pending, start] = useTransition();
   const [waiting, setWaiting] = useState(building);
+  const busy = waiting && !hasPack;
   useEffect(() => {
-    if (!waiting) return;
+    if (!busy) return;
     const id = setInterval(() => router.refresh(), 3000);
     const stop = setTimeout(() => setWaiting(false), 120_000);
     return () => { clearInterval(id); clearTimeout(stop); };
-  }, [waiting, router]);
-  useEffect(() => { if (hasPack) setWaiting(false); }, [hasPack]);
+  }, [busy, router]);
   return (
-    <Button size="sm" variant={hasPack ? "secondary" : "primary"} disabled={disabled || pending || waiting}
-      onClick={() => start(async () => { await buildPack(month); setWaiting(true); })}>
-      {waiting ? t("building") : hasPack ? t("regenerate") : t("build")}
+    <Button size="sm" variant={hasPack ? "secondary" : "primary"} disabled={disabled || pending || busy}
+      onClick={() => start(async () => { await buildPack(month); setWaiting(true); router.refresh(); })}>
+      {busy ? t("building") : hasPack ? t("regenerate") : t("build")}
     </Button>
   );
 }
@@ -76,8 +76,9 @@ export function HoursForm({ month }: { month: string }) {
 }
 
 export function RemoveHours({ id }: { id: string }) {
+  const t = useTranslations("clients");
   const [pending, start] = useTransition();
   return (
-    <button aria-label="Remove" disabled={pending} onClick={() => start(() => removeHours(id))} className="rounded-md p-1 text-muted hover:bg-surface-2 hover:text-ink"><X size={16} /></button>
+    <button aria-label={t("remove")} disabled={pending} onClick={() => start(() => removeHours(id))} className="rounded-md p-1 text-muted hover:bg-surface-2 hover:text-ink"><X size={16} /></button>
   );
 }

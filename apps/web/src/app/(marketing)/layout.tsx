@@ -16,14 +16,14 @@ export default async function MarketingLayout({ children }: LayoutProps<"/">) {
           <span className="whitespace-nowrap font-serif text-lg sm:text-xl">{t("common.appName")}</span>
         </Link>
         <nav aria-label="Main" className="hidden items-center gap-6 text-[15px] text-muted md:flex">
-          <a href="/#how" className="hover:text-ink">{t("nav.how")}</a>
-          <a href="/#reflection" className="hover:text-ink">{t("nav.reflection")}</a>
+          <Link href="/#how" className="hover:text-ink">{t("nav.how")}</Link>
+          <Link href="/#reflection" className="hover:text-ink">{t("nav.reflection")}</Link>
           <Link href="/privacy" className="hover:text-ink">{t("nav.privacy")}</Link>
-          <a href="/#pricing" className="hover:text-ink">{t("nav.pricing")}</a>
+          <Link href="/#pricing" className="hover:text-ink">{t("nav.pricing")}</Link>
         </nav>
         <div className="flex items-center gap-2">
           <Link href="/login" className={buttonClass("ghost", "sm")}>{t("nav.signIn")}</Link>
-          <a href="/#join" className={buttonClass("primary", "sm", "hidden sm:inline-flex")}>{t("nav.bookDemo")}</a>
+          <Link href="/#join" className={buttonClass("primary", "sm", "hidden sm:inline-flex")}>{t("nav.bookDemo")}</Link>
         </div>
       </header>
       <main id="main">{children}</main>

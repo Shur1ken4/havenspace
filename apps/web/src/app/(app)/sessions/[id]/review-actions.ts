@@ -9,6 +9,7 @@ const sectionsSchema = z.array(z.object({ key: z.string().max(40), text: z.strin
 
 export async function saveNote(sessionId: string, sections: { key: string; text: string }[]) {
   const session = await requireUser();
+  z.uuid().parse(sessionId);
   const clean = sectionsSchema.parse(sections);
   try {
     await withUser(session.user.id, async (db) => {
@@ -27,6 +28,7 @@ export async function saveNote(sessionId: string, sections: { key: string; text:
 
 export async function approveNote(sessionId: string) {
   const session = await requireUser();
+  z.uuid().parse(sessionId);
   await withUser(session.user.id, async (db) => {
     await db.query("update notes set status = 'approved', approved_at = now() where session_id = $1 and status = 'draft'", [sessionId]);
     await audit(db, session.user.id, "note.approve", "session", sessionId);
@@ -36,6 +38,7 @@ export async function approveNote(sessionId: string) {
 
 export async function renameSpeakers(sessionId: string, names: Record<string, string>) {
   const session = await requireUser();
+  z.uuid().parse(sessionId);
   const clean = Object.fromEntries(
     Object.entries(names).filter(([k]) => /^[a-z_0-9]{1,20}$/.test(k)).map(([k, v]) => [k, String(v).trim().slice(0, 30)]),
   );
@@ -60,6 +63,7 @@ export async function swapSpeakers(sessionId: string, a: string, b: string) {
 
 export async function redraft(sessionId: string) {
   const session = await requireUser();
+  z.uuid().parse(sessionId);
   await withUser(session.user.id, async (db) => {
     const { rowCount } = await db.query(
       `update sessions set status = 'processing', stage = 'writing_note' where id = $1 and status = 'ready'

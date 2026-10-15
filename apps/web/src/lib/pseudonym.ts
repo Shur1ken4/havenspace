@@ -6,6 +6,6 @@ export function looksLikeFullName(value: string): boolean {
   const words = v.split(/\s+/).filter(Boolean);
   if (words.length < 2) return false;
   const nameLike = words.filter((w) => /^\p{Lu}[\p{Ll}'’-]{2,}$/u.test(w));
-  const generic = /^(client|patient|person|couple|family|group|mr|ms|mrs|dr)$/i;
+  const generic = /^(client|patient|person|couple|family|group|mr|ms|mrs|dr|клиент|клиентка|пациент|пара|семья|группа)$/iu;
   return nameLike.length >= 2 && !words.some((w) => generic.test(w));
 }

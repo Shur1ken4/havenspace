@@ -53,6 +53,7 @@ export async function addHours(form: FormData) {
 
 export async function removeHours(id: string) {
   const session = await requireUser();
+  z.uuid().parse(id);
   await withUser(session.user.id, (db) => db.query("delete from supervision_hours where id = $1", [id]));
   revalidatePath("/supervision");
 }

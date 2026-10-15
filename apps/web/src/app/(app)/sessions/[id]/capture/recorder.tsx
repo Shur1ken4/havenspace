@@ -25,6 +25,17 @@ function formatTime(total: number) {
   return `${h > 0 ? `${h}:` : ""}${String(m).padStart(h > 0 ? 2 : 1, "0")}:${String(s).padStart(2, "0")}`;
 }
 
+function Meter({ label, value, color }: { label: string; value: number; color: string }) {
+  return (
+    <div className="space-y-1.5">
+      <div className="flex justify-between text-sm text-muted"><span>{label}</span></div>
+      <div className="h-2.5 overflow-hidden rounded-full bg-surface-2">
+        <div className="h-full rounded-full transition-[width] duration-150" style={{ width: `${Math.round(value * 100)}%`, background: color }} />
+      </div>
+    </div>
+  );
+}
+
 export function Recorder({ sessionId, mode, hasSavedVoice, interrupted }: {
   sessionId: string; mode: Mode; hasSavedVoice: boolean; interrupted: boolean;
 }) {
@@ -49,17 +60,16 @@ export function Recorder({ sessionId, mode, hasSavedVoice, interrupted }: {
   const tick = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    uploader.current = new UploadQueue(sessionId, setQueue);
+    uploader.current = new UploadQueue(sessionId, (state) => {
+      setQueue(state);
+      // The server rejected the recording (e.g. consent was withdrawn): stop at once.
+      if (state.fatal) {
+        stopRef.current();
+        setError(state.fatal === "consent_required" ? "consent" : "rejected");
+        setPhase("error");
+      }
+    });
   }, [sessionId]);
-
-  // Server says the recording was rejected (e.g. consent withdrawn).
-  useEffect(() => {
-    if (queue.fatal) {
-      stopEverything();
-      setError(queue.fatal === "consent_required" ? "consent" : "rejected");
-      setPhase("error");
-    }
-  }, [queue.fatal]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Warn before closing the tab while recording.
   useEffect(() => {
@@ -81,6 +91,8 @@ export function Recorder({ sessionId, mode, hasSavedVoice, interrupted }: {
     wakeLock.current?.release().catch(() => {});
   }, []);
 
+  const stopRef = useRef(stopEverything);
+  useEffect(() => { stopRef.current = stopEverything; }, [stopEverything]);
   useEffect(() => stopEverything, [stopEverything]);
 
   async function nextSegment() {
@@ -201,15 +213,6 @@ export function Recorder({ sessionId, mode, hasSavedVoice, interrupted }: {
     consent: tk("required"), rejected: tc("somethingWrong"), end: tc("somethingWrong"),
   };
 
-  const Meter = ({ label, value, color }: { label: string; value: number; color: string }) => (
-    <div className="space-y-1.5">
-      <div className="flex justify-between text-sm text-muted"><span>{label}</span></div>
-      <div className="h-2.5 overflow-hidden rounded-full bg-surface-2">
-        <div className="h-full rounded-full transition-[width] duration-150" style={{ width: `${Math.round(value * 100)}%`, background: color }} />
-      </div>
-    </div>
-  );
-
   // ── Setup ────────────────────────────────────────────────────────────────
   if (phase === "setup") {
     return (
@@ -270,7 +273,7 @@ export function Recorder({ sessionId, mode, hasSavedVoice, interrupted }: {
         <span className="breathing-dot" data-paused={phase !== "recording"} />
         <span className="text-muted" aria-live="polite">{phase === "paused" ? t("paused") : phase === "ending" ? t("uploading") : t("recordingTitle")}</span>
       </div>
-      <p className="font-serif text-7xl tabular-nums text-ink sm:text-8xl" aria-label="elapsed time">{formatTime(elapsed)}</p>
+      <p className="font-serif text-7xl tabular-nums text-ink sm:text-8xl" aria-label={t("elapsed")}>{formatTime(elapsed)}</p>
       <div className="mx-auto grid max-w-md gap-4 text-left">
         {mode === "online_call" ? (
           <>

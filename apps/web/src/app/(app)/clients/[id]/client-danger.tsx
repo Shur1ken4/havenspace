@@ -16,7 +16,7 @@ export function ClientDanger({ clientId, pseudonym, archived }: { clientId: stri
     <section className="flex flex-wrap gap-3 border-t border-line pt-6">
       <a href={`/api/export?client=${clientId}`} className={buttonClass("secondary", "sm")}><Download size={16} aria-hidden /> {t("exportClient")}</a>
       <Button variant="secondary" size="sm" disabled={pending} onClick={() => start(() => archiveClient(clientId, !archived))}>
-        {archived ? "↺" : t("archive")}
+        {archived ? t("unarchive") : t("archive")}
       </Button>
       <Button variant="destructive" size="sm" onClick={() => setOpen(true)}>{t("deleteClient")}</Button>
       <Dialog open={open} onOpenChange={setOpen} title={t("deleteClient")} description={t("deleteClientBody", { pseudonym })}>

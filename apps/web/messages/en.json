@@ -15,7 +15,6 @@
     "cancel": "Cancel",
     "continue": "Continue",
     "back": "Back",
-    "edit": "Edit",
     "delete": "Delete",
     "close": "Close",
     "loading": "One moment…",
@@ -24,7 +23,6 @@
     "demoBanner": "Demo mode: use role-play sessions only. Please don't record real clients yet.",
     "somethingWrong": "Something didn't work. Please try again in a moment.",
     "skipToContent": "Skip to content",
-    "theme": "Theme",
     "language": "Language"
   },
   "badges": {
@@ -38,13 +36,11 @@
     "privacy": "Privacy",
     "pricing": "Pricing",
     "signIn": "Sign in",
-    "joinPilot": "Join the pilot",
     "today": "Today",
     "clients": "Clients",
     "supervision": "Supervision",
     "settings": "Settings",
     "signOut": "Sign out",
-    "openApp": "Open the app",
     "bookDemo": "Book a demo"
   },
   "landing": {
@@ -202,7 +198,6 @@
     "supervisor": "Supervisor"
   },
   "onboarding": {
-    "title": "Let's set things up",
     "stepOf": "Step {n} of 4",
     "professionTitle": "What's your profession?",
     "professionBody": "This helps us use the right language in your notes.",
@@ -212,7 +207,6 @@
     "modalityBody": "Choose one or more. Reflection on your sessions is based on these. You can change this any time.",
     "formatTitle": "How do you like your notes?",
     "formatBody": "Your drafts will follow this format.",
-    "languageLabel": "Language for the app and for your notes",
     "voiceTitle": "Let us learn your voice",
     "voiceBody": "Read the sentence below aloud for a few seconds. It helps us tell your voice apart from your client's in in-person sessions. We keep only a voice fingerprint (a list of numbers), never the recording, and you can delete it in Settings.",
     "voiceSentence": "I'm here to listen. Take your time — there's no right or wrong way to begin.",
@@ -233,8 +227,6 @@
     "awaitingReview": "Notes awaiting your review",
     "nothingToReview": "Nothing waiting. Take a breath.",
     "processing": "Being prepared",
-    "recent": "Recent sessions",
-    "quickStart": "Start a session",
     "chooseClient": "Who is the session with?",
     "addClientFirst": "Add a client first",
     "noClientsTitle": "Add your first client",
@@ -274,7 +266,7 @@
     "deleteConfirmLabel": "Type the pseudonym to confirm",
     "exportClient": "Export this client's data",
     "startSession": "Start session",
-    "emptyList": "Nothing yet."
+    "unarchive": "Restore from archive"
   },
   "consent": {
     "title": "Consent for {pseudonym}",
@@ -354,14 +346,14 @@
     "recapPlaceholder": "What did you work on? What did your client bring? Anything agreed for next time?",
     "dictate": "Dictate",
     "stopDictation": "Stop dictating",
-    "dictationUnsupported": "Dictation isn't available in this browser. You can type instead.",
     "recapSubmit": "Prepare my note",
     "dateLabel": "Session date",
     "durationLabel": "Length (minutes)",
     "short_online_call": "Online call",
     "short_in_person": "In the room",
     "short_upload": "Uploaded audio",
-    "short_recap": "Written recap"
+    "short_recap": "Written recap",
+    "elapsed": "Time recorded"
   },
   "review": {
     "progressTitle": "Preparing your session",
@@ -384,7 +376,6 @@
     "approve": "Approve note",
     "approveHint": "Approving locks the note. You decide what goes into the record.",
     "approveConfirm": "Approve and lock this note?",
-    "check": "check",
     "checkHint": "Items marked [check] need your confirmation — they were unclear or uncertain.",
     "exportPdf": "PDF",
     "exportDocx": "Word",
@@ -405,7 +396,6 @@
     "speaker_client": "Client",
     "speaker_client_2": "Client 2",
     "speaker_speaker_3": "Speaker 3",
-    "speaker_unknown": "Speaker",
     "speaker_recap": "Recap",
     "audioDeleted": "Audio deleted {date}",
     "audioKept": "Audio kept until {date}",
@@ -455,7 +445,6 @@
     "twoFactorDisable": "Turn off",
     "twoFactorScan": "Add this key to your authenticator app, then enter the 6-digit code it shows.",
     "twoFactorBackup": "Backup codes — keep these somewhere safe:",
-    "freshRequired": "Please sign in again to do this.",
     "signOutEverywhere": "Sign out on all devices",
     "languageLabel": "Language",
     "languageHint": "Used for the app, your notes and your reflections.",
@@ -491,7 +480,7 @@
     "kind_individual": "Individual",
     "kind_group": "Group",
     "supervisor": "Supervisor (initials)",
-    "noSessions": "No approved sessions this month yet.",
+    "noSessions": "No sessions this month yet.",
     "exportPdf": "Download PDF",
     "excerptChoose": "Choose the moments you'd like to discuss",
     "regenerate": "Prepare again",

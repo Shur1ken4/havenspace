@@ -28,7 +28,11 @@ export function Security({ twoFactorOn }: { twoFactorOn: boolean }) {
     const res = await authClient.$fetch<Passkey[]>("/passkey/list-user-passkeys", { method: "GET" });
     setPasskeys(res.data ?? []);
   }
-  useEffect(() => { loadPasskeys(); }, []);
+  useEffect(() => {
+    let alive = true;
+    authClient.$fetch<Passkey[]>("/passkey/list-user-passkeys", { method: "GET" }).then((res) => { if (alive) setPasskeys(res.data ?? []); });
+    return () => { alive = false; };
+  }, []);
 
   async function addPasskey() {
     setError(null);

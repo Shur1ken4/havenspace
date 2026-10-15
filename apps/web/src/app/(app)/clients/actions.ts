@@ -97,6 +97,7 @@ export async function deleteClient(clientId: string, confirmation: string) {
 
 export async function archiveClient(clientId: string, archived: boolean) {
   const session = await requireUser();
+  z.uuid().parse(clientId);
   await withUser(session.user.id, (db) =>
     db.query("update clients set status = $2 where id = $1", [clientId, archived ? "archived" : "active"]),
   );
@@ -119,6 +120,8 @@ export async function addTimelineItem(form: FormData) {
 
 export async function updateTimelineItem(itemId: string, clientId: string, status: "active" | "done" | "dropped") {
   const session = await requireUser();
+  z.uuid().parse(itemId);
+  z.enum(["active", "done", "dropped"]).parse(status);
   await withUser(session.user.id, (db) => db.query("update client_timeline_items set status = $2 where id = $1", [itemId, status]));
   revalidatePath(`/clients/${clientId}`);
 }
