@@ -11,9 +11,9 @@ export default async function MarketingLayout({ children }: LayoutProps<"/">) {
         {t("common.skipToContent")}
       </a>
       <header className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-5 sm:px-6">
-        <Link href="/" className="flex items-center gap-2.5 text-ink">
+        <Link href="/" className="flex shrink-0 items-center gap-2 text-ink sm:gap-2.5">
           <LogoMark className="h-8 w-8" />
-          <span className="font-serif text-xl">{t("common.appName")}</span>
+          <span className="whitespace-nowrap font-serif text-lg sm:text-xl">{t("common.appName")}</span>
         </Link>
         <nav aria-label="Main" className="hidden items-center gap-6 text-[15px] text-muted md:flex">
           <a href="/#how" className="hover:text-ink">{t("nav.how")}</a>

@@ -12,6 +12,10 @@ import { Progress } from "./progress";
 import { Failed } from "./failed";
 import { DeleteSession } from "./delete-session";
 
+export async function generateMetadata() {
+  return { title: (await getTranslations("meta"))("session") };
+}
+
 export default async function SessionPage({ params }: PageProps<"/sessions/[id]">) {
   const { id } = await params;
   const { therapist } = await requireTherapist();
@@ -42,7 +46,7 @@ export default async function SessionPage({ params }: PageProps<"/sessions/[id]"
         <div className="flex flex-wrap items-end justify-between gap-3">
           <h1 className="text-4xl">{s.pseudonym} · {format.dateTime(s.started_at, { dateStyle: "medium" })}</h1>
           <div className="flex flex-wrap gap-2">
-            <Chip tone="plain">{t(`session.mode_${s.capture_mode}`)}</Chip>
+            <Chip tone="plain">{t(`session.short_${s.capture_mode}`)}</Chip>
             {s.duration_seconds ? <Chip tone="plain">{Math.round(s.duration_seconds / 60)} min</Chip> : null}
             {s.audio_deleted_at && <Chip>{t("review.audioDeleted", { date: format.dateTime(s.audio_deleted_at, { dateStyle: "medium" }) })}</Chip>}
             {!s.audio_deleted_at && s.audio_delete_after && <Chip tone="amber">{t("review.audioKept", { date: format.dateTime(s.audio_delete_after, { dateStyle: "medium" }) })}</Chip>}

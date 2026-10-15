@@ -27,7 +27,8 @@ export default getRequestConfig(async () => {
   const locale = toLocale((await therapistLanguage()) ?? (await cookies()).get("locale")?.value);
   const en = (await import("../../messages/en.json")).default;
   const own = locale === "en" ? en : (await import(`../../messages/${locale}.json`)).default;
-  return { locale, messages: deepMerge(en, own) };
+  // English uses Irish conventions for dates and times (15 Oct 2026, 14:30).
+  return { locale: locale === "en" ? "en-IE" : locale, messages: deepMerge(en, own), timeZone: "Europe/Dublin" };
 });
 
 // Falls back to English for any string not yet translated.

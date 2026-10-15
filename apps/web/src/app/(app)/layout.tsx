@@ -25,7 +25,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
             <LogoMark className="h-7 w-7" />
             <span className="font-serif text-lg">{t("common.appName")}</span>
           </Link>
-          <AppNav />
+          <div className="order-last -mx-1 w-full sm:order-none sm:mx-0 sm:w-auto"><AppNav /></div>
           <SignOutButton />
         </div>
       </header>

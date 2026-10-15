@@ -8,6 +8,10 @@ import { Recorder } from "./recorder";
 import { Uploader } from "./uploader";
 import { RecapForm } from "./recap";
 
+export async function generateMetadata() {
+  return { title: (await getTranslations("meta"))("session") };
+}
+
 export default async function CapturePage({ params }: PageProps<"/sessions/[id]/capture">) {
   const { id } = await params;
   const { therapist } = await requireTherapist();
@@ -27,7 +31,7 @@ export default async function CapturePage({ params }: PageProps<"/sessions/[id]/
       <div className="flex flex-wrap items-center gap-3">
         <h1 className="text-4xl">{s.pseudonym}</h1>
         {s.capture_mode !== "recap" && <Chip>{t("consentConfirmed")}</Chip>}
-        <Chip tone="plain">{t(`mode_${s.capture_mode}`)}</Chip>
+        <Chip tone="plain">{t(`short_${s.capture_mode}`)}</Chip>
       </div>
       {(s.capture_mode === "online_call" || s.capture_mode === "in_person") && (
         <Recorder sessionId={id} mode={s.capture_mode} hasSavedVoice={Boolean(therapist.voice_enrolled_at)} interrupted={s.status === "recording" && s.has_audio} />

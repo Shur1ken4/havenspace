@@ -9,7 +9,9 @@ export async function loadMonth(db: Db, month: string) {
   const { rows: [hours] } = await db.query(
     `select coalesce(sum(duration_seconds) filter (where status = 'ready'), 0)::int as client_seconds,
             count(*) filter (where status = 'ready')::int as sessions,
-            count(distinct client_id) filter (where status = 'ready')::int as clients
+            count(distinct client_id) filter (where status = 'ready')::int as clients,
+            (select count(*) from notes n join sessions x on x.id = n.session_id
+              where n.status = 'approved' and x.started_at >= $1::date and x.started_at < $1::date + interval '1 month')::int as approved
        from sessions where started_at >= $1::date and started_at < $1::date + interval '1 month'`, [start],
   );
   const supervision = (await db.query(

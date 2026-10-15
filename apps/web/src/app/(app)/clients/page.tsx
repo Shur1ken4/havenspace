@@ -16,8 +16,8 @@ export default async function ClientsPage() {
   const format = await getFormatter();
   const clients = await withUser(therapist.id, async (db) => (await db.query(
     `select c.id, c.pseudonym, c.status,
-            (select count(*) from sessions s where s.client_id = c.id)::int as session_count,
-            (select max(started_at) from sessions s where s.client_id = c.id) as last_session,
+            (select count(*) from sessions s where s.client_id = c.id and s.status <> 'draft')::int as session_count,
+            (select max(started_at) from sessions s where s.client_id = c.id and s.status <> 'draft') as last_session,
             case when exists (select 1 from consents k where k.client_id = c.id and k.withdrawn_at is null) then 'active'
                  when exists (select 1 from consents k where k.client_id = c.id) then 'withdrawn' else 'missing' end as consent
        from clients c order by c.status, c.pseudonym`,
@@ -55,7 +55,7 @@ export default async function ClientsPage() {
           </ul>
         )}
       </section>
-      <aside>
+      <aside className="order-first lg:order-none">
         <Card className="space-y-4 lg:sticky lg:top-6">
           <h2 className="text-2xl">{t("add")}</h2>
           <AddClientForm />

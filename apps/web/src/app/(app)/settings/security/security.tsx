@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import QRCode from "qrcode";
@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
 import { Input } from "@/components/ui/field";
 import { Notice } from "@/components/ui/notice";
-import { signOutEverywhere } from "../actions";
+import { disableTwoFactor, signOutEverywhere } from "../actions";
 
 type Passkey = { id: string; name?: string | null; createdAt?: string };
 
@@ -22,7 +22,7 @@ export function Security({ twoFactorOn }: { twoFactorOn: boolean }) {
   const [error, setError] = useState<string | null>(null);
   const [setup, setSetup] = useState<{ qr: string; secret: string; backup: string[] } | null>(null);
   const [code, setCode] = useState("");
-  const [pending, start] = useTransition();
+  const [disabling, setDisabling] = useState(false);
 
   async function loadPasskeys() {
     const res = await authClient.$fetch<Passkey[]>("/passkey/list-user-passkeys", { method: "GET" });
@@ -46,10 +46,20 @@ export function Security({ twoFactorOn }: { twoFactorOn: boolean }) {
     setSetup({ qr: await QRCode.toString(uri, { type: "svg", margin: 1 }), secret, backup: res.data.backupCodes });
   }
 
-  async function verify() {
+  async function verify(e: React.FormEvent) {
+    e.preventDefault();
     const res = await authClient.twoFactor.verifyTotp({ code });
     if (res.error) { setError(t("invalidCode")); return; }
-    setSetup(null);
+    // Turning 2FA on starts a fresh session, which then needs a code once.
+    router.push("/login/verify?enabled=1&next=/settings/security");
+  }
+
+  async function turnOff(e: React.FormEvent) {
+    e.preventDefault();
+    const res = await disableTwoFactor(code);
+    if (res.error) { setError(res.error === "locked" ? t("tooManyAttempts") : t("invalidCode")); return; }
+    setDisabling(false);
+    setCode("");
     router.refresh();
   }
 
@@ -82,16 +92,26 @@ export function Security({ twoFactorOn }: { twoFactorOn: boolean }) {
             <p>{t("twoFactorScan")}</p>
             <div className="h-44 w-44 rounded-[12px] bg-white p-2" dangerouslySetInnerHTML={{ __html: setup.qr }} />
             <p className="break-all font-mono text-sm text-muted">{setup.secret}</p>
-            <div className="flex gap-2">
-              <Input className="max-w-40" inputMode="numeric" autoComplete="one-time-code" aria-label={t("twoFactorCodeLabel")} value={code} onChange={(e) => setCode(e.target.value)} />
-              <Button onClick={verify}>{t("verify")}</Button>
-            </div>
             <Notice tone="info" title={t("twoFactorBackup")}>
               <p className="font-mono text-sm">{setup.backup.join("  ")}</p>
             </Notice>
+            <form onSubmit={verify} className="flex gap-2">
+              <Input className="max-w-40" inputMode="numeric" autoComplete="one-time-code" aria-label={t("twoFactorCodeLabel")} value={code} onChange={(e) => setCode(e.target.value)} />
+              <Button type="submit">{t("verify")}</Button>
+            </form>
           </div>
         ) : twoFactorOn ? (
-          <Button variant="secondary" disabled={pending} onClick={() => start(async () => { await authClient.twoFactor.disable({}); router.refresh(); })}>{t("twoFactorDisable")}</Button>
+          disabling ? (
+            <form onSubmit={turnOff} className="space-y-2">
+              <p className="text-sm text-muted">{t("twoFactorDisableHint")}</p>
+              <div className="flex gap-2">
+                <Input className="max-w-40" inputMode="numeric" autoComplete="one-time-code" aria-label={t("twoFactorCodeLabel")} value={code} onChange={(e) => setCode(e.target.value)} />
+                <Button type="submit" variant="secondary">{t("twoFactorDisable")}</Button>
+              </div>
+            </form>
+          ) : (
+            <Button variant="secondary" onClick={() => setDisabling(true)}>{t("twoFactorDisable")}</Button>
+          )
         ) : (
           <Button variant="secondary" onClick={enable2fa}>{t("twoFactorEnable")}</Button>
         )}

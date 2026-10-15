@@ -1,7 +1,10 @@
 {
   "meta": {
     "title": "Psych Copilot — notes and reflection for therapists",
-    "description": "Drafts your session notes and offers gentle, supervisor-style reflection on your own practice. Built in Ireland. Audio deleted after transcription."
+    "description": "Drafts your session notes and offers gentle, supervisor-style reflection on your own practice. Built in Ireland. Audio deleted after transcription.",
+    "client": "Client",
+    "session": "Session",
+    "consent": "Consent"
   },
   "common": {
     "appName": "Psych Copilot",
@@ -144,7 +147,10 @@
     "invalidCode": "That code didn't match. Please try again.",
     "devMailboxHint": "Local development: emails aren't sent. Open the dev mailbox to find your link.",
     "devMailbox": "Open dev mailbox",
-    "newHere": "New here? The same link creates your account."
+    "newHere": "New here? The same link creates your account.",
+    "twoFactorJustEnabled": "Two-step verification is on. Enter a code once more to confirm this device.",
+    "twoFactorBackupHint": "No phone to hand? You can use one of your backup codes instead.",
+    "tooManyAttempts": "Too many attempts. Please wait 15 minutes and try again."
   },
   "app": {
     "greetingMorning": "Good morning, {name}",
@@ -256,7 +262,7 @@
     "goals": "Goals",
     "homework": "Homework",
     "changes": "Changes noticed",
-    "noTimeline": "The timeline fills in as you approve session notes.",
+    "noTimeline": "Sessions appear here once they've been prepared.",
     "addItem": "Add",
     "itemPlaceholder": "Write in your own words",
     "markDone": "Mark done",
@@ -267,7 +273,8 @@
     "deleteClientBody": "This permanently deletes {pseudonym}, their consent records, sessions, transcripts, notes and reflections. This can't be undone.",
     "deleteConfirmLabel": "Type the pseudonym to confirm",
     "exportClient": "Export this client's data",
-    "startSession": "Start session"
+    "startSession": "Start session",
+    "emptyList": "Nothing yet."
   },
   "consent": {
     "title": "Consent for {pseudonym}",
@@ -350,7 +357,11 @@
     "dictationUnsupported": "Dictation isn't available in this browser. You can type instead.",
     "recapSubmit": "Prepare my note",
     "dateLabel": "Session date",
-    "durationLabel": "Length (minutes)"
+    "durationLabel": "Length (minutes)",
+    "short_online_call": "Online call",
+    "short_in_person": "In the room",
+    "short_upload": "Uploaded audio",
+    "short_recap": "Written recap"
   },
   "review": {
     "progressTitle": "Preparing your session",
@@ -374,7 +385,7 @@
     "approveHint": "Approving locks the note. You decide what goes into the record.",
     "approveConfirm": "Approve and lock this note?",
     "check": "check",
-    "checkHint": "Items marked [check] were unclear in the recording — please confirm them.",
+    "checkHint": "Items marked [check] need your confirmation — they were unclear or uncertain.",
     "exportPdf": "PDF",
     "exportDocx": "Word",
     "copy": "Copy",
@@ -400,7 +411,11 @@
     "audioKept": "Audio kept until {date}",
     "aiDraft": "Drafted with AI from your session. Please review before approving.",
     "regenerate": "Redraft",
-    "deleteSession": "Delete this session"
+    "deleteSession": "Delete this session",
+    "status_draft": "Note to review",
+    "status_approved": "Note approved",
+    "status_processing": "Being prepared",
+    "status_failed": "Couldn't be prepared"
   },
   "settings": {
     "title": "Settings",
@@ -442,14 +457,17 @@
     "twoFactorBackup": "Backup codes — keep these somewhere safe:",
     "freshRequired": "Please sign in again to do this.",
     "signOutEverywhere": "Sign out on all devices",
-    "modalityHint": "Reflection uses the first one you've chosen. Change the order by unticking and re-ticking.",
     "languageLabel": "Language",
     "languageHint": "Used for the app, your notes and your reflections.",
     "privacyPageLink": "How we handle your data",
     "voiceRedo": "Record again",
     "invalidCode": "That code didn't match. Please try again.",
     "verify": "Verify",
-    "twoFactorCodeLabel": "6-digit code"
+    "twoFactorCodeLabel": "6-digit code",
+    "twoFactorDisableHint": "Enter a current code from your authenticator app (or a backup code) to turn this off.",
+    "tooManyAttempts": "Too many attempts. Please wait 15 minutes and try again.",
+    "primaryLabel": "Main approach for reflection",
+    "primaryHint": "Reflection on your sessions is based on this approach."
   },
   "supervision": {
     "title": "Supervision",
@@ -479,7 +497,8 @@
     "regenerate": "Prepare again",
     "questions": "Questions you might bring",
     "pdfSubtitle": "Prepared from approved session notes and reflections. Pseudonyms only.",
-    "sessionsCount": "{count, plural, =0 {No sessions} one {# session} other {# sessions}} this month"
+    "sessionsCount": "{count, plural, =0 {No sessions} one {# session} other {# sessions}} this month",
+    "approvedOnly": "The pack is built from notes you've approved this month ({count, plural, =0 {none yet} one {# note} other {# notes}}). Approve notes first to include them."
   },
   "privacyPage": {
     "title": "Privacy, in plain words",
@@ -577,7 +596,8 @@
     "transcript__relabel": "Swapped speaker labels",
     "supervision__build": "Prepared a supervision pack",
     "supervision__export_pdf": "Downloaded a supervision pack",
-    "auth__revoke_all": "Signed out on all devices"
+    "auth__revoke_all": "Signed out on all devices",
+    "auth__2fa_off": "Turned off two-step verification"
   },
   "consentTemplate": {
     "title": "Client consent template",

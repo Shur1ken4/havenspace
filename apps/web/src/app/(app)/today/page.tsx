@@ -24,6 +24,7 @@ export default async function TodayPage() {
       `select s.id, c.pseudonym, s.started_at, s.status, s.capture_mode, n.status as note_status
          from sessions s join clients c on c.id = s.client_id left join notes n on n.session_id = s.id
         where s.started_at >= date_trunc('day', now() at time zone 'Europe/Dublin') at time zone 'Europe/Dublin'
+          and s.status <> 'draft'
         order by s.started_at desc`,
     )).rows;
     const awaiting = (await db.query<Row>(
@@ -53,7 +54,7 @@ export default async function TodayPage() {
       <Link href={`/sessions/${s.id}`} className="flex items-center justify-between gap-3 rounded-[12px] px-3 py-3 hover:bg-surface-2">
         <span>
           <span className="font-medium text-ink">{s.pseudonym}</span>{" "}
-          <span className="text-muted">· {format.dateTime(s.started_at, { weekday: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Dublin" })}</span>
+          <span className="text-muted">· {format.dateTime(s.started_at, { weekday: "short", day: "numeric", month: "short" })} · {t(`session.short_${s.capture_mode}`)}</span>
         </span>
         <ArrowRight size={16} className="text-muted" aria-hidden />
       </Link>

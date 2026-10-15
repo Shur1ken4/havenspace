@@ -3,6 +3,7 @@
 - Audio kept "for 7 days" is hard-deleted once that time has passed.
 - Audio from sessions that never finished processing is deleted after 48 hours.
 - Voice-enrolment samples are deleted after 1 hour if somehow left behind.
+- Sessions started but never recorded are removed after 24 hours.
 - Expired sign-in tokens and sessions are removed.
 """
 from __future__ import annotations
@@ -33,6 +34,11 @@ def run(conn: psycopg.Connection) -> int:
                   and exists (select 1 from audio_chunks a where a.session_id = s.id)
                   and not exists (select 1 from audio_chunks a where a.session_id = s.id and a.deleted_at is null)"""
         )
+    # Sessions that were started but never recorded or written (e.g. the therapist went back).
+    conn.execute(
+        """delete from sessions s where s.status = 'draft' and s.created_at < now() - interval '24 hours'
+             and s.recap_text is null and not exists (select 1 from audio_chunks a where a.session_id = s.id)"""
+    )
     conn.execute('delete from "verification" where "expiresAt" < now()')
     conn.execute('delete from "session" where "expiresAt" < now()')
     # Rows for deleted audio carry no content; drop them after 30 days.

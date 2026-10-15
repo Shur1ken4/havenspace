@@ -42,7 +42,7 @@ Constraints:
 ---
 
 # ADR-2: Hosting and EU data residency
-Status: Proposed   Date: 2026-10-15   Deciders: Shurik, Clinical Lead
+Status: Proposed — database/sign-in part superseded by ADR-5   Date: 2026-10-15   Deciders: Shurik, Clinical Lead
 
 ## Context
 Everything that touches session data must stay in the EU (GDPR Article 9 health data). We are a tiny team, so we want managed services that are fast to build on, while keeping an exit path. Three things need homes: (1) database + login + file storage, (2) the web app, (3) the speech-to-text worker, which needs a GPU in production to transcribe a 50-minute session in under 3 minutes.
@@ -147,3 +147,82 @@ How it is enforced:
 - **Easier:** we can launch to paying therapists without device certification; clear story for the DPIA and for clinicians ("a supervisor's notebook, not a clinician").
 - **Harder:** some therapists will ask for risk alerts or live help; we say no for now. We must stay disciplined in marketing as well as code.
 - **Revisit when:** we have funding and a regulatory consultant for an MDR pathway; a regulatory lawyer should confirm this boundary before the pilot uses real client data.
+
+---
+
+# ADR-5: Self-contained Postgres and our own sign-in instead of Supabase
+Status: Accepted (for development; revisit before pilot)   Date: 2026-10-15   Deciders: Shurik (delegated to engineering)
+
+## Context
+ADR-2 proposed Supabase (Frankfurt) for database, sign-in and storage. Building locally on Supabase needs Docker Desktop or a cloud account before anything runs. We also want an easy exit from US-headquartered providers if a DPIA reviewer asks for it.
+
+## Decision
+- **Database:** plain PostgreSQL. Locally it runs from the project folder (`npm run db:start`, no Docker). In production any EU managed Postgres works — Supabase's Postgres in Frankfurt, Scaleway or OVH (French) or a Hetzner server (German).
+- **Row-level security** is enforced in Postgres itself: the web app connects as `app_user`, which cannot bypass RLS, and sets the signed-in therapist per transaction. The worker uses `worker_user`, which can.
+- **Sign-in:** Better Auth (open-source library) with email magic links, passkeys and optional authenticator-app 2FA, stored in our own database.
+- **File storage:** a small storage layer with two drivers — local folder (dev) and any S3-compatible EU object storage (prod).
+
+## Options considered
+| Option | Complexity | Cost | Privacy / EU | Time to build |
+|---|---|---|---|---|
+| Supabase (auth + DB + storage) | Low | Free → ~$25/mo | EU region, US company | Fast, but needs Docker/cloud account to start |
+| **Postgres + Better Auth + S3 layer** | Medium | Any EU Postgres (~€15–30/mo) | Can be fully EU-owned | +2 days, done |
+| Auth.js / own magic-link code | Medium–high | — | Same | Slower; fewer features (passkeys, 2FA) |
+
+## Consequences
+- **Easier:** runs on a laptop with no accounts; provider-neutral; RLS tested in our own test suite.
+- **Harder:** we operate sign-in ourselves (keep Better Auth updated); the auth tables are readable by the app role (no RLS) — every auth query must filter by the signed-in user.
+- **Revisit when:** choosing pilot hosting (pick the EU Postgres + S3 provider and record it here).
+
+---
+
+# ADR-6: Encryption of transcripts and notes
+Status: Proposed   Date: 2026-10-15   Deciders: Shurik, Clinical Lead
+
+## Context
+Transcripts, notes and reflections are special-category data. Managed Postgres encrypts disks at rest, but anyone with database access (or a leaked backup) can read rows.
+
+## Decision (proposed for M6 hardening)
+Per-therapist **envelope encryption** of `transcript_segments.text`, `notes.content_json`, `reflections.content_json` and `sessions.recap_text`: each therapist gets a data key, itself encrypted by a master key held in an EU key-management service (e.g. AWS KMS eu-central-1 or Scaleway Key Manager). The web app and worker decrypt only when needed. Deleting a therapist's data key makes all their content unreadable ("crypto-shredding"), which also covers backups.
+
+## Options considered
+| Option | Complexity | Cost | Privacy / EU | Time to build |
+|---|---|---|---|---|
+| Disk encryption only (provider default) | None | Included | Baseline | Done |
+| **Per-therapist envelope encryption + EU KMS** | Medium | ~€1–5/mo | Strong; crypto-shredding | ~1 week |
+| Client-side (browser) encryption | High | — | Strongest | Breaks server-side AI processing |
+
+## Consequences
+- **Easier:** strong story for the DPIA; deletion covers backups.
+- **Harder:** full-text transcript search must happen after decryption (fine at our scale); key management must be operated carefully.
+- **Revisit when:** before real client data (part of the M6 checklist).
+
+---
+
+# ADR-7: Re-authentication rules
+Status: Accepted   Date: 2026-10-15   Deciders: Shurik (delegated to engineering)
+
+## Decision
+- Sessions last 12 hours (`SESSION_HOURS`).
+- **Bulk exports** ("download all my data", "export this client") and **deletions** of a client or the account require a sign-in from the last 15 minutes; otherwise the therapist is asked to sign in again.
+- Single-note PDF/Word exports do not ask again (they are part of everyday work) but are written to the audit log.
+- Sign-in is rate-limited (Better Auth, stored in the database).
+
+## Consequences
+Protects the highest-impact actions without making daily note-writing tiresome. Revisit if pilot therapists share devices.
+
+---
+
+# ADR-8: Languages
+Status: Accepted   Date: 2026-10-15   Deciders: Shurik
+
+## Decision
+English and Russian. All interface text lives in `apps/web/messages/{en,ru}.json`. The language is chosen **only in Settings → Profile** (no public switcher). It also sets the language of notes and reflections; speech-to-text detects the session language automatically. Ukrainian is dropped for now and can be added later by adding `uk.json` and one line in `src/i18n/request.ts`.
+
+---
+
+# ADR-9: Refusal fallbacks on Anthropic's API (development)
+Status: Accepted   Date: 2026-10-15
+
+## Decision
+Development calls to Anthropic's API use the server-side `fallbacks: "default"` option: if a safety classifier declines a request (rare, but possible with therapy content such as self-harm disclosures), the API re-runs it on Anthropic's recommended fallback model within the same call. This is not available on Bedrock; there, a refusal fails the step and the session shows "couldn't finish — try again". The model that actually ran is stored on every output row.

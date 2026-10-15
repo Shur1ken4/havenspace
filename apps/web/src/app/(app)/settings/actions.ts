@@ -8,6 +8,7 @@ import { isFresh, requireUser } from "@/lib/session";
 import { audit } from "@/lib/audit";
 import { auth } from "@/lib/auth";
 import { storage } from "@/lib/storage";
+import { verifySecondFactor } from "@/lib/mfa";
 
 const profileSchema = z.object({
   displayName: z.string().trim().max(80),
@@ -16,6 +17,7 @@ const profileSchema = z.object({
   modalities: z.array(z.enum(["cbt", "mi", "dbt", "person_centred", "solution_focused", "integrative", "psychodynamic", "systemic"])).min(1),
   noteFormat: z.enum(["SOAP", "DAP", "BIRP", "FREE"]),
   language: z.enum(["en", "ru"]),
+  primaryModality: z.string(),
 });
 
 export type ProfileState = { ok?: boolean; error?: boolean };
@@ -29,9 +31,13 @@ export async function saveProfile(_prev: ProfileState, form: FormData): Promise<
     modalities: form.getAll("modalities"),
     noteFormat: form.get("noteFormat"),
     language: form.get("language"),
+    primaryModality: String(form.get("primaryModality") ?? ""),
   });
   if (!parsed.success) return { error: true };
   const d = parsed.data;
+  // The main approach (used for reflection) is stored first.
+  const primary = d.modalities.includes(d.primaryModality as never) ? d.primaryModality : d.modalities[0];
+  d.modalities = [primary, ...d.modalities.filter((m) => m !== primary)] as typeof d.modalities;
   await withUser(session.user.id, (db) => db.query(
     `update therapists set display_name = $2, profession = $3, accreditation_stage = $4, modalities = $5, note_format = $6, language = $7 where id = $1`,
     [session.user.id, d.displayName, d.profession, d.accreditationStage, d.modalities, d.noteFormat, d.language],
@@ -73,4 +79,14 @@ export async function signOutEverywhere() {
   await auth.api.revokeSessions({ headers: await headers() });
   await withUser(session.user.id, (db) => audit(db, session.user.id, "auth.revoke_all", "therapist", session.user.id));
   redirect("/login");
+}
+
+export async function disableTwoFactor(code: string): Promise<{ error?: "invalid" | "locked" }> {
+  const session = await requireUser();
+  const result = await verifySecondFactor(session.user.id, code);
+  if (result !== "ok") return { error: result };
+  await auth.api.disableTwoFactor({ body: {}, headers: await headers() });
+  await withUser(session.user.id, (db) => audit(db, session.user.id, "auth.2fa_off", "therapist", session.user.id));
+  revalidatePath("/settings/security");
+  return {};
 }

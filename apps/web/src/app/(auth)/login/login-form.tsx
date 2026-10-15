@@ -14,10 +14,9 @@ export function LoginForm({ next, fresh, devMailbox }: { next: string; fresh: bo
   const tc = useTranslations("common");
   const router = useRouter();
   const [email, setEmail] = useState("");
-  const [stage, setStage] = useState<"email" | "sent" | "twoFactor">("email");
+  const [stage, setStage] = useState<"email" | "sent">("email");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [code, setCode] = useState("");
 
   async function sendLink(e: React.FormEvent) {
     e.preventDefault();
@@ -36,13 +35,6 @@ export function LoginForm({ next, fresh, devMailbox }: { next: string; fresh: bo
     else router.push(next);
   }
 
-  async function verifyTotp(e: React.FormEvent) {
-    e.preventDefault();
-    const { error } = await authClient.twoFactor.verifyTotp({ code });
-    if (error) setError(t("invalidCode"));
-    else router.push(next);
-  }
-
   if (stage === "sent") {
     return (
       <Card className="space-y-4 fade-up">
@@ -55,21 +47,6 @@ export function LoginForm({ next, fresh, devMailbox }: { next: string; fresh: bo
           </Notice>
         )}
         <Button variant="ghost" onClick={() => setStage("email")}>{t("useDifferent")}</Button>
-      </Card>
-    );
-  }
-
-  if (stage === "twoFactor") {
-    return (
-      <Card className="space-y-4">
-        <h1 className="text-3xl">{t("twoFactorTitle")}</h1>
-        <p className="text-muted">{t("twoFactorBody")}</p>
-        <form onSubmit={verifyTotp} className="space-y-4">
-          <Field label={t("twoFactorCode")} htmlFor="totp" error={error}>
-            <Input id="totp" inputMode="numeric" autoComplete="one-time-code" value={code} onChange={(e) => setCode(e.target.value)} />
-          </Field>
-          <Button type="submit" className="w-full">{t("verify")}</Button>
-        </form>
       </Card>
     );
   }

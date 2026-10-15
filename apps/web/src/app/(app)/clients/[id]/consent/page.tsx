@@ -12,6 +12,10 @@ import { ConsentText } from "@/components/app/consent-text";
 import { recordConsent } from "../../actions";
 import { WithdrawConsent } from "./withdraw";
 
+export async function generateMetadata() {
+  return { title: (await getTranslations("meta"))("consent") };
+}
+
 export default async function ConsentPage({ params, searchParams }: PageProps<"/clients/[id]/consent">) {
   const { id } = await params;
   const sp = await searchParams;

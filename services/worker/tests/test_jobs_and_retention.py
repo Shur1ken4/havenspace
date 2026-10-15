@@ -78,3 +78,12 @@ def test_demo_pipeline_writes_note_reflection_and_cited_timeline(conn, therapist
     assert "draft_note@" in note["prompt_version"]
     assert refl["dropped_items"] == 0 and len(refl["content_json"]["strengths"]) == 3
     assert conn.execute("select count(*) n from client_timeline_items where session_id = %s", (sid,)).fetchone()["n"] >= 1
+
+
+def test_retention_removes_empty_abandoned_sessions(conn, therapist, client_with_consent):
+    sid = _session(conn, therapist, client_with_consent, status="draft")
+    conn.execute("update sessions set created_at = now() - interval '2 days' where id = %s", (sid,))
+    keep = _session(conn, therapist, client_with_consent, status="draft")
+    retention.run(conn)
+    assert conn.execute("select count(*) n from sessions where id = %s", (sid,)).fetchone()["n"] == 0
+    assert conn.execute("select count(*) n from sessions where id = %s", (keep,)).fetchone()["n"] == 1

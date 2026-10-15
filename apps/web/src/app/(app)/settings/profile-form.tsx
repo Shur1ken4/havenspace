@@ -1,5 +1,5 @@
 "use client";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { Therapist } from "@/lib/session";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,8 @@ const formats = ["SOAP", "DAP", "BIRP", "FREE"] as const;
 export function ProfileForm({ therapist }: { therapist: Therapist }) {
   const t = useTranslations();
   const [state, action, pending] = useActionState<ProfileState, FormData>(saveProfile, {});
+  const [chosen, setChosen] = useState<string[]>(therapist.modalities);
+  const [primary, setPrimary] = useState<string>(therapist.modalities[0] ?? "");
   return (
     <Card className="max-w-2xl">
       <form action={action} className="space-y-6">
@@ -35,16 +37,24 @@ export function ProfileForm({ therapist }: { therapist: Therapist }) {
         </div>
         <fieldset className="space-y-2">
           <legend className="text-[15px] font-medium">{t("onboarding.modalityTitle")}</legend>
-          <p className="text-sm text-muted">{t("settings.modalityHint")}</p>
           <div className="grid gap-2 sm:grid-cols-2">
             {modalities.map((m) => (
               <label key={m} className="flex items-center gap-3 rounded-[12px] border border-line px-4 py-2.5 has-[:checked]:border-primary has-[:checked]:bg-primary-soft">
-                <input type="checkbox" name="modalities" value={m} defaultChecked={therapist.modalities.includes(m)} className="h-4 w-4 accent-[var(--primary-strong)]" />
+                <input type="checkbox" name="modalities" value={m} checked={chosen.includes(m)} className="h-4 w-4 accent-[var(--primary-strong)]"
+                  onChange={(e) => setChosen(e.target.checked ? [...chosen, m] : chosen.filter((x) => x !== m))} />
                 {t(`modalities.${m}`)}
               </label>
             ))}
           </div>
         </fieldset>
+        {chosen.length > 1 && (
+          <Field label={t("settings.primaryLabel")} hint={t("settings.primaryHint")} htmlFor="primaryModality">
+            <Select id="primaryModality" name="primaryModality" value={chosen.includes(primary) ? primary : chosen[0]} onChange={(e) => setPrimary(e.target.value)}>
+              {chosen.map((m) => <option key={m} value={m}>{t(`modalities.${m}`)}</option>)}
+            </Select>
+          </Field>
+        )}
+        {chosen.length === 1 && <input type="hidden" name="primaryModality" value={chosen[0]} />}
         <Field label={t("onboarding.formatTitle")} htmlFor="noteFormat">
           <Select id="noteFormat" name="noteFormat" defaultValue={therapist.note_format}>
             {formats.map((f) => <option key={f} value={f}>{t(`noteFormats.${f}`)}</option>)}

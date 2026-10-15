@@ -11,6 +11,10 @@ import { Notice } from "@/components/ui/notice";
 import { TimelineList } from "./timeline-list";
 import { ClientDanger } from "./client-danger";
 
+export async function generateMetadata() {
+  return { title: (await getTranslations("meta"))("client") };
+}
+
 export default async function ClientPage({ params }: PageProps<"/clients/[id]">) {
   const { id } = await params;
   const { therapist } = await requireTherapist();
@@ -24,7 +28,7 @@ export default async function ClientPage({ params }: PageProps<"/clients/[id]">)
       `select s.id, s.started_at, s.status, s.capture_mode, s.duration_seconds, n.status as note_status,
               coalesce((select array_agg(distinct i.text) from client_timeline_items i where i.session_id = s.id and i.kind = 'theme'), '{}') as themes
          from sessions s left join notes n on n.session_id = s.id
-        where s.client_id = $1 order by s.started_at desc`, [id],
+        where s.client_id = $1 and s.status <> 'draft' order by s.started_at desc`, [id],
     )).rows;
     const items = (await db.query(
       `select i.id, i.kind, i.text, i.status, i.source, i.created_at, s.started_at as session_date
@@ -69,9 +73,9 @@ export default async function ClientPage({ params }: PageProps<"/clients/[id]">)
                   <Link href={`/sessions/${s.id}`} className="block rounded-[14px] border border-line bg-surface p-4 hover:border-primary">
                     <p className="font-medium text-ink">{format.dateTime(s.started_at, { dateStyle: "medium" })}</p>
                     <p className="text-sm text-muted">
-                      {t(`session.mode_${s.capture_mode}`)}
+                      {t(`session.short_${s.capture_mode}`)}
                       {s.duration_seconds ? ` · ${Math.round(s.duration_seconds / 60)} min` : ""}
-                      {" · "}{s.note_status === "approved" ? t("review.approved", { date: "" }).trim() : s.note_status === "draft" ? t("review.draft") : t(`review.stage_${s.status === "ready" ? "queued" : "queued"}`)}
+                      {" · "}{t(`review.status_${s.note_status ?? (s.status === "failed" ? "failed" : "processing")}`)}
                     </p>
                     {s.themes.length > 0 && (
                       <div className="mt-2 flex flex-wrap gap-1.5">{s.themes.map((th: string) => <Chip key={th} tone="clay">{th}</Chip>)}</div>

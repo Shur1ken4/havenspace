@@ -89,6 +89,14 @@ export function OnboardingWizard({ initialLanguage }: { initialLanguage: "en" | 
               );
             })}
           </div>
+          {form.modalities.length > 1 && (
+            <Field label={t("settings.primaryLabel")} hint={t("settings.primaryHint")} htmlFor="primary">
+              <Select id="primary" value={form.modalities[0]}
+                onChange={(e) => set("modalities", [e.target.value as OnboardingInput["modalities"][number], ...form.modalities.filter((m) => m !== e.target.value)])}>
+                {form.modalities.map((m) => <option key={m} value={m}>{t(`modalities.${m}`)}</option>)}
+              </Select>
+            </Field>
+          )}
         </section>
       )}
 

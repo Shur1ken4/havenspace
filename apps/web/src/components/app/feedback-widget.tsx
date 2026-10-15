@@ -20,9 +20,10 @@ export function FeedbackWidget() {
     <>
       <button
         onClick={() => { setOpen(true); setDone(false); }}
-        className="no-print fixed bottom-5 right-5 z-30 inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-2.5 text-sm text-ink shadow-soft hover:bg-surface-2"
+        aria-label={t("feedback")}
+        className="no-print fixed bottom-4 right-4 z-30 inline-flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-line bg-surface text-sm text-ink shadow-soft hover:bg-surface-2 sm:bottom-5 sm:right-5 sm:h-auto sm:w-auto sm:px-4 sm:py-2.5"
       >
-        <MessagesSquare size={16} aria-hidden /> {t("feedback")}
+        <MessagesSquare size={16} aria-hidden /> <span className="hidden sm:inline">{t("feedback")}</span>
       </button>
       <Dialog open={open} onOpenChange={setOpen} title={t("feedbackTitle")} description={t("feedbackBody")}>
         {done ? (

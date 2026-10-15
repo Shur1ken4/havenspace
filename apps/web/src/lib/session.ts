@@ -1,8 +1,10 @@
 import "server-only";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 import { auth } from "./auth";
 import { withUser } from "./db";
+import { isMfaPending } from "./mfa";
 
 export type Therapist = {
   id: string;
@@ -18,13 +20,21 @@ export type Therapist = {
   onboarding_completed_at: string | null;
 };
 
+// One lookup per request, however many components ask.
+const rawSession = cache(async () => auth.api.getSession({ headers: await headers() }));
+
+/** The signed-in user, or null — also null while two-step verification is pending. */
 export async function getSession() {
-  return auth.api.getSession({ headers: await headers() });
+  const session = await rawSession();
+  if (!session || (await isMfaPending(session))) return null;
+  return session;
 }
 
+/** Like getSession, but sends people to sign in (or to the code step) instead of returning null. */
 export async function requireUser() {
-  const session = await getSession();
+  const session = await rawSession();
   if (!session) redirect("/login");
+  if (await isMfaPending(session)) redirect("/login/verify");
   return session;
 }
 
@@ -36,7 +46,7 @@ export async function requireTherapist(opts: { allowIncomplete?: boolean } = {})
   return { session, therapist };
 }
 
-export async function loadTherapist(userId: string, email: string): Promise<Therapist> {
+export const loadTherapist = cache(async (userId: string, email: string): Promise<Therapist> => {
   return withUser(userId, async (db) => {
     await db.query("insert into therapists (id) values ($1) on conflict (id) do nothing", [userId]);
     const { rows } = await db.query(
@@ -47,7 +57,7 @@ export async function loadTherapist(userId: string, email: string): Promise<Ther
     );
     return { ...rows[0], email } as Therapist;
   });
-}
+});
 
 /** True when the user signed in recently enough for exports and deletions. */
 export function isFresh(session: { session: { createdAt: Date | string } }, maxAgeMinutes = 15) {

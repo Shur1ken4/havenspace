@@ -7,6 +7,10 @@ import { buttonClass } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { RetentionChoice, VoiceSettings, DeleteAccount } from "./privacy-controls";
 
+export async function generateMetadata() {
+  return { title: (await (await import("next-intl/server")).getTranslations("settings"))("privacy") };
+}
+
 export default async function PrivacySettings() {
   const { therapist } = await requireTherapist();
   const t = await getTranslations("settings");

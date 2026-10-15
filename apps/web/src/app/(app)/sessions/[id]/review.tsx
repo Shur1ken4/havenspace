@@ -1,6 +1,6 @@
 "use client";
 import { useMemo, useRef, useState, useTransition } from "react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { Copy, Download, FileText, Lock, Search, ArrowLeftRight } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button, buttonClass } from "@/components/ui/button";
@@ -88,6 +88,7 @@ function NoteTab({ sessionId, note }: { sessionId: string; note: ReviewProps["no
   const t = useTranslations("review");
   const tn = useTranslations("noteSections");
   const tc = useTranslations("common");
+  const format = useFormatter();
   const [sections, setSections] = useState(note?.content.sections ?? []);
   const [dirty, setDirty] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -110,7 +111,7 @@ function NoteTab({ sessionId, note }: { sessionId: string; note: ReviewProps["no
     <div className="grid gap-6 lg:grid-cols-[1fr_260px]">
       <Card className="space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          {locked ? <Chip><Lock size={14} aria-hidden /> {t("approved", { date: new Date(note.approvedAt!).toLocaleDateString() })}</Chip> : <Chip tone="amber">{t("draft")}</Chip>}
+          {locked ? <Chip><Lock size={14} aria-hidden /> {t("approved", { date: format.dateTime(new Date(note.approvedAt!), { dateStyle: "medium" }) })}</Chip> : <Chip tone="amber">{t("draft")}</Chip>}
           <span className="text-sm text-muted">{note.content.format}</span>
         </div>
         {!locked && <p className="text-sm text-muted">{t("aiDraft")}</p>}

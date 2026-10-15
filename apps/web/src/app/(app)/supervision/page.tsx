@@ -59,10 +59,10 @@ export default async function SupervisionPage({ searchParams }: PageProps<"/supe
             <h2 className="text-2xl">{t("packTitle", { month: monthLabel })}</h2>
             <div className="flex gap-2">
               {ai && <a className={buttonClass("secondary", "sm")} href={`/api/supervision/${month}`}><Download size={16} aria-hidden /> {t("exportPdf")}</a>}
-              <BuildPack month={month} building={Boolean(data.pack?.building)} hasPack={Boolean(ai)} disabled={data.hours.sessions === 0} />
+              <BuildPack month={month} building={Boolean(data.pack?.building)} hasPack={Boolean(ai)} disabled={data.hours.approved === 0} />
             </div>
           </div>
-          {data.hours.sessions === 0 && <Notice tone="info">{t("noSessions")}</Notice>}
+          {data.hours.sessions === 0 ? <Notice tone="info">{t("noSessions")}</Notice> : !ai && <p className="text-muted">{t("approvedOnly", { count: data.hours.approved })}</p>}
           {ai && (
             <div className="space-y-5">
               <section className="space-y-2"><h3 className="text-xl">{t("summary")}</h3><p className="leading-relaxed">{ai.overview}</p>
