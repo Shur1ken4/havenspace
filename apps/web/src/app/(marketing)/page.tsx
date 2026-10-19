@@ -35,11 +35,12 @@ export default async function LandingPage() {
     { icon: Minimize2, title: a("stillTitle"), body: a("stillBody") },
     { icon: UserCheck, title: a("decideTitle"), body: a("decideBody") },
   ];
+  // Planned prices after the pilot (not billed yet). A "session" = one session processed into a note.
   const plans = [
-    { name: t("planFree"), price: "€0", body: t("planFreeBody") },
-    { name: t("planSolo"), price: "€39", body: t("planSoloBody"), featured: true },
-    { name: t("planGrowth"), price: "€59", body: t("planGrowthBody") },
-    { name: t("planSupervisor"), price: "€0", body: t("planSupervisorBody") },
+    { name: t("planFree"), price: "€0", body: t("planFreeBody"), perks: [t("perkFree1"), t("perkFree2")] },
+    { name: t("planSolo"), price: "€39", body: t("planSoloBody"), perks: [t("perkSolo1"), t("perkSolo2"), t("perkSolo3"), t("perkSolo4")], featured: true },
+    { name: t("planGrowth"), price: "€59", body: t("planGrowthBody"), perks: [t("perkGrowth1"), t("perkGrowth2"), t("perkGrowth3"), t("perkGrowth4")] },
+    { name: t("planSupervisor"), price: "€0", body: t("planSupervisorBody"), perks: [t("perkSup1"), t("perkSup2")] },
   ];
 
   return (
@@ -174,7 +175,10 @@ export default async function LandingPage() {
               <Card className={`h-full space-y-3 ${p.featured ? "border-primary" : ""}`}>
                 <h3 className="font-sans text-lg font-medium">{p.name}</h3>
                 <p><span className="font-serif text-4xl">{p.price}</span><span className="text-muted">{t("perMonth")}</span></p>
-                <p className="text-muted">{p.body}</p>
+                <p className="font-medium text-ink">{p.body}</p>
+                <ul className="space-y-1.5 text-sm text-muted">
+                  {p.perks.map((perk) => <li key={perk} className="flex gap-2"><Check size={16} className="mt-0.5 shrink-0 text-primary-strong" aria-hidden />{perk}</li>)}
+                </ul>
               </Card>
             </li>
           ))}

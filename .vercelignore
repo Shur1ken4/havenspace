@@ -1,0 +1,12 @@
+# Never upload local data, secrets or the speech-to-text worker to Vercel.
+.data
+.env
+.env.*
+!.env.example
+node_modules
+**/node_modules
+**/.next
+services
+reference
+evals/reports
+.claude

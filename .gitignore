@@ -13,3 +13,4 @@ reference/prototype/*
 .env.*
 !.env.example
 .vercel
+.env*
