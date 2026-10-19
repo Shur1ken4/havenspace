@@ -6,6 +6,7 @@ import {
 import { PlantIllustration, WindowIllustration } from "@/components/illustrations";
 import { ArchStage } from "@/components/marketing/arch-stage";
 import { SignupForm } from "@/components/marketing/signup-form";
+import { Pricing } from "@/components/marketing/pricing";
 import { PrivacyBadges } from "@/components/privacy-badges";
 import { buttonClass } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -34,13 +35,6 @@ export default async function LandingPage() {
     { icon: SmilePlus, title: a("neverTitle"), body: a("neverBody") },
     { icon: Minimize2, title: a("stillTitle"), body: a("stillBody") },
     { icon: UserCheck, title: a("decideTitle"), body: a("decideBody") },
-  ];
-  // Planned prices after the pilot (not billed yet). A "session" = one session processed into a note.
-  const plans = [
-    { name: t("planFree"), price: "€0", body: t("planFreeBody"), perks: [t("perkFree1"), t("perkFree2")] },
-    { name: t("planSolo"), price: "€39", body: t("planSoloBody"), perks: [t("perkSolo1"), t("perkSolo2"), t("perkSolo3"), t("perkSolo4")], featured: true },
-    { name: t("planGrowth"), price: "€59", body: t("planGrowthBody"), perks: [t("perkGrowth1"), t("perkGrowth2"), t("perkGrowth3"), t("perkGrowth4")] },
-    { name: t("planSupervisor"), price: "€0", body: t("planSupervisorBody"), perks: [t("perkSup1"), t("perkSup2")] },
   ];
 
   return (
@@ -169,20 +163,7 @@ export default async function LandingPage() {
       <section id="pricing" aria-labelledby="pricing-title" className="scroll-mt-20 py-16">
         <h2 id="pricing-title" className="text-3xl text-ink sm:text-4xl">{t("pricingTitle")}</h2>
         <p className="mt-3 text-lg text-muted">{t("pricingIntro")}</p>
-        <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {plans.map((p) => (
-            <li key={p.name}>
-              <Card className={`h-full space-y-3 ${p.featured ? "border-primary" : ""}`}>
-                <h3 className="font-sans text-lg font-medium">{p.name}</h3>
-                <p><span className="font-serif text-4xl">{p.price}</span><span className="text-muted">{t("perMonth")}</span></p>
-                <p className="font-medium text-ink">{p.body}</p>
-                <ul className="space-y-1.5 text-sm text-muted">
-                  {p.perks.map((perk) => <li key={perk} className="flex gap-2"><Check size={16} className="mt-0.5 shrink-0 text-primary-strong" aria-hidden />{perk}</li>)}
-                </ul>
-              </Card>
-            </li>
-          ))}
-        </ul>
+        <Pricing />
         <p className="mt-5 text-muted">{t("planCollege")}: {t("planCollegeBody")}</p>
       </section>
 
