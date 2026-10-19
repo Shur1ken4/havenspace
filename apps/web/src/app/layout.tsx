@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter, Source_Serif_4 } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
+import { currentTheme } from "@/lib/theme";
 import "./globals.css";
 
 const inter = Inter({ variable: "--font-inter-base", subsets: ["latin", "cyrillic"], display: "swap" });
@@ -28,9 +29,11 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const locale = await getLocale();
+  const theme = await currentTheme();
   return (
     <html
       lang={locale}
+      data-theme={theme === "system" ? undefined : theme}
       className={`${inter.variable} ${fraunces.variable} ${sourceSerif.variable}`}
       style={{
         // Combine the self-hosted fonts into the stacks used by the tokens.

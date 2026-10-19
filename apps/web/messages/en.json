@@ -914,5 +914,13 @@
     "disconnectedBody": "Your account is no longer linked to a therapist. If this is unexpected, talk to your therapist. You can delete your account below.",
     "crisis": "CouchNote isn't monitored in real time. In an emergency call 112 or 999, or Samaritans on 116 123 (free, 24/7).",
     "downloadData": "Download my data first"
+  },
+  "theme": {
+    "label": "Colour theme",
+    "title": "Appearance",
+    "body": "Light, dark, or match your device. Remembered on this device.",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "Match my device"
   }
 }

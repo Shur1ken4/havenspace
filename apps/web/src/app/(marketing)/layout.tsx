@@ -3,6 +3,8 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Logo } from "@/components/illustrations";
 import { buttonClass } from "@/components/ui/button";
 import { setPublicLocale } from "./actions";
+import { ThemeSwitch } from "@/components/theme-switch";
+import { currentTheme } from "@/lib/theme";
 
 export default async function MarketingLayout({ children }: LayoutProps<"/">) {
   const t = await getTranslations();
@@ -52,6 +54,7 @@ export default async function MarketingLayout({ children }: LayoutProps<"/">) {
                 </span>
               ))}
             </form>
+            <ThemeSwitch initial={await currentTheme()} compact />
           </div>
         </div>
       </footer>
