@@ -14,7 +14,7 @@ export async function generateMetadata() {
 
 type Request = {
   id: string; email: string; display_name: string; profession: string | null; accreditation_stage: string | null;
-  full_name: string | null; documents: { id: string; filename: string }[];
+  full_name: string | null; professional_body_other: string | null; documents: { id: string; filename: string }[];
   professional_body: (typeof PROFESSIONAL_BODIES)[number] | null; registration_number: string | null; country: string | null;
   access_status: "pending" | "approved" | "declined"; created_at: Date; access_decided_at: Date | null;
 };
@@ -31,7 +31,7 @@ export default async function AdminPage() {
   const { requests, signups } = await withUser(therapist.id, async (db) => ({
     requests: (await db.query<Request>(
       `select t.id, u.email, t.display_name, t.full_name, t.profession, t.accreditation_stage, t.professional_body,
-              t.registration_number, t.country, t.access_status, t.created_at, t.access_decided_at,
+              t.registration_number, t.professional_body_other, t.country, t.access_status, t.created_at, t.access_decided_at,
               coalesce((select json_agg(json_build_object('id', d.id, 'filename', d.filename) order by d.created_at)
                           from therapist_documents d where d.therapist_id = t.id and d.deleted_at is null), '[]') as documents
          from therapists t join "user" u on u.id = t.id
@@ -67,7 +67,8 @@ export default async function AdminPage() {
           <Chip tone={statusTone[r.access_status]}>{t(`admin.status_${r.access_status}`)}</Chip>
         </div>
         <p className="text-sm text-ink">
-          {r.professional_body ? t(`professionalBodies.${r.professional_body}`) : "—"}
+          {r.professional_body === "other" && r.professional_body_other ? r.professional_body_other
+            : r.professional_body ? t(`professionalBodies.${r.professional_body}`) : "—"}
           {r.registration_number ? <> · <span className="tabular-nums">{r.registration_number}</span></> : null}
           {register && (
             <a href={register} target="_blank" rel="noopener noreferrer" className="ml-2 inline-flex items-center gap-1 text-primary-strong underline">

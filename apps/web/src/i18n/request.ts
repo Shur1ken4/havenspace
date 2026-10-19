@@ -1,6 +1,7 @@
 import { getRequestConfig } from "next-intl/server";
 import { cookies, headers } from "next/headers";
 import { cache } from "react";
+import { browserLanguage } from "@/lib/browser-locale";
 
 export const locales = ["en", "ru"] as const;
 export type Locale = (typeof locales)[number];
@@ -10,7 +11,8 @@ export function toLocale(value: string | undefined | null): Locale {
 }
 
 // Signed-in therapists see the language saved in Settings (on any device).
-// Public pages follow the "locale" cookie, which Settings also sets.
+// Public pages follow the "locale" cookie (set by Settings or the footer switch),
+// and on a first visit the browser's own language.
 const therapistLanguage = cache(async (): Promise<string | null> => {
   const h = await headers();
   if (!h.get("cookie")?.includes("better-auth")) return null;
@@ -19,14 +21,14 @@ const therapistLanguage = cache(async (): Promise<string | null> => {
   const session = await auth.api.getSession({ headers: h }).catch(() => null);
   if (!session) return null;
   return withUser(session.user.id, async (db) =>
-    (await db.query("select language from therapists where id = $1", [session.user.id])).rows[0]?.language ?? null,
+    (await db.query("select language from therapists where id = $1 and onboarding_completed_at is not null", [session.user.id])).rows[0]?.language ?? null,
   ).catch(() => null);
 });
 
 export default getRequestConfig(async ({ locale: requested }) => {
   // An explicit locale (e.g. an email in the recipient's language) wins.
   const locale = requested ? toLocale(requested.slice(0, 2))
-    : toLocale((await therapistLanguage()) ?? (await cookies()).get("locale")?.value);
+    : toLocale((await therapistLanguage()) ?? (await cookies()).get("locale")?.value ?? (await browserLanguage()));
   const en = (await import("../../messages/en.json")).default;
   const own = locale === "en" ? en : (await import(`../../messages/${locale}.json`)).default;
   // English uses Irish conventions for dates and times (15 Oct 2026, 14:30).

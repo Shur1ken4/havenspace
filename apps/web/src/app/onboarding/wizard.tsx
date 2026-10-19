@@ -9,7 +9,7 @@ import { cn } from "@/components/ui/cn";
 import { VoiceCheck } from "@/components/app/voice-check";
 import { DocumentUpload } from "@/components/app/document-upload";
 import { completeOnboarding, type OnboardingInput } from "./actions";
-import { COUNTRIES, PROFESSIONAL_BODIES } from "@/lib/professional";
+import { COUNTRIES, bodyGroupsFor, defaultBodyFor, type Country } from "@/lib/professional";
 
 const professions = ["counsellor", "psychotherapist", "psychologist", "other"] as const;
 const stages = ["student", "pre_accredited", "accredited", "supervisor"] as const;
@@ -30,19 +30,20 @@ function Choice({ selected, onClick, children }: { selected: boolean; onClick: (
   );
 }
 
-export function OnboardingWizard({ initialLanguage }: { initialLanguage: "en" | "ru" }) {
+export function OnboardingWizard({ initialLanguage, initialCountry }: { initialLanguage: "en" | "ru"; initialCountry: Country }) {
   const t = useTranslations();
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [pending, start] = useTransition();
   const [form, setForm] = useState<OnboardingInput>({
     fullName: "", displayName: "", profession: "counsellor", accreditationStage: "pre_accredited",
-    professionalBody: "IACP", registrationNumber: "", country: "IE",
+    professionalBody: defaultBodyFor(initialCountry), professionalBodyOther: "", registrationNumber: "", country: initialCountry,
     modalities: [], noteFormat: "SOAP", language: initialLanguage,
   });
   // Students (and people not yet on a register) may skip the registration number.
   const needsReg = form.professionalBody !== "none_student" && form.accreditationStage !== "student";
-  const step1Done = form.fullName.trim().length >= 2 && (!needsReg || form.registrationNumber.trim().length >= 2);
+  const step1Done = form.fullName.trim().length >= 2 && (!needsReg || form.registrationNumber.trim().length >= 2)
+    && (form.professionalBody !== "other" || form.professionalBodyOther.trim().length >= 2);
   const set = <K extends keyof OnboardingInput>(k: K, v: OnboardingInput[K]) => setForm((f) => ({ ...f, [k]: v }));
 
   function finish() {
@@ -84,17 +85,33 @@ export function OnboardingWizard({ initialLanguage }: { initialLanguage: "en" | 
               <p className="text-sm text-muted">{t("onboarding.verifyBody")}</p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label={t("onboarding.bodyLabel")} htmlFor="body">
-                <Select id="body" value={form.professionalBody} onChange={(e) => set("professionalBody", e.target.value as OnboardingInput["professionalBody"])}>
-                  {PROFESSIONAL_BODIES.map((b) => <option key={b} value={b}>{t(`professionalBodies.${b}`)}</option>)}
-                </Select>
-              </Field>
               <Field label={t("onboarding.countryLabel")} htmlFor="country">
-                <Select id="country" value={form.country} onChange={(e) => set("country", e.target.value as OnboardingInput["country"])}>
+                <Select id="country" value={form.country} onChange={(e) => {
+                  const c = e.target.value as Country;
+                  setForm((f) => ({ ...f, country: c, professionalBody: defaultBodyFor(c) }));
+                }}>
                   {COUNTRIES.map((c) => <option key={c} value={c}>{t(`countries.${c}`)}</option>)}
                 </Select>
               </Field>
+              <Field label={t("onboarding.bodyLabel")} htmlFor="body">
+                <Select id="body" value={form.professionalBody} onChange={(e) => set("professionalBody", e.target.value as OnboardingInput["professionalBody"])}>
+                  {bodyGroupsFor(form.country).map((g) => (
+                    <optgroup key={g.country} label={t(`countries.${g.country}`)}>
+                      {g.bodies.map((b) => <option key={b} value={b}>{t(`professionalBodies.${b}`)}</option>)}
+                    </optgroup>
+                  ))}
+                  <optgroup label={t("onboarding.bodyOtherGroup")}>
+                    <option value="other">{t("professionalBodies.other")}</option>
+                    <option value="none_student">{t("professionalBodies.none_student")}</option>
+                  </optgroup>
+                </Select>
+              </Field>
             </div>
+            {form.professionalBody === "other" && (
+              <Field label={t("onboarding.bodyOtherLabel")} htmlFor="body-other">
+                <Input id="body-other" value={form.professionalBodyOther} maxLength={120} required onChange={(e) => set("professionalBodyOther", e.target.value)} />
+              </Field>
+            )}
             {needsReg && (
               <Field label={t("onboarding.regLabel")} hint={t("onboarding.regHint")} htmlFor="reg">
                 <Input id="reg" value={form.registrationNumber} maxLength={60} required onChange={(e) => set("registrationNumber", e.target.value)} autoComplete="off" />

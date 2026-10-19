@@ -12,6 +12,7 @@ const schema = z.object({
   profession: z.enum(["counsellor", "psychotherapist", "psychologist", "other"]),
   accreditationStage: z.enum(["student", "pre_accredited", "accredited", "supervisor"]),
   professionalBody: z.enum(PROFESSIONAL_BODIES),
+  professionalBodyOther: z.string().trim().max(120),
   registrationNumber: z.string().trim().max(60),
   country: z.enum(COUNTRIES),
   modalities: z.array(z.enum(["cbt", "mi", "dbt", "person_centred", "solution_focused", "integrative", "psychodynamic", "systemic"])).min(1).max(8),
@@ -28,6 +29,7 @@ export async function completeOnboarding(input: OnboardingInput): Promise<{ ok: 
   const d = data.data;
   const student = d.accreditationStage === "student" || d.professionalBody === "none_student";
   if (!student && d.registrationNumber.length < 2) return { ok: false };
+  if (d.professionalBody === "other" && d.professionalBodyOther.length < 2) return { ok: false };
   // "What should we call you" defaults to the first name.
   if (!d.displayName) d.displayName = d.fullName.split(/\s+/)[0];
   const status = await withUser(session.user.id, async (db) => {
@@ -35,10 +37,11 @@ export async function completeOnboarding(input: OnboardingInput): Promise<{ ok: 
     await db.query(
       `update therapists set display_name = $2, profession = $3, accreditation_stage = $4, modalities = $5,
               note_format = $6, language = $7, professional_body = $8, registration_number = nullif($9, ''), country = $10, full_name = $11,
+              professional_body_other = case when $8 = 'other' then nullif($12, '') end,
               onboarding_completed_at = coalesce(onboarding_completed_at, now())
         where id = $1`,
       [session.user.id, d.displayName, d.profession, d.accreditationStage, d.modalities, d.noteFormat, d.language,
-       d.professionalBody, d.registrationNumber, d.country, d.fullName],
+       d.professionalBody, d.registrationNumber, d.country, d.fullName, d.professionalBodyOther],
     );
     const { rows: [r] } = await db.query("select request_access() as status");
     return { status: r.status as string, isNew: !before?.onboarding_completed_at };

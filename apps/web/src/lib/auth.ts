@@ -48,7 +48,9 @@ export const auth = betterAuth({
       storeOTP: "hashed",
       async sendVerificationOTP({ email, otp }, ctx) {
         const cookie = ctx?.request?.headers.get("cookie") ?? "";
-        const locale = /(?:^|;\s*)locale=ru(?:;|$)/.test(cookie) ? "ru" : "en";
+        const chosen = /(?:^|;\s*)locale=(en|ru)(?:;|$)/.exec(cookie)?.[1];
+        const browser = (ctx?.request?.headers.get("accept-language") ?? "").trim().toLowerCase().startsWith("ru") ? "ru" : "en";
+        const locale = chosen ?? browser;
         const t = await getTranslations({ locale, namespace: "authEmail" });
         await sendEmail({ to: email, subject: t("subject", { code: otp }), text: t("body", { code: otp }) });
       },

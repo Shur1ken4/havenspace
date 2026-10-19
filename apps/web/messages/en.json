@@ -257,12 +257,14 @@
     "verifyTitle": "Your professional registration",
     "verifyBody": "We check these by hand before your account opens, usually within a working day.",
     "bodyLabel": "Professional body",
-    "countryLabel": "Where you practise",
+    "countryLabel": "Where you're registered",
     "regLabel": "Membership or registration number",
     "regHint": "Not needed if you're still in training.",
     "fullNameLabel": "Full name",
     "fullNameHint": "As on your professional register.",
-    "nameHint": "Optional. Leave empty and we'll use your first name."
+    "nameHint": "Optional. Leave empty and we'll use your first name.",
+    "bodyOtherGroup": "Something else",
+    "bodyOtherLabel": "Name of your organisation or certificate"
   },
   "today": {
     "title": "Today",
@@ -682,14 +684,29 @@
     "UKCP": "UKCP",
     "BPS": "BPS",
     "HCPC": "HCPC",
-    "other": "Other",
-    "none_student": "Not yet registered (in training)"
+    "other": "Other (type it)",
+    "none_student": "Not registered yet (in training)",
+    "ICP": "ICP (Irish Council for Psychotherapy)",
+    "BABCP": "BABCP (British Association for Behavioural & Cognitive Psychotherapies)",
+    "NCPS": "NCPS (National Counselling & Psychotherapy Society)",
+    "EAP_ECP": "EAP – European Certificate of Psychotherapy (ECP)",
+    "EUROPSY": "EuroPsy – European Certificate in Psychology",
+    "EU_NATIONAL": "National register in my country (e.g. Psychotherapeutenkammer, ADELI, Order of Psychologists)",
+    "UA_USP": "Ukrainian Union of Psychotherapists (UUP)",
+    "UA_NPA": "National Psychological Association of Ukraine (NPA)",
+    "RU_RPA": "Russian Psychotherapeutic Association (RPA)",
+    "RU_OPPL": "Professional Psychotherapeutic League (OPPL)",
+    "RU_RPO": "Russian Psychological Society (RPS)",
+    "RU_AKP": "Association for Cognitive Behavioural Psychotherapy (AKP)",
+    "RU_DIPLOMA": "State diploma in psychology or clinical psychology"
   },
   "countries": {
     "IE": "Ireland",
     "GB": "United Kingdom",
-    "EU": "Elsewhere in the EU",
-    "other": "Somewhere else"
+    "EU": "Another EU country",
+    "other": "Somewhere else",
+    "UA": "Ukraine",
+    "RU": "Russia"
   },
   "pending": {
     "title": "Thank you, we’re reviewing your request",

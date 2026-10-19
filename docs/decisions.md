@@ -374,3 +374,23 @@ Therapists want to share homework and session dates with clients between session
 - Easier: homework and the diary connect the time between sessions, without any clinical AI.
 - Harder: client emails and mood diaries are new personal and health data, so the DPIA and privacy notice must be updated before real clients use it. Clients become data subjects with their own accounts.
 - Revisit: email or push reminders (needs a scheduler), and whether "shared by default" is right (Clinical Lead).
+
+# ADR-15: Russian-speaking therapists, and the question of serving Russia
+Status: Proposed (needs legal advice before residents of Russia are accepted)   Date: 2026-10-19   Deciders: Shurik
+
+## Context
+Shurik wants CouchNote for both the EU and Russia.
+
+## Decision (now)
+- A first-time visitor whose browser is set to Russian sees the site in Russian. Code emails follow the same rule.
+- At sign-up the therapist picks a country: Ireland, UK, another EU country, Ukraine, Russia, or other. The list of professional bodies shows that country's organisations first, including the Russian ones (RPA, OPPL, RPS, AKP and the state diploma). "Other" lets them type any organisation.
+- Every account is still approved by hand on the Admin page.
+
+## Why residents of Russia are not opened up yet
+- **Russian law 152-FZ (data localisation):** personal data of Russian citizens must first be recorded in databases located in Russia. Ours is in Frankfurt. Health data also needs explicit written consent.
+- **Providers:** Anthropic (Claude) does not support use from Russia. Stripe does not operate there. Hosting providers may restrict it.
+- **EU sanctions:** EU Regulation 833/2014 limits some IT and software services to Russian entities. This needs a lawyer's opinion.
+
+## Consequences
+- Russian-speaking therapists in the EU are fully served now. This was already customer group 5 in CLAUDE.md.
+- Serving residents of Russia would need a separate Russian deployment, with local hosting, a local AI provider and local payments, after legal review.
