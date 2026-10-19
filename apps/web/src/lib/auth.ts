@@ -33,8 +33,13 @@ export const auth = betterAuth({
     customRules: {
       "/email-otp/send-verification-otp": { window: 60, max: 3 },
       "/sign-in/email-otp": { window: 60, max: 10 },
+      "/sign-in/email": { window: 60, max: 10 },
     },
   },
+  // Optional password, set from the profile page. Accounts are still created
+  // with an email code (which proves the address), so password sign-up is off;
+  // a forgotten password is never a lock-out because the email code always works.
+  emailAndPassword: { enabled: true, disableSignUp: true, minPasswordLength: 10, maxPasswordLength: 128 },
   advanced: { useSecureCookies: appUrl.startsWith("https://") },
   plugins: [
     // Sign-in by a 6-digit code sent by email. Unlike a one-time link, a code

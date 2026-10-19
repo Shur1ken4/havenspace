@@ -23,6 +23,8 @@ export function LoginForm({ next, fresh, devMailbox }: { next: string; fresh: bo
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [wait, setWait] = useState(0);
+  const [usePassword, setUsePassword] = useState(false);
+  const [password, setPassword] = useState("");
 
   useEffect(() => {
     if (wait <= 0) return;
@@ -55,6 +57,18 @@ export function LoginForm({ next, fresh, devMailbox }: { next: string; fresh: bo
       return;
     }
     // A full page load, so every server component sees the new session.
+    window.location.assign(next);
+  }
+
+  async function signInWithPassword(e: React.FormEvent) {
+    e.preventDefault();
+    setPending(true);
+    setError(null);
+    const { data, error } = await authClient.signIn.email({ email: email.trim(), password });
+    setPending(false);
+    if (error) { setError(error.status === 429 ? t("tooMany") : t("wrongPassword")); return; }
+    // Accounts with an authenticator app use a code or passkey instead (one second step, not two).
+    if (data && "twoFactorRedirect" in data && data.twoFactorRedirect) { setUsePassword(false); setError(t("passwordTwoFactor")); return; }
     window.location.assign(next);
   }
 
@@ -106,11 +120,22 @@ export function LoginForm({ next, fresh, devMailbox }: { next: string; fresh: bo
       <h1 className="text-3xl">{t("title")}</h1>
       {fresh && <Notice tone="attention">{t("freshNeeded")}</Notice>}
       <p className="text-muted">{t("intro")}</p>
-      <form onSubmit={sendCode} className="space-y-4">
-        <Field label={t("email")} htmlFor="email" error={error ?? undefined}>
-          <Input id="email" type="email" autoComplete="email webauthn" required value={email} onChange={(e) => setEmail(e.target.value)} />
+      <form onSubmit={usePassword ? signInWithPassword : sendCode} className="space-y-4">
+        <Field label={t("email")} htmlFor="email" error={!usePassword ? error ?? undefined : undefined}>
+          <Input id="email" type="email" autoComplete={usePassword ? "username" : "email webauthn"} required value={email} onChange={(e) => setEmail(e.target.value)} />
         </Field>
-        <Button type="submit" className="w-full" disabled={pending}>{pending ? t("sending") : t("send")}</Button>
+        {usePassword && (
+          <Field label={t("password")} htmlFor="password" error={error ?? undefined}>
+            <Input id="password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+          </Field>
+        )}
+        <Button type="submit" className="w-full" disabled={pending}>
+          {usePassword ? (pending ? t("signingIn") : t("signIn")) : (pending ? t("sending") : t("send"))}
+        </Button>
+        <button type="button" className="w-full text-center text-sm text-primary-strong underline underline-offset-4"
+          onClick={() => { setUsePassword((u) => !u); setError(null); }}>
+          {usePassword ? t("useCodeInstead") : t("usePassword")}
+        </button>
       </form>
       <div className="flex items-center gap-3 text-sm text-muted"><span className="h-px flex-1 bg-line" />{t("orPasskey")}<span className="h-px flex-1 bg-line" /></div>
       <Button variant="secondary" className="w-full" onClick={passkey} title={t("passkeyHint")}><KeyRound size={18} aria-hidden /> {t("passkey")}</Button>

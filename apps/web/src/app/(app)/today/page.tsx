@@ -72,7 +72,7 @@ export default async function TodayPage() {
     <div className="space-y-8">
       <section className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex items-center gap-4 sm:gap-6">
-          <Arch mood={archMood} className="h-24 w-24 shrink-0 sm:h-32 sm:w-32" />
+          <Arch mood={archMood} alive followPointer label={archLine} className="h-24 w-24 shrink-0 sm:h-32 sm:w-32" />
           <div className="space-y-2">
             <h1 className="text-4xl">{greeting}</h1>
             <p className="text-muted">{format.dateTime(new Date(), { dateStyle: "full", timeZone: "Europe/Dublin" })}</p>

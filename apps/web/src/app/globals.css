@@ -170,23 +170,75 @@ a, button, input, select, textarea, [role="tab"] {
 
 .arch-breath { transform-origin: 50% 100%; animation: arch-breathe 4.8s ease-in-out infinite; }
 .arch-blink { transform-origin: center; animation: arch-blink 5.5s infinite; }
-.arch[data-mood="resting"] .arch-breath { animation-duration: 7s; }
-.arch[data-mood="listening"] .arch-glow { animation: arch-glow 2.6s ease-in-out infinite; }
-.arch[data-mood="listening"] .arch-aura { animation: arch-aura 2.6s ease-out infinite; }
-.arch[data-mood="working"] .arch-glow { animation: arch-glow 1.2s ease-in-out infinite; }
-.arch[data-mood="working"] .arch-eyes { transform: translate(-2px, 3px) !important; }
-.arch[data-mood="working"] .arch-breath { animation: arch-sway 2.4s ease-in-out infinite; }
-.arch[data-mood="done"] .arch-note { animation: arch-note 2.8s var(--ease-calm) infinite; }
-.arch[data-mood="hello"] .arch-hop { transform-origin: 50% 100%; animation: arch-hop 700ms var(--ease-calm) 2; }
+.arch-face { transition: transform 450ms var(--ease-calm); transform-origin: 50% 60%; }
 .arch-button { display: block; cursor: pointer; background: none; border: 0; padding: 0; }
+
+/* Extras drawn for some moods */
+.arch-waves path { fill: none; stroke: var(--primary); stroke-width: 3; stroke-linecap: round; opacity: 0; }
+.arch-dots circle { fill: var(--arch-door); stroke: var(--arch-cheek); stroke-width: 1.5; opacity: 0; transform-origin: center; }
+.arch-zzz text { fill: var(--muted); font: 600 14px var(--font-inter), sans-serif; opacity: 0; }
+.arch-sparkles path { fill: var(--arch-glow); opacity: 0; transform-origin: center; }
+.arch-paper { fill: var(--arch-note); stroke: var(--border); }
+.arch-ink-line { fill: none; stroke: var(--primary); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 60; stroke-dashoffset: 60; }
+.arch-pen path { fill: var(--arch-feet); }
+.arch-pen { transform-origin: 112px 146px; }
+
+/* Moods */
+.arch[data-mood="resting"] .arch-breath { animation-duration: 7s; }
+.arch[data-mood="resting"] .arch-zzz text { animation: arch-zzz 3.6s ease-in-out infinite; }
+.arch[data-mood="resting"] .arch-zzz text:nth-child(2) { animation-delay: 0.6s; }
+.arch[data-mood="resting"] .arch-zzz text:nth-child(3) { animation-delay: 1.2s; }
+.arch[data-mood="listening"] .arch-glow, .arch[data-mood="transcribing"] .arch-glow { animation: arch-glow 2.6s ease-in-out infinite; }
+.arch[data-mood="listening"] .arch-aura, .arch[data-mood="transcribing"] .arch-aura { animation: arch-aura 2.6s ease-out infinite; }
+.arch-waves path { animation: arch-wave 2.2s ease-in-out infinite; }
+.arch-waves path:nth-child(2), .arch-waves path:nth-child(4) { animation-delay: 0.35s; }
+.arch[data-mood="transcribing"] .arch-waves path { animation-duration: 1.2s; }
+.arch[data-mood="writing"] .arch-glow { animation: arch-glow 1.2s ease-in-out infinite; }
+.arch[data-mood="writing"] .arch-breath { animation: arch-sway 2.4s ease-in-out infinite; }
+.arch[data-mood="writing"] .arch-pen { animation: arch-scribble 0.9s ease-in-out infinite; }
+.arch[data-mood="writing"] .arch-ink-line { animation: arch-write 3s linear infinite; }
+.arch[data-mood="writing"] .arch-ink-line { animation-delay: 0s; }
+.arch[data-mood="thinking"] .arch-dots circle { animation: arch-dot 2.4s ease-in-out infinite; }
+.arch[data-mood="thinking"] .arch-dots circle:nth-child(2) { animation-delay: 0.3s; }
+.arch[data-mood="thinking"] .arch-dots circle:nth-child(3) { animation-delay: 0.6s; }
+.arch[data-mood="thinking"] .arch-face { animation: arch-ponder 4s ease-in-out infinite; }
+.arch[data-mood="curious"] .arch-hop { transform-origin: 50% 100%; animation: arch-tilt 3s ease-in-out infinite; }
+.arch[data-mood="done"] .arch-note { animation: arch-note 2.8s var(--ease-calm) infinite; }
+.arch[data-mood="done"] .arch-hop { transform-origin: 50% 100%; animation: arch-hop 900ms var(--ease-calm) 1; }
+.arch[data-mood="celebrate"] .arch-hop { transform-origin: 50% 100%; animation: arch-hop 900ms var(--ease-calm) infinite; }
+.arch[data-mood="celebrate"] .arch-sparkles path { animation: arch-sparkle 1.8s ease-in-out infinite; }
+.arch[data-mood="celebrate"] .arch-sparkles path:nth-child(2n) { animation-delay: 0.6s; }
+.arch[data-mood="celebrate"] .arch-note { animation: arch-note 2.8s var(--ease-calm) infinite; }
+.arch[data-mood="hello"] .arch-hop { transform-origin: 50% 100%; animation: arch-hop 700ms var(--ease-calm) 2; }
+
+/* Idle behaviours (alive) */
+.arch[data-act="look-left"] .arch-eyes { transform: translate(-4px, 0) !important; }
+.arch[data-act="look-left"] .arch-face { transform: translateX(-3px); }
+.arch[data-act="look-right"] .arch-eyes { transform: translate(4px, 0) !important; }
+.arch[data-act="look-right"] .arch-face { transform: translateX(3px); }
+.arch[data-act="hop"] .arch-hop { transform-origin: 50% 100%; animation: arch-hop 700ms var(--ease-calm) 1; }
+.arch[data-act="stretch"] .arch-breath { animation: arch-stretch 1.4s var(--ease-calm) 1; }
+.arch[data-act="blink2"] .arch-blink { animation: arch-blink2 1.2s 1; }
 
 @keyframes arch-breathe { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.012, 1.025); } }
 @keyframes arch-blink { 0%, 92%, 100% { transform: scaleY(1); } 94% { transform: scaleY(0.1); } 96% { transform: scaleY(1); } }
+@keyframes arch-blink2 { 0%, 100% { transform: scaleY(1); } 15%, 55% { transform: scaleY(0.1); } 30%, 70% { transform: scaleY(1); } }
 @keyframes arch-glow { 0%, 100% { opacity: 0.35; transform: scale(1); } 50% { opacity: 0.85; transform: scale(1.3); } }
 @keyframes arch-aura { 0% { opacity: 0.35; transform: scale(0.4); } 100% { opacity: 0; transform: scale(1.5); } }
 @keyframes arch-sway { 0%, 100% { transform: rotate(-1.2deg); } 50% { transform: rotate(1.2deg); } }
 @keyframes arch-note { 0% { opacity: 0; transform: translate(0, 10px) rotate(0); } 25% { opacity: 1; } 70% { opacity: 1; transform: translate(38px, -64px) rotate(8deg); } 100% { opacity: 0; transform: translate(42px, -70px) rotate(8deg); } }
 @keyframes arch-hop { 0%, 100% { transform: translateY(0) scale(1, 1); } 20% { transform: translateY(0) scale(1.05, 0.94); } 50% { transform: translateY(-14px) scale(0.97, 1.04); } 80% { transform: translateY(0) scale(1.03, 0.97); } }
+@keyframes arch-wave { 0%, 100% { opacity: 0; transform: translateX(0); } 40% { opacity: 0.7; } 80% { opacity: 0; transform: translateX(var(--arch-wave-dx, 0)); } }
+.arch-waves path:nth-child(-n+2) { --arch-wave-dx: 10px; }
+.arch-waves path:nth-child(n+3) { --arch-wave-dx: -10px; }
+@keyframes arch-scribble { 0%, 100% { transform: translate(0, 0) rotate(0); } 25% { transform: translate(-8px, 3px) rotate(-6deg); } 50% { transform: translate(-16px, 1px) rotate(2deg); } 75% { transform: translate(-6px, 4px) rotate(-3deg); } }
+@keyframes arch-write { 0% { stroke-dashoffset: 60; } 70%, 100% { stroke-dashoffset: 0; } }
+@keyframes arch-dot { 0%, 100% { opacity: 0; transform: translateY(6px) scale(0.6); } 40%, 70% { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes arch-ponder { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(2px, -2px); } }
+@keyframes arch-tilt { 0%, 100% { transform: rotate(0); } 30%, 60% { transform: rotate(-6deg); } }
+@keyframes arch-zzz { 0% { opacity: 0; transform: translate(0, 6px); } 30% { opacity: 0.9; } 100% { opacity: 0; transform: translate(6px, -12px); } }
+@keyframes arch-sparkle { 0%, 100% { opacity: 0; transform: scale(0.4) rotate(0); } 50% { opacity: 1; transform: scale(1.1) rotate(20deg); } }
+@keyframes arch-stretch { 0%, 100% { transform: scale(1, 1); } 40% { transform: scale(0.96, 1.07); } 70% { transform: scale(1.03, 0.97); } }
 
 .highlight-moment { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
 

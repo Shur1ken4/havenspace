@@ -2,12 +2,12 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/illustrations";
 import { AppNav } from "@/components/app/nav";
-import { SignOutButton } from "@/components/app/sign-out";
+import { AccountMenu } from "@/components/account/account-menu";
 import { FeedbackWidget } from "@/components/app/feedback-widget";
 import { realDataAllowed, requireTherapist } from "@/lib/session";
 
 export default async function AppLayout({ children }: LayoutProps<"/">) {
-  const { therapist } = await requireTherapist();
+  const { therapist, session } = await requireTherapist();
   const t = await getTranslations();
   return (
     <div className="min-h-dvh">
@@ -25,7 +25,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
             <Logo name={t("common.appName")} size="sm" />
           </Link>
           <div className="order-last -mx-1 w-full sm:order-none sm:mx-0 sm:w-auto"><AppNav isAdmin={therapist.is_admin} /></div>
-          <SignOutButton />
+          <AccountMenu name={session.user.name || therapist.display_name} email={session.user.email} image={session.user.image ?? null} accountHref="/settings/account" />
         </div>
       </header>
       <main id="main" className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">{children}</main>

@@ -44,7 +44,7 @@ export default async function ClientHome({ searchParams }: PageProps<"/me">) {
     <div className="space-y-8">
       {welcome && <Notice tone="success">{t("welcome", { name: data.therapist })}</Notice>}
       <section className="flex items-center gap-4 sm:gap-6">
-        <Arch mood={open === 0 ? "done" : "idle"} className="h-24 w-24 shrink-0 sm:h-28 sm:w-28" />
+        <Arch mood={open === 0 ? "done" : "idle"} alive followPointer className="h-24 w-24 shrink-0 sm:h-28 sm:w-28" />
         <div className="space-y-1">
           <h1 className="text-4xl">{t("hello")}</h1>
           <p className="text-ink"><span className="font-medium text-brand-ink">Arch:</span> {open > 0 ? t("archOpen", { count: open }) : t("archNone")}</p>
@@ -78,7 +78,6 @@ export default async function ClientHome({ searchParams }: PageProps<"/me">) {
         <MoodList items={data.moods.map((m) => ({ id: m.id, mood: m.mood, note: m.note, shared: m.shared, when: f.dateTime(m.created_at, { dateStyle: "medium", timeStyle: "short" }) }))} />
       </section>
 
-      <LeaveApp />
     </div>
   );
 }

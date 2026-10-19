@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Logo } from "@/components/illustrations";
-import { SignOutButton } from "@/components/app/sign-out";
+import { AccountMenu } from "@/components/account/account-menu";
 import { requireClient } from "@/lib/session";
 import { setPublicLocale } from "@/app/(marketing)/actions";
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -9,7 +9,7 @@ import { currentTheme } from "@/lib/theme";
 
 // The client app (ADR-14): deliberately small and separate from the therapist's workspace.
 export default async function ClientLayout({ children }: LayoutProps<"/me">) {
-  await requireClient();
+  const { session } = await requireClient();
   const t = await getTranslations();
   const locale = await getLocale();
   const other = locale.startsWith("ru") ? "en" : "ru";
@@ -24,15 +24,11 @@ export default async function ClientLayout({ children }: LayoutProps<"/me">) {
               <input type="hidden" name="lang" value={other} />
               <button className="rounded-[10px] px-3 py-2 text-sm text-muted hover:bg-surface-2 hover:text-ink">{other === "ru" ? "Русский" : "English"}</button>
             </form>
-            <SignOutButton />
+            <AccountMenu name={session.user.name ?? ""} email={session.user.email} image={session.user.image ?? null} accountHref="/me/settings" />
           </div>
         </div>
       </header>
       <main id="main" className="mx-auto max-w-3xl px-4 py-8 sm:px-6">{children}</main>
-      {/* CLINICAL-REVIEW: the crisis signpost shown to clients on every page. */}
-      <footer className="mx-auto max-w-3xl px-4 pb-10 sm:px-6">
-        <p className="rounded-[14px] border border-line bg-surface-2 px-5 py-4 text-sm text-muted">{t("me.crisis")}</p>
-      </footer>
     </div>
   );
 }

@@ -9,6 +9,7 @@ export function SettingsNav() {
   const path = usePathname();
   const items = [
     { href: "/settings", label: t("profile") },
+    { href: "/settings/account", label: t("account") },
     { href: "/settings/privacy", label: t("privacy") },
     { href: "/settings/security", label: t("security") },
   ];

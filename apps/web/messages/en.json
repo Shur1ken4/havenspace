@@ -182,7 +182,12 @@
     "tooMany": "Too many tries. Please wait a minute and try again.",
     "devQuick": "Test accounts (local only)",
     "clientHint": "Have an invite from your therapist?",
-    "clientLink": "Join here"
+    "clientLink": "Join here",
+    "password": "Password",
+    "usePassword": "Sign in with a password instead",
+    "useCodeInstead": "Sign in with an email code instead",
+    "wrongPassword": "Wrong email or password. You can always sign in with an email code.",
+    "passwordTwoFactor": "Your account uses an authenticator app, so please sign in with an email code or passkey."
   },
   "app": {
     "greetingMorning": "Good morning, {name}",
@@ -452,7 +457,8 @@
     "status_draft": "Note to review",
     "status_approved": "Note approved",
     "status_processing": "Being prepared",
-    "status_failed": "Couldn't be prepared"
+    "status_failed": "Couldn't be prepared",
+    "archWaiting": "Arch is on it. Take a breath; you don't need to watch."
   },
   "settings": {
     "title": "Settings",
@@ -503,7 +509,8 @@
     "twoFactorDisableHint": "Enter a current code from your authenticator app (or a backup code) to turn this off.",
     "tooManyAttempts": "Too many attempts. Please wait 15 minutes and try again.",
     "primaryLabel": "Main approach for reflection",
-    "primaryHint": "Reflection on your sessions is based on this approach."
+    "primaryHint": "Reflection on your sessions is based on this approach.",
+    "account": "Account"
   },
   "supervision": {
     "title": "Supervision",
@@ -775,7 +782,9 @@
     "todayDone": "{count, plural, one {One note is} other {# notes are}} ready for you to review.",
     "recListening": "I'm listening. Stay with your client.",
     "recPaused": "Paused. My light is off.",
-    "recEnding": "Saving the last few seconds…"
+    "recEnding": "Saving the last few seconds…",
+    "thinkingTag": "Reflecting",
+    "thinking": "Thinking about your technique: what went well, and one thing to try next time."
   },
   "authEmail": {
     "subject": "{code} is your CouchNote sign-in code",
@@ -914,7 +923,7 @@
     "mood3": "Okay",
     "mood4": "Good",
     "mood5": "Very good",
-    "noteLabel": "Anything you'd like to write down? (optional)",
+    "noteLabel": "Would you like to share something? (optional)",
     "notePlaceholder": "What happened, what helped, what you noticed…",
     "shareWith": "Share this entry with {name}",
     "saveMood": "Save",
@@ -930,7 +939,11 @@
     "disconnectedTitle": "Your therapist has closed this app",
     "disconnectedBody": "Your account is no longer linked to a therapist. If this is unexpected, talk to your therapist. You can delete your account below.",
     "crisis": "CouchNote isn't monitored in real time. In an emergency call 112 or 999, or Samaritans on 116 123 (free, 24/7).",
-    "downloadData": "Download my data first"
+    "downloadData": "Download my data first",
+    "settingsTitle": "Settings",
+    "urgentTitle": "If you need urgent help",
+    "dataTitle": "Your data",
+    "dataBody": "Download your homework and diary entries as a file."
   },
   "theme": {
     "label": "Colour theme",
@@ -939,5 +952,34 @@
     "light": "Light",
     "dark": "Dark",
     "system": "Match my device"
+  },
+  "account": {
+    "menu": "Your account",
+    "account": "Account",
+    "signOut": "Sign out",
+    "noName": "Your account",
+    "profileTitle": "Your profile",
+    "addPhoto": "Add a photo",
+    "changePhoto": "Change photo",
+    "removePhoto": "Remove photo",
+    "name": "Your name",
+    "email": "Email",
+    "emailHint": "You sign in with this address.",
+    "saved": "Saved",
+    "passwordTitle": "Password",
+    "passwordOn": "You can sign in with your password or an email code.",
+    "passwordOff": "Optional. Add a password to sign in without waiting for an email code.",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "repeatPassword": "Repeat new password",
+    "passwordRule": "At least 10 characters. A short sentence is easy to remember.",
+    "setPassword": "Set password",
+    "changePassword": "Change password",
+    "pwSaved": "Password saved. Other devices were signed out.",
+    "pwError_short": "Please use at least 10 characters.",
+    "pwError_mismatch": "The two passwords don't match.",
+    "pwError_wrong_current": "Your current password isn't right.",
+    "pwError_fresh": "For your security, please sign out and sign in again with an email code, then set your password within 15 minutes.",
+    "pwError_generic": "Something went wrong. Please try again."
   }
 }

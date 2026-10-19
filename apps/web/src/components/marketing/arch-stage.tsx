@@ -1,14 +1,15 @@
 "use client";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
-import { Ear, NotebookPen, Pause, Play, DoorClosed, Check } from "lucide-react";
+import { Ear, NotebookPen, Pause, Play, DoorClosed, Check, Lightbulb } from "lucide-react";
 import { Arch, type ArchMood } from "@/components/arch";
 
 /** The hero: Arch acts out one session, from listening to closing the door. */
 const SCENES: { mood: ArchMood; key: string; icon: typeof Ear }[] = [
   { mood: "listening", key: "listening", icon: Ear },
-  { mood: "working", key: "working", icon: NotebookPen },
-  { mood: "done", key: "done", icon: Check },
+  { mood: "writing", key: "working", icon: NotebookPen },
+  { mood: "thinking", key: "thinking", icon: Lightbulb },
+  { mood: "celebrate", key: "done", icon: Check },
   { mood: "resting", key: "resting", icon: DoorClosed },
 ];
 const SCENE_MS = 4200;

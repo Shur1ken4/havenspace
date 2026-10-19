@@ -118,7 +118,6 @@ export function LeaveApp() {
       <summary className="cursor-pointer text-muted">{t("leaveTitle")}</summary>
       <div className="mt-4 space-y-3">
         <p className="text-muted">{t("leaveBody")}</p>
-        <a href="/api/export" className="inline-block text-primary-strong underline underline-offset-4">{t("downloadData")}</a>
         <label htmlFor="leave-word" className="text-sm text-ink">{t("leaveType")}</label>
         <Input id="leave-word" value={word} onChange={(e) => setWord(e.target.value)} autoComplete="off" />
         <Button variant="destructive" disabled={pending || !["DELETE", "УДАЛИТЬ"].includes(word.trim().toUpperCase())}
