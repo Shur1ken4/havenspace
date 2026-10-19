@@ -19,6 +19,10 @@ the Clinical Lead before real clients. In code, these places are marked
 | 11 | Wording shown to therapists about reflection ("supervisor-style", "openings you might revisit") | `apps/web/messages/*.json` → `review.*`, `landing.*` | Draft |
 | 12 | Russian translation of all clinical wording | `apps/web/messages/ru.json` | Draft — please check terminology |
 | 13 | **Live research mode** instructions (in-session reads; experiment only, ADR-10) and the wording on the recording screen | `services/worker/prompts/live_insight.md`; `apps/web/messages/*.json` → `live.*` | Draft — please decide whether the boundaries are right |
+| 14 | **Arch, the companion**: its moods (listening / writing / ready / resting), what it says to therapists, and the rule that it never reacts to client content | `apps/web/src/components/arch.tsx`; `apps/web/messages/*.json` → `arch.*` | Draft — please check that Arch feels like a calm colleague, not a toy or a therapist |
+| 15 | **Client app wording**: invite screen, what the therapist sees vs. what stays private, homework and diary prompts | `apps/web/messages/*.json` → `join.*`, `me.*`, `clientApp.*` | Draft |
+| 16 | **Crisis signpost shown to clients** (112/999, Samaritans 116 123) on every client page and the invite screen. The app does not monitor or flag anything | `apps/web/src/app/me/layout.tsx`; `me.crisis`, `join.notMonitored` | Draft — please confirm the numbers and wording for IE/UK |
+| 17 | **Mood diary scale** (5 faces, "Very low" … "Very good"), shared by default per entry, never scored or analysed | `apps/web/src/components/mood-face.tsx`; `me.mood*` | Draft — is "shared by default" right? |
 
 ## How to review
 1. Run `npm run eval` (with an AI key in `.env`) and open the report in `evals/reports/`.

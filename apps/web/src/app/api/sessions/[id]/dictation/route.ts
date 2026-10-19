@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { withUser } from "@/lib/db";
+import { isUuid } from "@/lib/ids";
 import { getSession } from "@/lib/session";
 
 // Queue transcription of a dictated recap segment.
@@ -7,6 +8,7 @@ export async function POST(req: Request, ctx: RouteContext<"/api/sessions/[id]/d
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "unauthorised" }, { status: 401 });
   const { id } = await ctx.params;
+  if (!isUuid(id)) return NextResponse.json({ error: "bad_request" }, { status: 400 });
   const { segment } = await req.json().catch(() => ({ segment: 0 }));
   const uid = session.user.id;
   const ok = await withUser(uid, async (db) => {
@@ -25,6 +27,7 @@ export async function DELETE(_req: Request, ctx: RouteContext<"/api/sessions/[id
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "unauthorised" }, { status: 401 });
   const { id } = await ctx.params;
+  if (!isUuid(id)) return NextResponse.json({ error: "bad_request" }, { status: 400 });
   await withUser(session.user.id, (db) => db.query("update sessions set dictation_status = null, dictation_text = null where id = $1", [id]));
   return NextResponse.json({ ok: true });
 }

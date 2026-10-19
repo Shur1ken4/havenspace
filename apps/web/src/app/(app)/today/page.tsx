@@ -7,6 +7,8 @@ import { buttonClass } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
 import { PlantIllustration, WindowIllustration } from "@/components/illustrations";
+import { Arch } from "@/components/arch";
+import { PasskeyPrompt } from "@/components/app/passkey-prompt";
 
 export async function generateMetadata() {
   return { title: (await getTranslations("today"))("title") };
@@ -61,12 +63,21 @@ export default async function TodayPage() {
     </li>
   );
 
+  // Arch only reports its own work; never anything about a client.
+  const archMood = data.processing.length > 0 ? "working" : data.awaiting.length > 0 ? "done" : "idle";
+  const archLine = archMood === "working" ? t("arch.todayWorking", { count: data.processing.length })
+    : archMood === "done" ? t("arch.todayDone", { count: data.awaiting.length }) : t("arch.todayIdle");
+
   return (
     <div className="space-y-8">
       <section className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-        <div className="space-y-2">
-          <h1 className="text-4xl">{greeting}</h1>
-          <p className="text-muted">{format.dateTime(new Date(), { dateStyle: "full", timeZone: "Europe/Dublin" })}</p>
+        <div className="flex items-center gap-4 sm:gap-6">
+          <Arch mood={archMood} className="h-24 w-24 shrink-0 sm:h-32 sm:w-32" />
+          <div className="space-y-2">
+            <h1 className="text-4xl">{greeting}</h1>
+            <p className="text-muted">{format.dateTime(new Date(), { dateStyle: "full", timeZone: "Europe/Dublin" })}</p>
+            <p className="text-ink" aria-live="polite"><span className="font-medium text-brand-ink">Arch:</span> {archLine}</p>
+          </div>
         </div>
         {data.counts.clients > 0 ? (
           <Link href="/sessions/new" className={buttonClass("primary", "lg")}>{t("today.startSession")}</Link>
@@ -74,6 +85,8 @@ export default async function TodayPage() {
           <Link href="/clients#add" className={buttonClass("primary", "lg")}><Plus size={18} aria-hidden /> {t("today.addClientFirst")}</Link>
         )}
       </section>
+
+      <PasskeyPrompt />
 
       {data.counts.clients === 0 && (
         <Card className="flex flex-col items-center gap-3 py-10 text-center">

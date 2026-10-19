@@ -18,6 +18,12 @@ export type Therapist = {
   audio_retention: "delete_after_transcription" | "keep_7_days";
   voice_enrolled_at: string | null;
   onboarding_completed_at: string | null;
+  access_status: "pending" | "approved" | "declined";
+  professional_body: string | null;
+  registration_number: string | null;
+  country: string | null;
+  full_name: string | null;
+  is_admin: boolean;
 };
 
 // One lookup per request, however many components ask.
@@ -38,12 +44,42 @@ export async function requireUser() {
   return session;
 }
 
-/** Signed-in therapist with a profile row; sends unfinished profiles to onboarding. */
-export async function requireTherapist(opts: { allowIncomplete?: boolean } = {}) {
+/** "client" = linked to a therapist through the client app (ADR-14);
+ *  "former_client" = their therapist disconnected them; anyone else is a therapist. */
+export type Role = "therapist" | "client" | "former_client";
+
+export const loadRole = cache(async (userId: string): Promise<Role> => {
+  return withUser(userId, async (db) => {
+    const { rows } = await db.query("select revoked_at from client_accounts where user_id = $1", [userId]);
+    if (!rows[0]) return "therapist";
+    return rows[0].revoked_at ? "former_client" : "client";
+  });
+});
+
+/** Client app pages: signed-in clients only; therapists go to their own app. */
+export async function requireClient() {
   const session = await requireUser();
+  const role = await loadRole(session.user.id);
+  if (role === "therapist") redirect("/today");
+  return { session, role };
+}
+
+/** Signed-in therapist with a profile row; sends unfinished profiles to
+ *  onboarding, and accounts still waiting for approval to /pending. */
+export async function requireTherapist(opts: { allowIncomplete?: boolean; allowPending?: boolean } = {}) {
+  const session = await requireUser();
+  if ((await loadRole(session.user.id)) !== "therapist") redirect("/me");
   const therapist = await loadTherapist(session.user.id, session.user.email);
   if (!opts.allowIncomplete && !therapist.onboarding_completed_at) redirect("/onboarding");
+  if (!opts.allowPending && therapist.onboarding_completed_at && therapist.access_status !== "approved") redirect("/pending");
   return { session, therapist };
+}
+
+/** Admin pages: approved admins only (the database checks this again). */
+export async function requireAdmin() {
+  const ctx = await requireTherapist();
+  if (!ctx.therapist.is_admin) redirect("/today");
+  return ctx;
 }
 
 export const loadTherapist = cache(async (userId: string, email: string): Promise<Therapist> => {
@@ -51,7 +87,8 @@ export const loadTherapist = cache(async (userId: string, email: string): Promis
     await db.query("insert into therapists (id) values ($1) on conflict (id) do nothing", [userId]);
     const { rows } = await db.query(
       `select id, display_name, profession, accreditation_stage, modalities, note_format, language,
-              audio_retention, voice_enrolled_at, onboarding_completed_at
+              audio_retention, voice_enrolled_at, onboarding_completed_at,
+              access_status, professional_body, registration_number, country, full_name, is_admin() as is_admin
          from therapists where id = $1`,
       [userId],
     );

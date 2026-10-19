@@ -256,3 +256,121 @@ Build live suggestions as a **private research mode** that is never sold, market
 - Easier: real evidence (with the Clinical Lead) about whether live suggestions are worth certifying later.
 - Harder: one more moving part in the worker; laptop CPU is the limit (two speech streams in real time), which is why live mode uses the smaller speech model.
 - Revisit when: funding for certification exists, or a lawyer advises on the research use. Never enable for pilot therapists or real clients without a new ADR.
+
+---
+
+# ADR-11: Pilot access — request, review, approve
+Status: Accepted   Date: 2026-10-18   Deciders: Shurik
+
+## Context
+The pilot goes to real therapists through a public link. We want only qualified therapists and trainees in, to control AI costs, and to know who is using the product, without collecting identity documents.
+
+## Decision
+- Anyone can **request access**: sign in with their email, then fill in their profile, including **professional body, membership/registration number and country**.
+- New accounts are **pending**. They see "we're reviewing your request" and the **database refuses** to let them add clients or start sessions (`enforce_access` trigger). A therapist cannot change their own status (`lock_access_fields` trigger).
+- **Admins** (named by email with `node scripts/pilot.mjs admin <email>`) see an **Admin** page: approve, decline or remove access, with a link to the relevant public register (IACP, PSI, CORU, BACP…) for a manual check. Admins can also **invite** people from the waiting list; invited emails are approved automatically when they sign up.
+- Emails: admins get "a new request is waiting" (no personal details in the email); therapists get "your account is ready" or "you're invited" in their own language.
+- No ID documents are uploaded. Registration numbers are checked by hand.
+
+## Options considered
+| Option | Complexity | Cost | Privacy | Time |
+|---|---|---|---|---|
+| Open sign-up | None | AI cost exposure | Anyone gets in | — |
+| **Request + manual approval (this ADR)** | Low | None | Minimal extra data (body, number) | ~1 day |
+| Automated register lookup | High | Scraping/API agreements | Same | Weeks; registers differ |
+| ID document upload | Medium | ID-check vendor | Collects sensitive ID data | Rejected |
+
+## Consequences
+- Easier: controlled pilot; a clear list of who is in.
+- Harder: someone must check requests (a minute each).
+- Revisit when: paid plans launch (self-serve sign-up with verification later).
+
+# ADR-12: Name "CouchNote" and the companion "Arch"
+Status: Accepted (working name)   Date: 2026-10-19   Deciders: Shurik, Clinical Lead
+
+## Context
+"Antara" clashed with existing companies and with "Tara", the AI companion of another therapy app. We needed a working name we can ship the pilot with, and the companion designs (the "Soft Arch" character) needed a name that is not already a therapy companion.
+
+## Decision
+- The product is called **CouchNote** for now. Only the display name changed; the logo mark and colours stay.
+- The companion is **Arch**: the soft-arch character with a small door and light on its chest. It is animated in the web app: the landing-page hero, Today, recording, processing and sign-in.
+- **Arch's rules:**
+  - Its moods only show its own work (listening, writing, ready, resting). It never reacts to what a client said, because that would be judgement and close to risk-flagging (ADR-4).
+  - Its door light is on only while audio is being heard or processed.
+  - All motion stops for people who ask their device for reduced motion.
+  - The landing-page animation has a pause button.
+
+## Options considered
+| Option | Complexity | Cost | Privacy/EU | Time |
+|---|---|---|---|---|
+| Keep "Antara" | none | legal risk | — | — |
+| CouchNote + Arch (chosen) | low | none | — | 1 day |
+| Family-name based (Alento + Tosha) | low | domain likely needs buying | — | 1 day |
+
+## Consequences
+- Easier: the brand is consistent across the app and emails, and Arch makes the product feel warm and recognisable.
+- Harder: "CouchNote" has not had a trademark search yet.
+- Revisit: before any paid launch, do a TMview/EUIPO search and buy a domain. A rename is mostly text-only changes, plus the Hetzner server folder name.
+
+# ADR-13: Sign in with an email code instead of a one-time link
+Status: Accepted   Date: 2026-10-19   Deciders: Shurik
+
+## Context
+Many therapists use work email (HSE, clinics, universities) that is protected by security scanners such as Microsoft Defender Safe Links or Mimecast. These scanners open every link in an email to check it. That uses up a single-use magic link before the person clicks it, so they see "link expired". Links also sign you in on whichever device opens the email, often the phone rather than the laptop you were using.
+
+## Decision
+- Sign-in uses a **6-digit code** sent by email, which the person types on the sign-in screen. Passkeys (Face ID, Touch ID, Windows Hello) stay as the one-tap option.
+- After the first sign-in, Today offers once to add a passkey.
+- The code expires in 10 minutes and is stored hashed. Each code allows 5 tries. Each IP address can request at most 3 codes a minute.
+- Local development has `/dev/login`: one click signs in as a test persona. It goes through the same code path and is disabled on any production build.
+
+## Options considered
+| Option | Complexity | Cost | Privacy/EU | Time |
+|---|---|---|---|---|
+| Magic link (before) | low | none | same | — |
+| Email code (chosen) | low | none | same | hours |
+| Link that opens a "confirm" page | medium | none | same | hours; still the wrong device |
+
+## Consequences
+- Easier: works with scanned work email and across devices; no "link expired" support requests.
+- Harder: one more step (typing 6 digits). Phones autofill codes from email on iOS and macOS.
+- Revisit: if pilot users still struggle, consider "trust this device for 30 days".
+
+# ADR-14: Client app and therapist verification documents
+Status: Accepted (pilot)   Date: 2026-10-19   Deciders: Shurik (Clinical Lead to review items 15–17)
+
+## Context
+Therapists want to share homework and session dates with clients between sessions, and clients want somewhere to note how they feel. Until now, clients were not users at all. Separately, approving therapists by hand is faster with a document to look at.
+
+## Decision
+- **Two roles, one sign-in system.**
+  - A user is a **client** if they were linked through an invite. Everyone else is a therapist.
+  - Clients only ever see `/me`. Therapist pages redirect them, and row-level security hides every clinical table from them (tested).
+- **Invites:**
+  - The therapist creates a one-time code (`K7P4-QM2X`), shown as a link plus a QR code. It is valid for 7 days, and only a hash is stored. Creating a new code cancels the old one.
+  - The client signs in with **their own email**, which the therapist never sees.
+  - Code attempts are limited to 20 per 10 minutes per IP address.
+- **What a client gets:**
+  - homework (mark it done, add a short reply);
+  - the next session date (entered by hand; not a booking system);
+  - a mood diary, where each entry can be shared or kept private.
+- **Limits:**
+  - No AI ever processes client-app content, and nothing is scored or flagged (ADR-4).
+  - A static crisis signpost is shown on every client page.
+- **Client rights:** a client can download their data and delete their account; deleting it removes their diary. The therapist can disconnect a client at any time.
+- **Therapist sign-up:**
+  - Full name (as on the register) is required, and so is a registration number unless they are a student.
+  - A licence or membership document is optional (PDF, JPG or PNG, up to 4 MB, checked by content).
+  - Only the therapist and admins can open documents, and they open in a sandbox. They are deleted 30 days after the access decision.
+
+## Options considered
+| Option | Complexity | Cost | Privacy/EU | Time |
+|---|---|---|---|---|
+| Code + link the therapist shares (chosen) | low | none | the therapist never handles the client's email | 1 day |
+| We email the client | low | email | the client's email sits in the therapist's account | 1 day |
+| Native mobile app | high | store fees | same | weeks |
+
+## Consequences
+- Easier: homework and the diary connect the time between sessions, without any clinical AI.
+- Harder: client emails and mood diaries are new personal and health data, so the DPIA and privacy notice must be updated before real clients use it. Clients become data subjects with their own accounts.
+- Revisit: email or push reminders (needs a scheduler), and whether "shared by default" is right (Clinical Lead).

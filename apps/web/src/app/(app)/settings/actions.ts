@@ -63,7 +63,8 @@ export async function deleteAccount(confirmation: string) {
   if (!isFresh(session)) redirect("/login?reason=fresh&next=/settings/privacy");
   const uid = session.user.id;
   const keys = await withUser(uid, async (db) => {
-    const { rows } = await db.query("select path from audio_chunks where deleted_at is null");
+    const { rows } = await db.query(
+      "select path from audio_chunks where deleted_at is null union all select path from therapist_documents where deleted_at is null");
     await audit(db, uid, "account.delete", "therapist", uid);
     return rows.map((r) => r.path as string);
   });

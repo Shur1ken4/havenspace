@@ -6,7 +6,7 @@ language first, technical detail second.
 
 ## 1. Roles
 - **Therapist** — our customer. Data controller for their clients' data.
-- **Psych Copilot** — data processor for client data; controller for the therapist's own account data.
+- **CouchNote** — data processor for client data; controller for the therapist's own account data.
 - **Client** — the person in therapy. Never a user of the app; identified only by a pseudonym chosen by the therapist.
 
 ## 2. Data we hold
@@ -54,7 +54,7 @@ Therapist reviews, edits, approves ◀── Web app ◀── Postgres
 | No content in logs | Worker log function only accepts whitelisted fields (ids, counts, stage, error class). Job and session errors store only an error class name. | `services/worker/worker/log.py` |
 | No analytics by default | No analytics or error tracking are installed. If added: EU-hosted, non-content events only, after consent. | — |
 | Audit log | Views, edits, approvals, exports and deletions are logged (who/what/when, no content). Append-only for the app. | `apps/web/src/lib/audit.ts`, `0002_app.sql` |
-| Sign-in | Email magic links (15 min, single use), passkeys, optional authenticator-app 2FA, 12-hour sessions, rate limiting; re-sign-in within 15 min for bulk exports and deletions. | `apps/web/src/lib/auth.ts`; ADR-7 |
+| Sign-in | 6-digit email codes (10 min, stored hashed, 5 tries per code, 3 codes per minute per IP), passkeys, optional authenticator-app 2FA, 12-hour sessions, rate limiting; re-sign-in within 15 min for bulk exports and deletions. | `apps/web/src/lib/auth.ts`; ADR-7 |
 | Transport and browser | HTTPS everywhere (HSTS), strict Content-Security-Policy, no third-party scripts or fonts (fonts self-hosted), microphone/screen-capture allowed only on our own origin, no referrer. | `apps/web/next.config.ts` |
 | Encryption at rest | Provider disk encryption; S3 objects stored with server-side encryption. Per-therapist envelope encryption proposed (ADR-6). | `storage.ts` |
 | AI guardrails | No diagnosis / risk rating: no fields for them in the output schema, prompt rules, forbidden-terms check with one automatic redraft, evals. | ADR-4; `services/worker/worker/agent/` |
@@ -64,7 +64,7 @@ Therapist reviews, edits, approves ◀── Web app ◀── Postgres
 
 ## 5. Retention summary
 - Audio: minutes (default) / 7 days (opt-in) / 48 h for abandoned recordings / 1 h for voice samples and dictation.
-- Expired sign-in links and sessions: removed by the scheduled job.
+- Expired sign-in codes and sessions: removed by the scheduled job.
 - Everything else: until the therapist deletes it. Account deletion removes all rows (database cascade) and any remaining audio files.
 - Backups: provider-dependent; to be documented with the chosen Postgres provider (crypto-shredding in ADR-6 covers backups).
 
@@ -75,3 +75,18 @@ Therapist reviews, edits, approves ◀── Web app ◀── Postgres
 4. Independent DPIA review by a lawyer; finalise the DPA and privacy notice.
 5. Clinical Lead sign-off on prompts, rubrics, consent wording (docs/clinical-review.md).
 6. Penetration test / security review; dependency scanning in CI.
+
+## Client app (ADR-14)
+- **New data:**
+  - client sign-in email (stored in the auth tables; never shown to the therapist);
+  - mood diary entries (special-category health data);
+  - homework replies.
+- **Who sees what:**
+  - The client sees only rows linked to their own client record.
+  - The therapist sees diary entries only when the client shares them.
+  - No AI processes any of it.
+- **Deletion:**
+  - When a client deletes their account, their login and diary are removed.
+  - When a therapist deletes a client, the link, homework and diary go with it (cascade).
+- **Therapist verification documents:** stored in the same EU object storage, readable by the owner and admins only, and deleted 30 days after the access decision (worker retention job).
+- **Before real clients use this:** update the DPIA and the privacy notice for clients as data subjects.

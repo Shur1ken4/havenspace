@@ -38,7 +38,7 @@ def therapist(conn):
     tid = secrets.token_hex(12)
     conn.execute('insert into "user" (id, name, email, "emailVerified", "createdAt", "updatedAt") values (%s, %s, %s, true, now(), now())',
                  (tid, "t", f"{tid}@example.test"))
-    conn.execute("insert into therapists (id, onboarding_completed_at, modalities) values (%s, now(), '{cbt}')", (tid,))
+    conn.execute("insert into therapists (id, onboarding_completed_at, modalities, access_status) values (%s, now(), '{cbt}', 'approved')", (tid,))
     return tid
 
 

@@ -17,9 +17,13 @@ export async function sendEmail(mail: OutgoingEmail): Promise<void> {
     return;
   }
   const nodemailer = await import("nodemailer");
+  const port = Number(process.env.SMTP_PORT ?? 587);
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT ?? 587),
+    port,
+    // Always encrypted: port 465 is TLS from the start; on 587 refuse to send if STARTTLS isn't offered.
+    secure: port === 465,
+    requireTLS: port !== 465,
     auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
   });
   await transporter.sendMail({ from: process.env.EMAIL_FROM, ...mail });

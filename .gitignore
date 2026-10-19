@@ -10,3 +10,6 @@ __pycache__/
 .pytest_cache/
 reference/prototype/*
 !reference/prototype/README.md
+.env.*
+!.env.example
+.vercel

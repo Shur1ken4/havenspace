@@ -16,8 +16,10 @@
     "worker": "cd services/worker && ~/.local/bin/uv run python -m worker",
     "eval": "cd services/worker && ~/.local/bin/uv run python -m evals_runner",
     "signups": "node scripts/signups.mjs",
+    "admin": "node scripts/admin.mjs",
     "up": "node scripts/up.mjs",
-    "setup": "npm install && cd services/worker && ~/.local/bin/uv sync"
+    "setup": "npm install && cd services/worker && ~/.local/bin/uv sync",
+    "seed": "node scripts/seed.mjs && node scripts/seed-client.mjs"
   },
   "devDependencies": {
     "embedded-postgres": "18.4.0-beta.17",

@@ -10,6 +10,7 @@ import { Chip } from "@/components/ui/chip";
 import { Notice } from "@/components/ui/notice";
 import { TimelineList } from "./timeline-list";
 import { ClientDanger } from "./client-danger";
+import { ClientAppPanel, type ClientAppData } from "./client-app-panel";
 
 export async function generateMetadata() {
   return { title: (await getTranslations("meta"))("client") };
@@ -35,8 +36,22 @@ export default async function ClientPage({ params }: PageProps<"/clients/[id]">)
          from client_timeline_items i left join sessions s on s.id = i.session_id
         where i.client_id = $1 and i.status <> 'dropped' order by i.status, i.created_at desc`, [id],
     )).rows;
+    const iso = (d: Date | null) => (d ? d.toISOString() : null);
+    const link = (await db.query("select linked_at from client_accounts where client_id = $1 and revoked_at is null", [id])).rows[0];
+    const invite = (await db.query("select max(expires_at) as e from client_invites where client_id = $1 and used_at is null and expires_at > now()", [id])).rows[0];
+    const app: ClientAppData = {
+      link: link ? { linked_at: link.linked_at.toISOString() } : null,
+      inviteExpires: iso(invite?.e ?? null),
+      assignments: (await db.query(
+        `select id, title, details, to_char(due_on, 'YYYY-MM-DD') as due_on, done_at, client_reply from assignments
+          where client_id = $1 and archived_at is null order by done_at nulls first, created_at desc limit 30`, [id],
+      )).rows.map((a) => ({ ...a, done_at: iso(a.done_at) })),
+      nextSession: iso((await db.query("select min(starts_at) as s from appointments where client_id = $1 and starts_at > now() - interval '1 hour'", [id])).rows[0].s),
+      moods: (await db.query("select id, mood, note, created_at from mood_entries where client_id = $1 order by created_at desc limit 20", [id]))
+        .rows.map((m) => ({ ...m, created_at: m.created_at.toISOString() })),
+    };
     await audit(db, therapist.id, "client.view", "client", id);
-    return { client, consent, sessions, items };
+    return { client, consent, sessions, items, app };
   }).catch(() => null);
   if (!data) notFound();
 
@@ -95,6 +110,8 @@ export default async function ClientPage({ params }: PageProps<"/clients/[id]">)
           ))}
         </section>
       </div>
+
+      <ClientAppPanel clientId={id} active={data.client.status === "active"} data={data.app} />
 
       <ClientDanger clientId={id} pseudonym={data.client.pseudonym} archived={data.client.status === "archived"} />
     </div>

@@ -1,4 +1,4 @@
-# Psych Copilot (working name)
+# CouchNote — AI assistant for therapists
 
 A calm assistant for therapists, used **after** a session. It:
 
@@ -56,7 +56,7 @@ npm run db:seed
 
 ### Signing in locally
 
-Emails aren't sent on your laptop. After you ask for a sign-in link, open **http://localhost:3210/dev/mailbox** and click the link there.
+Emails aren't sent on your laptop. The quickest way in is **http://localhost:3210/dev/login**: one click signs you in as the demo therapist (admin), a therapist waiting for approval, or a brand-new user. To try the real sign-in screen instead, ask for a code and find it at **http://localhost:3210/dev/mailbox**. Both pages exist only on your laptop, never on the live site.
 
 - Demo account: **demo@psych.test** (has five role-play sessions ready to review)
 - Or type any email to create a fresh account and go through onboarding.

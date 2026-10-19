@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { withUser } from "@/lib/db";
+import { isUuid } from "@/lib/ids";
 import { getSession } from "@/lib/session";
 import { audit } from "@/lib/audit";
 import { fileResponse, toDocx, toPdf } from "@/lib/export";
@@ -10,6 +11,7 @@ export async function GET(req: Request, ctx: RouteContext<"/api/sessions/[id]/ex
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "unauthorised" }, { status: 401 });
   const { id } = await ctx.params;
+  if (!isUuid(id)) return NextResponse.json({ error: "bad_request" }, { status: 400 });
   const format = new URL(req.url).searchParams.get("format") === "docx" ? "docx" : "pdf";
   const row = await withUser(session.user.id, async (db) => {
     const r = (await db.query(

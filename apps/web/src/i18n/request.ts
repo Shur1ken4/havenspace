@@ -23,8 +23,10 @@ const therapistLanguage = cache(async (): Promise<string | null> => {
   ).catch(() => null);
 });
 
-export default getRequestConfig(async () => {
-  const locale = toLocale((await therapistLanguage()) ?? (await cookies()).get("locale")?.value);
+export default getRequestConfig(async ({ locale: requested }) => {
+  // An explicit locale (e.g. an email in the recipient's language) wins.
+  const locale = requested ? toLocale(requested.slice(0, 2))
+    : toLocale((await therapistLanguage()) ?? (await cookies()).get("locale")?.value);
   const en = (await import("../../messages/en.json")).default;
   const own = locale === "en" ? en : (await import(`../../messages/${locale}.json`)).default;
   // English uses Irish conventions for dates and times (15 Oct 2026, 14:30).

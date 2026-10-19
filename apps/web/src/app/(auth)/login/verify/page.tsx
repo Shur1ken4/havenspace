@@ -13,7 +13,8 @@ export default async function VerifyPage({ searchParams }: PageProps<"/login/ver
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect("/login");
   const sp = await searchParams;
-  const next = typeof sp.next === "string" ? sp.next : "/today";
+  // Only paths on this site: never send someone to another website after signing in.
+  const next = typeof sp.next === "string" && sp.next.startsWith("/") && !sp.next.startsWith("//") && !sp.next.startsWith("/\\") ? sp.next : "/today";
   if (!(await isMfaPending(session))) redirect(next);
   return <VerifyForm next={next} justEnabled={sp.enabled === "1"} />;
 }

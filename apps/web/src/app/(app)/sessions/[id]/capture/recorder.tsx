@@ -12,6 +12,7 @@ import { levelMeter, pickMimeType, recordClip } from "@/lib/client/audio";
 import { canCaptureTabAudio, isMac } from "@/lib/client/browser";
 import { UploadQueue, type QueueState } from "@/lib/client/upload-queue";
 import { LiveClipper } from "@/lib/client/live";
+import { Arch } from "@/components/arch";
 import { LivePanel } from "./live-panel";
 
 type Mode = "online_call" | "in_person";
@@ -45,6 +46,7 @@ export function Recorder({ sessionId, mode, hasSavedVoice, interrupted, liveAllo
   const tc = useTranslations("common");
   const tk = useTranslations("consent");
   const tl = useTranslations("live");
+  const a = useTranslations("arch");
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("setup");
   const [error, setError] = useState<string | null>(null);
@@ -304,9 +306,13 @@ export function Recorder({ sessionId, mode, hasSavedVoice, interrupted, liveAllo
   // ── Recording ────────────────────────────────────────────────────────────
   const recording = (
     <Card className={liveOn ? "space-y-8 py-10 text-center sm:p-10" : "space-y-8 py-10 text-center sm:p-12"}>
-      <div className="flex items-center justify-center gap-3">
-        <span className="breathing-dot" data-paused={phase !== "recording"} />
-        <span className="text-muted" aria-live="polite">{phase === "paused" ? t("paused") : phase === "ending" ? t("uploading") : t("recordingTitle")}</span>
+      <div className="flex flex-col items-center gap-2">
+        <Arch mood={phase === "recording" ? "listening" : phase === "ending" ? "working" : "resting"} className="h-20 w-20" />
+        <div className="flex items-center justify-center gap-3">
+          <span className="breathing-dot" data-paused={phase !== "recording"} />
+          <span className="text-muted" aria-live="polite">{phase === "paused" ? t("paused") : phase === "ending" ? t("uploading") : t("recordingTitle")}</span>
+        </div>
+        <span className="text-sm text-muted">{a(phase === "recording" ? "recListening" : phase === "ending" ? "recEnding" : "recPaused")}</span>
       </div>
       <p className="font-serif text-7xl tabular-nums text-ink sm:text-8xl" aria-label={t("elapsed")}>{formatTime(elapsed)}</p>
       <div className="mx-auto grid max-w-md gap-4 text-left">

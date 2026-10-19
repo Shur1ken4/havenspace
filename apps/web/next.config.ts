@@ -34,6 +34,8 @@ const nextConfig: NextConfig = {
   // therapist's private data, which must never sit in a shared server cache.
   poweredByHeader: false,
   serverExternalPackages: ["pdfkit", "pg"],
+  // PDF exports read these fonts from disk; make sure they ship with the server functions.
+  outputFileTracingIncludes: { "/**": ["./assets/fonts/**"] },
   turbopack: {
     rules: {
       "*.css": {
@@ -43,7 +45,11 @@ const nextConfig: NextConfig = {
     },
   },
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      // Uploaded verification documents open in a locked-down sandbox (later rules win).
+      { source: "/api/documents/:id", headers: [{ key: "Content-Security-Policy", value: "sandbox; default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; object-src 'self'" }] },
+    ];
   },
 };
 

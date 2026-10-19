@@ -5,6 +5,8 @@
 - Voice-enrolment samples are deleted after 1 hour if somehow left behind.
 - Sessions started but never recorded are removed after 24 hours.
 - Expired sign-in tokens and sessions are removed.
+- Therapist verification documents are deleted 30 days after the access decision.
+- Unused client invites are removed a day after they expire.
 """
 from __future__ import annotations
 
@@ -40,6 +42,16 @@ def run(conn: psycopg.Connection) -> int:
         """delete from sessions s where s.status = 'draft' and s.created_at < now() - interval '24 hours'
              and s.recap_text is null and not exists (select 1 from audio_chunks a where a.session_id = s.id)"""
     )
+    docs = conn.execute(
+        """select d.id, d.path from therapist_documents d join therapists t on t.id = d.therapist_id
+            where d.deleted_at is null and t.access_status <> 'pending'
+              and t.access_decided_at < now() - interval '30 days'"""
+    ).fetchall()
+    if docs:
+        store().remove([r["path"] for r in docs])
+        conn.execute("update therapist_documents set deleted_at = now() where id = any(%s)", ([r["id"] for r in docs],))
+        log("retention.documents_deleted", deleted=len(docs))
+    conn.execute("delete from client_invites where used_at is null and expires_at < now() - interval '1 day'")
     conn.execute('delete from "verification" where "expiresAt" < now()')
     conn.execute('delete from "session" where "expiresAt" < now()')
     # Rows for deleted audio carry no content; drop them after 30 days.

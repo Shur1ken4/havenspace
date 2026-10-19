@@ -6,7 +6,7 @@ import { pool } from "./db";
 
 // Two-step verification gate, enforced by the app for every sign-in method
 // (the sign-in library's plugin only covers password sign-ins, and we use
-// magic links). A session with 2FA pending is treated as not signed in.
+// email codes). A session with 2FA pending is treated as not signed in.
 
 type RawSession = { user: { id: string; twoFactorEnabled?: boolean | null }; session: { id: string } };
 

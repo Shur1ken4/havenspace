@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Card } from "@/components/ui/card";
-import { WindowIllustration } from "@/components/illustrations";
+import { Arch } from "@/components/arch";
 
 const ORDER = ["queued", "transcribing", "labelling", "cleaning", "writing_note", "reflecting", "timeline"];
 
@@ -29,7 +29,7 @@ export function Progress({ sessionId, initialStage }: { sessionId: string; initi
   const current = Math.max(0, ORDER.indexOf(stage));
   return (
     <Card className="mx-auto max-w-xl space-y-6 py-10 text-center">
-      <WindowIllustration className="mx-auto h-32 w-40" />
+      <Arch mood="working" className="mx-auto h-36 w-36" />
       <h2 className="text-3xl">{t("progressTitle")}</h2>
       <p className="flex items-center justify-center gap-3 text-lg text-ink" aria-live="polite">
         <span className="breathing-dot" /> {t(`stage_${ORDER[current]}`)}

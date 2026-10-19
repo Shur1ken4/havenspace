@@ -1,6 +1,7 @@
 // Creates a demo therapist with synthetic clients and role-play sessions
 // (from evals/sessions/*.json) so the app can be explored straight away.
-// Sign in as demo@psych.test — the sign-in link appears on /dev/mailbox.
+// Sign in at /dev/login (one click), or as demo@psych.test with the code from /dev/mailbox.
+// Also creates pending@psych.test, a therapist waiting for approval.
 // Synthetic data only. Safe to re-run: it replaces the demo account.
 import { readdirSync, readFileSync } from "node:fs";
 import { randomBytes } from "node:crypto";
@@ -20,9 +21,25 @@ await client.query(
   [uid, EMAIL],
 );
 await client.query(
-  `insert into therapists (id, display_name, profession, accreditation_stage, modalities, note_format, language, onboarding_completed_at)
-   values ($1, 'Demo', 'counsellor', 'pre_accredited', '{cbt,mi,person_centred,solution_focused}', 'SOAP', 'en', now())`,
+  `insert into therapists (id, display_name, profession, accreditation_stage, modalities, note_format, language, onboarding_completed_at, access_status)
+   values ($1, 'Demo', 'counsellor', 'pre_accredited', '{cbt,mi,person_centred,solution_focused}', 'SOAP', 'en', now(), 'approved')`,
   [uid],
+);
+
+// The demo therapist can open the Admin page; a second account waits for approval there.
+await client.query("insert into admins (email) values ($1) on conflict do nothing", [EMAIL]);
+const PENDING = "pending@psych.test";
+await client.query('delete from "user" where email = $1', [PENDING]);
+const pid = randomBytes(16).toString("hex");
+await client.query(
+  `insert into "user" (id, name, email, "emailVerified", "createdAt", "updatedAt") values ($1, 'Pending Therapist', $2, true, now(), now())`,
+  [pid, PENDING],
+);
+await client.query(
+  `insert into therapists (id, display_name, profession, accreditation_stage, modalities, note_format, language, onboarding_completed_at,
+                           access_status, professional_body, registration_number, country)
+   values ($1, 'Pat', 'psychotherapist', 'accredited', '{person_centred}', 'DAP', 'en', now(), 'pending', 'IACP', 'TEST-0001', 'IE')`,
+  [pid],
 );
 
 const dir = path.join(ROOT, "evals", "sessions");
@@ -58,5 +75,5 @@ for (const file of files) {
   await client.query("insert into jobs (therapist_id, session_id, kind) values ($1, $2, 'regenerate')", [uid, sess.id]);
   console.log(`seeded ${s.client_label}: ${s.title}`);
 }
-console.log(`\nDemo account: ${EMAIL}. Start the worker (npm run worker) to draft notes and reflections.`);
+console.log(`\nTest accounts: ${EMAIL} (admin) and ${PENDING} (waiting for approval). Sign in at /dev/login. Start the worker (npm run worker) to draft notes and reflections.`);
 await client.end();

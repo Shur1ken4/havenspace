@@ -48,7 +48,7 @@ export async function toDocx(doc: ExportDoc): Promise<Uint8Array> {
     for (const line of (b.text || "—").split("\n")) children.push(new Paragraph({ children: [new TextRun({ text: line, font: "Inter", size: 22 })] }));
   }
   children.push(new Paragraph({ spacing: { before: 400 }, children: [new TextRun({ text: doc.footer, color: "66726B", font: "Inter", size: 16 })] }));
-  const file = new Document({ creator: "Psych Copilot", title: doc.title, sections: [{ children }] });
+  const file = new Document({ creator: "CouchNote", title: doc.title, sections: [{ children }] });
   return new Uint8Array(await Packer.toBuffer(file));
 }
 

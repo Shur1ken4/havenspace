@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
 import { devMailbox } from "@/lib/email";
+import { devLoginEnabled } from "@/lib/dev-login";
 
 // Local development only: shows emails that would have been sent.
 export default function DevMailbox() {
-  if (process.env.NODE_ENV === "production" || process.env.EMAIL_TRANSPORT !== "console") notFound();
+  if (!devLoginEnabled()) notFound();
   return (
     <main className="mx-auto max-w-2xl space-y-4 px-4 py-10">
       <h1 className="text-3xl">Dev mailbox</h1>

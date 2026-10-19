@@ -13,5 +13,5 @@ export async function verifyCode(_prev: VerifyState, form: FormData): Promise<Ve
   if (result !== "ok") return { error: result };
   await markVerified(session.session.id);
   const next = String(form.get("next") ?? "");
-  redirect(next.startsWith("/") && !next.startsWith("//") ? next : "/today");
+  redirect(next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\") ? next : "/today");
 }

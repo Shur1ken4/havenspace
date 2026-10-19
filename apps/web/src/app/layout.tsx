@@ -12,9 +12,9 @@ const sourceSerif = Source_Serif_4({ variable: "--font-serif-cyr", subsets: ["la
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta");
   return {
-    title: { default: t("title"), template: "%s · Psych Copilot" },
+    title: { default: t("title"), template: "%s · CouchNote" },
     description: t("description"),
-    applicationName: "Psych Copilot",
+    applicationName: "CouchNote",
     robots: { index: true, follow: true },
   };
 }

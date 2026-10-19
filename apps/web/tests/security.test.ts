@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type pg from "pg";
-import { admin, appRole, asUser, makeTherapist } from "./db";
+import { admin, appRole, asUser, makeTherapist, makeUser } from "./db";
 
 let su: pg.Client, app: pg.Client;
 let alice: string, bob: string, aliceClient: string;
@@ -45,9 +45,11 @@ describe("row-level security", () => {
     await expect(asUser(app, alice, () => app.query("update audit_log set action = 'x'"))).rejects.toThrow(/permission denied/);
   });
 
-  it("the app can add to the sign-up list but never read it", async () => {
-    await app.query("insert into pilot_signups (email, profession) values ('a@example.test', 'counsellor')");
-    await expect(app.query("select * from pilot_signups")).rejects.toThrow(/permission denied/);
+  it("the app can add to the sign-up list; only admins can read it", async () => {
+    await app.query("insert into pilot_signups (email, profession) values ($1, 'counsellor')", [`${crypto.randomUUID()}@example.test`]);
+    expect((await app.query("select * from pilot_signups")).rows).toHaveLength(0);
+    expect((await asUser(app, alice, () => app.query("select * from pilot_signups"))).rows).toHaveLength(0);
+    await expect(app.query("update pilot_signups set name = 'x'")).rejects.toThrow(/permission denied/);
   });
 });
 
@@ -133,6 +135,50 @@ describe("live research mode", () => {
   });
 });
 
+describe("pilot access", () => {
+  it("a pending account cannot add clients until an admin approves it", async () => {
+    const carol = await makeTherapist(su);
+    await su.query("update therapists set access_status = 'pending' where id = $1", [carol]);
+    const add = () => asUser(app, carol, () => app.query("insert into clients (therapist_id, pseudonym) values ($1, 'X')", [carol]));
+    await expect(add()).rejects.toThrow(/access_pending/);
+    // A therapist cannot approve themselves.
+    await asUser(app, carol, () => app.query("update therapists set access_status = 'approved' where id = $1", [carol]))
+      .catch(() => {});
+    expect((await su.query("select access_status from therapists where id = $1", [carol])).rows[0].access_status).toBe("pending");
+    // An admin can.
+    const adminEmail = (await su.query('select email from "user" where id = $1', [alice])).rows[0].email;
+    await su.query("insert into admins (email) values (lower($1))", [adminEmail]);
+    const seen = await asUser(app, alice, () => app.query("select id from therapists where id = $1", [carol]));
+    expect(seen.rows).toHaveLength(1);
+    await asUser(app, alice, () => app.query("update therapists set access_status = 'approved' where id = $1", [carol]));
+    await add();
+    await su.query("delete from admins");
+  });
+
+  it("an account paused after approval cannot upload audio or queue work", async () => {
+    const erin = await makeTherapist(su);
+    const upload = () => asUser(app, erin, () => app.query(
+      "insert into audio_chunks (therapist_id, session_id, track, segment, seq, path, bytes, mime) values ($1, null, 'calibration', 0, 0, 'x', 1, 'audio/webm')", [erin]));
+    const queue = () => asUser(app, erin, () => app.query("insert into jobs (therapist_id, kind, payload) values ($1, 'enrol_voice', '{}')", [erin]));
+    await upload();
+    await queue();
+    await su.query("update therapists set access_status = 'declined' where id = $1", [erin]);
+    await expect(upload()).rejects.toThrow(/access_pending/);
+    await expect(queue()).rejects.toThrow(/access_pending/);
+    // The worker is never blocked.
+    await su.query("insert into jobs (therapist_id, kind, payload) values ($1, 'enrol_voice', '{}')", [erin]);
+  });
+
+  it("an invited email is approved automatically", async () => {
+    const dan = await makeTherapist(su);
+    await su.query("update therapists set access_status = 'pending' where id = $1", [dan]);
+    const email = (await su.query('select email from "user" where id = $1', [dan])).rows[0].email;
+    await su.query("insert into access_invites (email) values (lower($1))", [email]);
+    const r = await asUser(app, dan, () => app.query("select request_access() as s"));
+    expect(r.rows[0].s).toBe("approved");
+  });
+});
+
 describe("approved notes", () => {
   it("cannot be edited after approval", async () => {
     const c = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'Client C') returning id", [alice])).rows[0].id;
@@ -155,5 +201,89 @@ describe("account deletion", () => {
       const { rows } = await su.query(`select count(*)::int as n from ${table} where ${col} = $1`, [t]);
       expect(rows[0].n, table).toBe(0);
     }
+  });
+});
+
+describe("client app", () => {
+  const hash = () => `h-${Math.random().toString(36).slice(2)}`;
+  const invite = async (therapist: string, client: string, h: string, expires = "now() + interval '7 days'") =>
+    asUser(app, therapist, () => app.query(`insert into client_invites (therapist_id, client_id, code_hash, expires_at) values ($1, $2, $3, ${expires})`, [therapist, client, h]));
+  const redeem = (user: string, h: string) => asUser(app, user, () => app.query("select redeem_client_invite($1)", [h]));
+
+  it("links a client by a one-time invite and shows them only their own homework", async () => {
+    const h = hash();
+    await invite(alice, aliceClient, h);
+    expect((await app.query("select client_invite_preview($1) as n", [h])).rows[0].n).not.toBeNull();
+    const carl = await makeUser(su);
+    await redeem(carl, h);
+    // Single use.
+    await expect(redeem(await makeUser(su), h)).rejects.toThrow(/invite_invalid/);
+
+    const other = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'Client Other') returning id", [alice])).rows[0].id;
+    await asUser(app, alice, () => app.query(
+      "insert into assignments (therapist_id, client_id, title) values ($1, $2, 'Mine'), ($1, $3, 'Not mine')", [alice, aliceClient, other]));
+    const seen = await asUser(app, carl, () => app.query("select title from assignments"));
+    expect(seen.rows.map((r) => r.title)).toEqual(["Mine"]);
+    // Nothing clinical is visible to a client.
+    for (const table of ["clients", "sessions", "notes", "transcript_segments", "reflections", "client_timeline_items", "therapists", "consents"]) {
+      const { rows } = await asUser(app, carl, () => app.query(`select count(*)::int as n from ${table}`));
+      expect(rows[0].n, table).toBe(0);
+    }
+    // A client cannot write homework, only mark their own done.
+    await expect(asUser(app, carl, () => app.query("insert into assignments (therapist_id, client_id, title) values ($1, $2, 'x')", [alice, aliceClient]))).rejects.toThrow();
+    const mine = seen.rows.length && (await asUser(app, alice, () => app.query("select id from assignments where title = 'Mine'"))).rows[0].id;
+    await asUser(app, carl, () => app.query("select client_update_assignment($1, true, 'Did it')", [mine]));
+    expect((await asUser(app, carl, () => app.query("update assignments set title = 'hacked' where id = $1", [mine]))).rowCount).toBe(0);
+    const notMine = (await asUser(app, alice, () => app.query("select id from assignments where title = 'Not mine'"))).rows[0].id;
+    await expect(asUser(app, carl, () => app.query("select client_update_assignment($1, true, '')", [notMine]))).rejects.toThrow(/not_found/);
+  });
+
+  it("shows the therapist only diary entries the client chose to share", async () => {
+    const c = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'Diary') returning id", [alice])).rows[0].id;
+    const h = hash();
+    await invite(alice, c, h);
+    const dee = await makeUser(su);
+    await redeem(dee, h);
+    await asUser(app, dee, () => app.query(
+      "insert into mood_entries (therapist_id, client_id, client_user_id, mood, note, shared) values ($1, $2, $3, 4, 'shared', true), ($1, $2, $3, 2, 'private', false)", [alice, c, dee]));
+    expect((await asUser(app, alice, () => app.query("select note from mood_entries where client_id = $1", [c]))).rows.map((r) => r.note)).toEqual(["shared"]);
+    expect((await asUser(app, bob, () => app.query("select note from mood_entries"))).rows).toHaveLength(0);
+    // A client cannot file entries under someone else's record.
+    await expect(asUser(app, dee, () => app.query(
+      "insert into mood_entries (therapist_id, client_id, client_user_id, mood) values ($1, $2, $3, 3)", [alice, aliceClient, dee]))).rejects.toThrow();
+    // Disconnected: the client sees nothing any more.
+    await asUser(app, alice, () => app.query("select revoke_client_link($1)", [c]));
+    await asUser(app, alice, () => app.query("insert into assignments (therapist_id, client_id, title) values ($1, $2, 'After')", [alice, c]));
+    expect((await asUser(app, dee, () => app.query("select * from assignments"))).rows).toHaveLength(0);
+  });
+
+  it("refuses expired invites, therapist accounts, and links made by hand", async () => {
+    const c = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'Edge') returning id", [alice])).rows[0].id;
+    const old = hash();
+    await invite(alice, c, old, "now() - interval '1 minute'");
+    await expect(redeem(await makeUser(su), old)).rejects.toThrow(/invite_invalid/);
+    const h = hash();
+    await invite(alice, c, h);
+    await expect(redeem(bob, h)).rejects.toThrow(/therapist_account/);
+    // The app cannot write client links directly; only the functions can.
+    await expect(asUser(app, alice, () => app.query("insert into client_accounts (user_id, therapist_id, client_id) values ($1, $2, $3)", [bob, alice, c]))).rejects.toThrow(/permission denied/);
+    // A pending therapist cannot send invites.
+    const pat = await makeTherapist(su);
+    const pc = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'P') returning id", [pat])).rows[0].id;
+    await su.query("update therapists set access_status = 'pending' where id = $1", [pat]);
+    await expect(invite(pat, pc, hash())).rejects.toThrow(/access_pending/);
+  });
+
+  it("lets a client delete their own account and diary", async () => {
+    const c = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'Leaver') returning id", [alice])).rows[0].id;
+    const h = hash();
+    await invite(alice, c, h);
+    const lee = await makeUser(su);
+    await redeem(lee, h);
+    await asUser(app, lee, () => app.query("insert into mood_entries (therapist_id, client_id, client_user_id, mood) values ($1, $2, $3, 3)", [alice, c, lee]));
+    await asUser(app, lee, () => app.query("select leave_client_app()"));
+    expect((await su.query('select count(*)::int as n from "user" where id = $1', [lee])).rows[0].n).toBe(0);
+    expect((await su.query("select count(*)::int as n from mood_entries where client_user_id = $1", [lee])).rows[0].n).toBe(0);
+    expect((await su.query("select count(*)::int as n from clients where id = $1", [c])).rows[0].n).toBe(1);
   });
 });

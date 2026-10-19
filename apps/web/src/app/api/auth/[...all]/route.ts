@@ -7,7 +7,7 @@ const handler = toNextJsHandler(auth);
 // While two-step verification is pending, only these sign-in endpoints work.
 // Everything else (e.g. turning 2FA off, adding a passkey) needs the code first.
 const ALLOWED_WHILE_PENDING = new Set([
-  "/get-session", "/sign-out", "/sign-in/magic-link", "/magic-link/verify",
+  "/get-session", "/sign-out", "/email-otp/send-verification-otp", "/sign-in/email-otp",
   "/passkey/generate-authenticate-options", "/passkey/verify-authentication",
 ]);
 

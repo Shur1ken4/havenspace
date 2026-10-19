@@ -1,6 +1,7 @@
 import "server-only";
 import { betterAuth } from "better-auth";
-import { magicLink } from "better-auth/plugins/magic-link";
+import { emailOTP } from "better-auth/plugins/email-otp";
+import { getTranslations } from "next-intl/server";
 import { twoFactor } from "better-auth/plugins/two-factor";
 import { nextCookies } from "better-auth/next-js";
 import { passkey } from "@better-auth/passkey";
@@ -11,7 +12,7 @@ const appUrl = process.env.APP_URL ?? "http://localhost:3000";
 const sessionHours = Number(process.env.SESSION_HOURS ?? 12);
 
 export const auth = betterAuth({
-  appName: "Psych Copilot",
+  appName: "CouchNote",
   baseURL: appUrl,
   secret: process.env.BETTER_AUTH_SECRET,
   database: pool,
@@ -27,21 +28,33 @@ export const auth = betterAuth({
     storage: "database",
     window: 60,
     max: 60,
+    // Per visitor IP. Sending codes is the expensive, abusable step (it sends
+    // email); checking a code is also capped by allowedAttempts below.
+    customRules: {
+      "/email-otp/send-verification-otp": { window: 60, max: 3 },
+      "/sign-in/email-otp": { window: 60, max: 10 },
+    },
   },
   advanced: { useSecureCookies: appUrl.startsWith("https://") },
   plugins: [
-    magicLink({
-      expiresIn: 15 * 60,
-      async sendMagicLink({ email, url }) {
-        await sendEmail({
-          to: email,
-          subject: "Your sign-in link",
-          text: `Here is your sign-in link. It works once and expires in 15 minutes.\n\n${url}\n\nIf you didn't ask for this, you can ignore this email.`,
-        });
+    // Sign-in by a 6-digit code sent by email. Unlike a one-time link, a code
+    // isn't used up by email security scanners (common on work email), and it
+    // works when the email is opened on a different device. New emails create
+    // an account; pilot access is approved separately (ADR-11).
+    emailOTP({
+      otpLength: 6,
+      expiresIn: 10 * 60,
+      allowedAttempts: 5,
+      storeOTP: "hashed",
+      async sendVerificationOTP({ email, otp }, ctx) {
+        const cookie = ctx?.request?.headers.get("cookie") ?? "";
+        const locale = /(?:^|;\s*)locale=ru(?:;|$)/.test(cookie) ? "ru" : "en";
+        const t = await getTranslations({ locale, namespace: "authEmail" });
+        await sendEmail({ to: email, subject: t("subject", { code: otp }), text: t("body", { code: otp }) });
       },
     }),
-    passkey({ rpName: "Psych Copilot", rpID: new URL(appUrl).hostname, origin: appUrl }),
-    twoFactor({ issuer: "Psych Copilot", allowPasswordless: true }),
+    passkey({ rpName: "CouchNote", rpID: new URL(appUrl).hostname, origin: appUrl }),
+    twoFactor({ issuer: "CouchNote", allowPasswordless: true }),
     nextCookies(),
   ],
 });

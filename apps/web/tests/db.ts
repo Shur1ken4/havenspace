@@ -12,7 +12,14 @@ export const appRole = () => new pg.Client({ connectionString: toTest(process.en
 export async function makeTherapist(db: pg.Client): Promise<string> {
   const id = randomBytes(12).toString("hex");
   await db.query(`insert into "user" (id, name, email, "emailVerified", "createdAt", "updatedAt") values ($1, 't', $2, true, now(), now())`, [id, `${id}@example.test`]);
-  await db.query("insert into therapists (id, onboarding_completed_at) values ($1, now())", [id]);
+  await db.query("insert into therapists (id, onboarding_completed_at, access_status) values ($1, now(), 'approved')", [id]);
+  return id;
+}
+
+/** Creates a plain signed-up user with no therapist profile (e.g. a client before joining). */
+export async function makeUser(db: pg.Client): Promise<string> {
+  const id = randomBytes(12).toString("hex");
+  await db.query(`insert into "user" (id, name, email, "emailVerified", "createdAt", "updatedAt") values ($1, 'c', $2, true, now(), now())`, [id, `${id}@example.test`]);
   return id;
 }
 

@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import {
-  ArrowRight, Check, Download, EyeOff, GlobeLock, HandHeart, KeyRound, Mic, NotebookPen, ShieldCheck, Sprout, Users,
+  ArrowRight, Check, Download, EyeOff, Lightbulb, Minimize2, SmilePlus, UserCheck, GlobeLock, HandHeart, KeyRound, Mic, NotebookPen, ShieldCheck, Sprout, Users,
 } from "lucide-react";
-import { PlantIllustration, RoomIllustration, WindowIllustration } from "@/components/illustrations";
+import { PlantIllustration, WindowIllustration } from "@/components/illustrations";
+import { ArchStage } from "@/components/marketing/arch-stage";
 import { SignupForm } from "@/components/marketing/signup-form";
 import { PrivacyBadges } from "@/components/privacy-badges";
 import { buttonClass } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import { Chip } from "@/components/ui/chip";
 
 export default async function LandingPage() {
   const t = await getTranslations("landing");
+  const a = await getTranslations("arch");
 
   const steps = [
     { icon: Mic, title: t("step1Title"), body: t("step1Body") },
@@ -26,6 +28,13 @@ export default async function LandingPage() {
     { icon: HandHeart, title: t("promise5Title"), body: t("promise5Body") },
     { icon: Download, title: t("promise6Title"), body: t("promise6Body") },
   ];
+  // CLINICAL-REVIEW: how Arch is described to therapists.
+  const archPoints = [
+    { icon: Lightbulb, title: a("lightTitle"), body: a("lightBody") },
+    { icon: SmilePlus, title: a("neverTitle"), body: a("neverBody") },
+    { icon: Minimize2, title: a("stillTitle"), body: a("stillBody") },
+    { icon: UserCheck, title: a("decideTitle"), body: a("decideBody") },
+  ];
   const plans = [
     { name: t("planFree"), price: "€0", body: t("planFreeBody") },
     { name: t("planSolo"), price: "€39", body: t("planSoloBody"), featured: true },
@@ -36,7 +45,7 @@ export default async function LandingPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6">
       {/* Hero */}
-      <section className="grid items-center gap-10 py-10 md:grid-cols-[1.1fr_1fr] md:py-20">
+      <section className="grid items-center gap-10 py-10 md:grid-cols-[1fr_1fr] md:py-16">
         <div className="fade-up space-y-6">
           <p className="text-sm uppercase tracking-[0.12em] text-muted">{t("eyebrow")}</p>
           <h1 className="text-4xl text-ink sm:text-5xl md:text-[3.4rem]">{t("heroTitle")}</h1>
@@ -47,7 +56,7 @@ export default async function LandingPage() {
           </div>
           <PrivacyBadges className="pt-2" />
         </div>
-        <RoomIllustration className="w-full max-w-xl justify-self-center" />
+        <ArchStage />
       </section>
 
       {/* How it works */}
@@ -70,6 +79,26 @@ export default async function LandingPage() {
             </li>
           ))}
         </ol>
+      </section>
+
+      {/* Arch */}
+      <section id="arch" aria-labelledby="arch-title" className="scroll-mt-20 py-16">
+        <p className="text-sm uppercase tracking-[0.12em] text-muted">{a("meetEyebrow")}</p>
+        <h2 id="arch-title" className="mt-2 text-3xl text-ink sm:text-4xl">{a("meetTitle")}</h2>
+        <p className="mt-3 max-w-2xl text-lg text-muted">{a("meetIntro")}</p>
+        <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {archPoints.map((p) => (
+            <li key={p.title}>
+              <Card className="h-full space-y-2">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent-soft text-ink">
+                  <p.icon size={20} aria-hidden />
+                </span>
+                <h3 className="font-sans text-lg font-medium text-ink">{p.title}</h3>
+                <p className="text-muted">{p.body}</p>
+              </Card>
+            </li>
+          ))}
+        </ul>
       </section>
 
       {/* Reflection */}

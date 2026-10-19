@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { LogoMark } from "@/components/illustrations";
+import { Logo } from "@/components/illustrations";
 import { AppNav } from "@/components/app/nav";
 import { SignOutButton } from "@/components/app/sign-out";
 import { FeedbackWidget } from "@/components/app/feedback-widget";
 import { realDataAllowed, requireTherapist } from "@/lib/session";
 
 export default async function AppLayout({ children }: LayoutProps<"/">) {
-  await requireTherapist();
+  const { therapist } = await requireTherapist();
   const t = await getTranslations();
   return (
     <div className="min-h-dvh">
@@ -21,11 +21,10 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
       )}
       <header className="no-print border-b border-line bg-surface/70">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
-          <Link href="/today" className="flex items-center gap-2 text-ink">
-            <LogoMark className="h-7 w-7" />
-            <span className="font-serif text-lg">{t("common.appName")}</span>
+          <Link href="/today" aria-label={t("common.appName")}>
+            <Logo name={t("common.appName")} size="sm" />
           </Link>
-          <div className="order-last -mx-1 w-full sm:order-none sm:mx-0 sm:w-auto"><AppNav /></div>
+          <div className="order-last -mx-1 w-full sm:order-none sm:mx-0 sm:w-auto"><AppNav isAdmin={therapist.is_admin} /></div>
           <SignOutButton />
         </div>
       </header>

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import JSZip from "jszip";
 import { withUser } from "@/lib/db";
-import { getSession, isFresh } from "@/lib/session";
+import { getSession, isFresh, loadRole } from "@/lib/session";
 import { audit } from "@/lib/audit";
 import { fileResponse } from "@/lib/export";
 
@@ -10,6 +10,19 @@ import { fileResponse } from "@/lib/export";
 export async function GET(req: Request) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "unauthorised" }, { status: 401 });
+  // A client of the client app gets their own data: diary and homework (ADR-14).
+  if ((await loadRole(session.user.id)) !== "therapist") {
+    const mine = await withUser(session.user.id, async (db) => ({
+      exported_at: new Date().toISOString(),
+      scope: "client_app",
+      homework: (await db.query("select title, details, due_on, done_at, client_reply, created_at from assignments order by created_at")).rows,
+      next_sessions: (await db.query("select starts_at from appointments order by starts_at")).rows,
+      mood_diary: (await db.query("select mood, note, shared, created_at from mood_entries order by created_at")).rows,
+    }));
+    const zip = new JSZip();
+    for (const [key, value] of Object.entries(mine)) zip.file(`${key}.json`, JSON.stringify(value, null, 2));
+    return fileResponse(await zip.generateAsync({ type: "uint8array" }), `couchnote-my-data-${new Date().toISOString().slice(0, 10)}.zip`, "application/zip");
+  }
   const clientId = new URL(req.url).searchParams.get("client");
   const back = clientId ? `/clients/${clientId}` : "/settings/privacy";
   if (!isFresh(session)) return NextResponse.redirect(new URL(`/login?reason=fresh&next=${encodeURIComponent(back)}`, req.url));
@@ -45,8 +58,8 @@ export async function GET(req: Request) {
   });
 
   const zip = new JSZip();
-  zip.file("README.txt", "Psych Copilot data export.\nEach file is JSON. Audio is not included because it is deleted after transcription.\n");
+  zip.file("README.txt", "CouchNote data export.\nEach file is JSON. Audio is not included because it is deleted after transcription.\n");
   for (const [key, value] of Object.entries(data)) if (value !== undefined) zip.file(`${key}.json`, JSON.stringify(value, null, 2));
   const body = await zip.generateAsync({ type: "uint8array" });
-  return fileResponse(body, `psych-copilot-${clientId ? "client" : "account"}-export-${new Date().toISOString().slice(0, 10)}.zip`, "application/zip");
+  return fileResponse(body, `couchnote-${clientId ? "client" : "account"}-export-${new Date().toISOString().slice(0, 10)}.zip`, "application/zip");
 }

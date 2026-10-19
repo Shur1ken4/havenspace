@@ -11,12 +11,12 @@ const items = [
   { href: "/settings", key: "settings" },
 ] as const;
 
-export function AppNav() {
+export function AppNav({ isAdmin = false }: { isAdmin?: boolean }) {
   const t = useTranslations("nav");
   const path = usePathname();
   return (
     <nav aria-label="App" className="flex gap-1 overflow-x-auto">
-      {items.map((it) => {
+      {[...items, ...(isAdmin ? [{ href: "/admin", key: "admin" } as const] : [])].map((it) => {
         const active = path === it.href || path.startsWith(it.href + "/");
         return (
           <Link

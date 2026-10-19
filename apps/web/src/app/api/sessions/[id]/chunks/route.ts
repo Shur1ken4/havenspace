@@ -52,6 +52,7 @@ export async function POST(req: Request, ctx: RouteContext<"/api/sessions/[id]/c
     await storage().remove([key]);
     if (isDbError(err, "consent_required")) return NextResponse.json({ error: "consent_required" }, { status: 403 });
     if (isDbError(err, "live_not_enabled")) return NextResponse.json({ error: "live_not_enabled" }, { status: 409 });
+    if (isDbError(err, "access_pending")) return NextResponse.json({ error: "access_pending" }, { status: 403 });
     throw err;
   }
   return NextResponse.json({ ok: true });

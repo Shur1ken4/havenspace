@@ -35,7 +35,7 @@ if (!(await portOpen())) {
 await new Promise((resolve, reject) => run("migrate", "node", ["scripts/migrate.mjs"]).on("exit", (c) => (c === 0 ? resolve() : reject(new Error("migration failed")))));
 run("web", "npm", ["run", "dev", "-w", "web"]);
 run("worker", uv, ["run", "python", "-m", "worker"], { cwd: path.join(ROOT, "services", "worker") });
-console.log(`\n  Psych Copilot is starting at ${process.env.APP_URL}\n  Sign-in links appear at ${process.env.APP_URL}/dev/mailbox\n  Press Ctrl+C to stop.\n`);
+console.log(`\n  CouchNote is starting at ${process.env.APP_URL}\n  One-click test sign-in: ${process.env.APP_URL}/dev/login\n  Press Ctrl+C to stop.\n`);
 
 const stop = () => { children.forEach((c) => c.kill("SIGTERM")); setTimeout(() => process.exit(0), 1500); };
 process.on("SIGINT", stop);

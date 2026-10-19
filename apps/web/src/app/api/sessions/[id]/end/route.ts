@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { withUser } from "@/lib/db";
+import { isUuid } from "@/lib/ids";
 import { getSession } from "@/lib/session";
 import { audit } from "@/lib/audit";
 
@@ -8,6 +9,7 @@ export async function POST(req: Request, ctx: RouteContext<"/api/sessions/[id]/e
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "unauthorised" }, { status: 401 });
   const { id } = await ctx.params;
+  if (!isUuid(id)) return NextResponse.json({ error: "bad_request" }, { status: 400 });
   const body = await req.json().catch(() => ({}));
   const duration = Math.max(0, Math.min(6 * 3600, Math.round(Number(body.durationSeconds) || 0)));
   const uid = session.user.id;

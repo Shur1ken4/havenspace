@@ -105,11 +105,30 @@ export function PlantIllustration({ className }: Props) {
 }
 
 export function LogoMark({ className }: Props) {
+  // "Inner room": an open doorway with a person resting inside.
   return (
     <svg viewBox="0 0 32 32" className={className} aria-hidden="true">
-      <circle cx="16" cy="16" r="15" fill="var(--primary-soft)" />
-      <path d="M9 20 C 9 14, 13 11, 16 11 C 19 11, 23 14, 23 20" fill="none" stroke="var(--primary-strong)" strokeWidth="2" strokeLinecap="round" />
-      <circle cx="16" cy="20" r="2" fill="var(--accent)" />
+      <path d="M8.5 28 V15.5 a7.5 7.5 0 0 1 15 0 V28" fill="none" stroke="var(--brand)" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="16" cy="19.5" r="3.4" fill="var(--brand)" />
     </svg>
+  );
+}
+
+/** Mark + "CouchNote" wordmark, with an optional small descriptor underneath. */
+export function Logo({ name, tagline, size = "md", taglineFrom }: {
+  name: string; tagline?: string; size?: "sm" | "md" | "lg";
+  /** Hide the descriptor on narrow screens (e.g. a crowded header). */
+  taglineFrom?: "sm";
+}) {
+  const mark = { sm: "h-7 w-7", md: "h-9 w-9", lg: "h-11 w-11" }[size];
+  const word = { sm: "text-lg", md: "text-xl sm:text-2xl", lg: "text-3xl" }[size];
+  return (
+    <span className="flex items-center gap-2.5 text-brand-ink">
+      <LogoMark className={`${mark} shrink-0`} />
+      <span className="flex flex-col leading-none">
+        <span className={`font-serif ${word} tracking-tight`}>{name}</span>
+        {tagline && <span className={`mt-1 ${taglineFrom === "sm" ? "hidden sm:block" : "block"} whitespace-nowrap text-[11px] uppercase tracking-[0.14em] text-muted`}>{tagline}</span>}
+      </span>
+    </span>
   );
 }
