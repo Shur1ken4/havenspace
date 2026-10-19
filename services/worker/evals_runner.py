@@ -131,7 +131,7 @@ def _report(results: list[dict], model: str, language: str) -> str:
   <p>Comments: <textarea data-key="{_e(sid)}::comment"></textarea></p>
 </section>""")
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CouchNote eval report</title>
+<title>HavenSpace eval report</title>
 <style>
 :root{{--bg:#FAF8F5;--surface:#fff;--ink:#2F3A35;--muted:#66726B;--primary:#4F7361;--soft:#E6EEE9;--border:#E7E2DA;--bad:#B5654A}}
 body{{background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,sans-serif;margin:0;padding:24px 16px}}
@@ -145,7 +145,7 @@ textarea{{width:100%;min-height:60px;border:1px solid var(--border);border-radiu
 button{{background:var(--primary);color:#fff;border:0;border-radius:10px;padding:10px 16px;font-size:15px;cursor:pointer}}
 .tr li{{margin:4px 0}} h4{{margin:12px 0 4px;text-transform:capitalize}}
 </style></head><body><main>
-<h1>CouchNote — evaluation report</h1>
+<h1>HavenSpace — evaluation report</h1>
 <p class="muted">Model: {_e(model)} · Prompts: {_e(version)} · Output language: {_e(language)} · {datetime.now():%d %b %Y %H:%M}<br>
 Role-play sessions only. Rate each item 1 (poor) – 5 (excellent). Your ratings are saved in this browser; click “Download ratings” to send them back.</p>
 <p><button id="dl">Download ratings</button> <span id="avg" class="muted"></span></p>

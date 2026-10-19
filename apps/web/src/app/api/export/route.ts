@@ -21,7 +21,7 @@ export async function GET(req: Request) {
     }));
     const zip = new JSZip();
     for (const [key, value] of Object.entries(mine)) zip.file(`${key}.json`, JSON.stringify(value, null, 2));
-    return fileResponse(await zip.generateAsync({ type: "uint8array" }), `couchnote-my-data-${new Date().toISOString().slice(0, 10)}.zip`, "application/zip");
+    return fileResponse(await zip.generateAsync({ type: "uint8array" }), `havenspace-my-data-${new Date().toISOString().slice(0, 10)}.zip`, "application/zip");
   }
   const clientId = new URL(req.url).searchParams.get("client");
   const back = clientId ? `/clients/${clientId}` : "/settings/privacy";
@@ -58,8 +58,8 @@ export async function GET(req: Request) {
   });
 
   const zip = new JSZip();
-  zip.file("README.txt", "CouchNote data export.\nEach file is JSON. Audio is not included because it is deleted after transcription.\n");
+  zip.file("README.txt", "HavenSpace data export.\nEach file is JSON. Audio is not included because it is deleted after transcription.\n");
   for (const [key, value] of Object.entries(data)) if (value !== undefined) zip.file(`${key}.json`, JSON.stringify(value, null, 2));
   const body = await zip.generateAsync({ type: "uint8array" });
-  return fileResponse(body, `couchnote-${clientId ? "client" : "account"}-export-${new Date().toISOString().slice(0, 10)}.zip`, "application/zip");
+  return fileResponse(body, `havenspace-${clientId ? "client" : "account"}-export-${new Date().toISOString().slice(0, 10)}.zip`, "application/zip");
 }

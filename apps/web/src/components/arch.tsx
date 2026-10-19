@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Arch, the CouchNote companion: a soft doorway with a little door on its chest.
+ * Arch, the HavenSpace companion: a soft doorway with a little door on its chest.
  * Arch's moods only ever show Arch's own work or a reaction to the person using
  * the app (a click, a finished note), never a reaction to what a client said —
  * see docs/clinical-review.md item 14.

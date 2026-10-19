@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "CouchNote — AI assistant for therapists",
-    short_name: "CouchNote",
+    name: "HavenSpace — AI assistant for therapists",
+    short_name: "HavenSpace",
     description: "Session notes and reflective practice for therapists.",
     start_url: "/today",
     display: "standalone",

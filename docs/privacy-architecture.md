@@ -6,7 +6,7 @@ language first, technical detail second.
 
 ## 1. Roles
 - **Therapist** — our customer. Data controller for their clients' data.
-- **CouchNote** — data processor for client data; controller for the therapist's own account data.
+- **HavenSpace** — data processor for client data; controller for the therapist's own account data.
 - **Client** — the person in therapy. Never a user of the app; identified only by a pseudonym chosen by the therapist.
 
 ## 2. Data we hold

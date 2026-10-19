@@ -114,7 +114,7 @@ export function LogoMark({ className }: Props) {
   );
 }
 
-/** Mark + "CouchNote" wordmark, with an optional small descriptor underneath. */
+/** Mark + "HavenSpace" wordmark, with an optional small descriptor underneath. */
 export function Logo({ name, tagline, size = "md", taglineFrom }: {
   name: string; tagline?: string; size?: "sm" | "md" | "lg";
   /** Hide the descriptor on narrow screens (e.g. a crowded header). */

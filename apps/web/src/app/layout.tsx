@@ -13,9 +13,9 @@ const sourceSerif = Source_Serif_4({ variable: "--font-serif-cyr", subsets: ["la
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta");
   return {
-    title: { default: t("title"), template: "%s · CouchNote" },
+    title: { default: t("title"), template: "%s · HavenSpace" },
     description: t("description"),
-    applicationName: "CouchNote",
+    applicationName: "HavenSpace",
     robots: { index: true, follow: true },
   };
 }

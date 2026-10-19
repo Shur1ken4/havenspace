@@ -1,13 +1,13 @@
 {
   "meta": {
-    "title": "CouchNote — personal AI assistant for therapists and psychologists",
+    "title": "HavenSpace — personal AI assistant for therapists and psychologists",
     "description": "Drafts your session notes and offers gentle, supervisor-style reflection on your own practice. Built in Ireland. Audio deleted after transcription.",
     "client": "Client",
     "session": "Session",
     "consent": "Consent"
   },
   "common": {
-    "appName": "CouchNote",
+    "appName": "HavenSpace",
     "save": "Save",
     "saving": "Saving…",
     "saved": "Saved",
@@ -47,7 +47,7 @@
   "landing": {
     "eyebrow": "For counsellors, psychotherapists and psychologists",
     "heroTitle": "Be with your client. We'll take care of the rest.",
-    "heroBody": "CouchNote drafts your session notes and offers gentle, supervisor-style reflection on your own practice — so you can stay present in the room, and leave the paperwork lighter.",
+    "heroBody": "HavenSpace drafts your session notes and offers gentle, supervisor-style reflection on your own practice — so you can stay present in the room, and leave the paperwork lighter.",
     "heroCta": "Book a demo",
     "heroSecondary": "See how it works",
     "howTitle": "Three quiet steps",
@@ -85,7 +85,7 @@
     "promise5Body": "Recording can't start for a client until their consent is recorded — and withdrawing it stops recording straight away.",
     "promise6Title": "Yours to export or delete",
     "promise6Body": "Download everything, or delete a client or your whole account, at any time.",
-    "notTitle": "What CouchNote deliberately doesn't do",
+    "notTitle": "What HavenSpace deliberately doesn't do",
     "not1": "It doesn't advise you during a session.",
     "not2": "It doesn't suggest diagnoses.",
     "not3": "It doesn't score or flag risk. Your notes record what was said, faithfully — the clinical judgement stays with you.",
@@ -103,12 +103,12 @@
     "planCollege": "Colleges",
     "planCollegeBody": "About €15 per student per month, for training courses.",
     "consentTemplateTitle": "Free client consent template",
-    "consentTemplateBody": "A plain-language consent form for using a note-taking assistant in your practice. Use it with or without CouchNote.",
+    "consentTemplateBody": "A plain-language consent form for using a note-taking assistant in your practice. Use it with or without HavenSpace.",
     "consentTemplateCta": "Read the template",
     "footerMade": "Made in Ireland.",
     "footerPrivacy": "Privacy",
     "footerConsent": "Consent template",
-    "footerDisclaimer": "CouchNote is a documentation and reflective-practice tool. It is not a medical device and does not give clinical advice.",
+    "footerDisclaimer": "HavenSpace is a documentation and reflective-practice tool. It is not a medical device and does not give clinical advice.",
     "joinTitle": "See it for yourself",
     "joinBody": "Book a 20-minute demo with our team, or join the waiting list and we'll let you know when places open.",
     "joinPoint1": "Free during the pilot",
@@ -341,7 +341,7 @@
     "withdrawnOn": "withdrawn {date}",
     "printable": "Printable version",
     "textHeading": "Using a note-taking assistant in our sessions",
-    "textP1": "I use a secure assistant called CouchNote to help me write my session notes and reflect on my own practice as a therapist.",
+    "textP1": "I use a secure assistant called HavenSpace to help me write my session notes and reflect on my own practice as a therapist.",
     "textP2": "With your permission, our session is recorded. The recording is turned into a written transcript and then permanently deleted, usually within minutes.",
     "textP3": "The transcript is used to draft my notes and to give me feedback on my own work. It is not used to diagnose you or to make decisions about you; I remain responsible for your care and for everything in my notes.",
     "textP4": "Everything is stored securely in the European Union. You are identified only by a code, never by your name. Your information is never used to train AI systems.",
@@ -545,7 +545,7 @@
   },
   "privacyPage": {
     "title": "Privacy, in plain words",
-    "intro": "CouchNote handles some of the most sensitive information there is. This page explains exactly what happens to it.",
+    "intro": "HavenSpace handles some of the most sensitive information there is. This page explains exactly what happens to it.",
     "flowTitle": "What happens to a session",
     "flow1": "You record (or upload, or type a recap). Audio is uploaded in small pieces to storage in the EU.",
     "flow2": "Our speech-to-text runs on our own servers in the EU. The audio is then permanently deleted.",
@@ -591,7 +591,7 @@
     "devNote": "During development we use Anthropic's API with synthetic, role-play data only. It is never used for real client sessions."
   },
   "export": {
-    "footer": "Prepared with CouchNote. Confidential clinical record — the therapist is responsible for its content."
+    "footer": "Prepared with HavenSpace. Confidential clinical record — the therapist is responsible for its content."
   },
   "signup": {
     "choose": "What would you like?",
@@ -607,7 +607,7 @@
     "size_small_team": "In a small team",
     "size_organisation": "In an organisation or service",
     "size_student": "I'm a student",
-    "consent": "I'm happy to be contacted about CouchNote. You can ask us to delete your details at any time.",
+    "consent": "I'm happy to be contacted about HavenSpace. You can ask us to delete your details at any time.",
     "submitDemo": "Request a demo",
     "submitWaitlist": "Join the waiting list",
     "thanksDemo": "Thank you — we'll be in touch to find a time.",
@@ -644,7 +644,7 @@
   },
   "consentTemplate": {
     "title": "Client consent template",
-    "intro": "A free, plain-language consent form for using a note-taking assistant in therapy. Print it, adapt it, and use it with or without CouchNote.",
+    "intro": "A free, plain-language consent form for using a note-taking assistant in therapy. Print it, adapt it, and use it with or without HavenSpace.",
     "print": "Print or save as PDF",
     "agree": "I have read this information, had the chance to ask questions, and agree to our sessions being recorded and processed as described. I understand I can withdraw my consent at any time.",
     "clientSignature": "Client (name or code) and signature",
@@ -656,7 +656,7 @@
   "dpa": {
     "title": "Data Processing Agreement",
     "draft": "Draft — this summary will be replaced by a full agreement reviewed by legal counsel before real client data is allowed.",
-    "intro": "When you use CouchNote for your practice, you are the data controller for your clients' information and we act as your data processor. In summary, we commit to:",
+    "intro": "When you use HavenSpace for your practice, you are the data controller for your clients' information and we act as your data processor. In summary, we commit to:",
     "p1": "Process session data only on your instructions, to provide the service you use.",
     "p2": "Keep all session data in the European Union.",
     "p3": "Delete audio after transcription by default, and delete everything else when you ask or close your account.",
@@ -720,7 +720,7 @@
     "body": "We’re checking your professional details. You’ll get an email at {email} as soon as your account is ready, usually within one working day.",
     "meanwhile": "You can close this page. Your profile is saved.",
     "declinedTitle": "We can’t open an account for you yet",
-    "declinedBody": "During the pilot, CouchNote is open to registered therapists and trainees we can verify. If you think this is a mistake, reply to any of our emails."
+    "declinedBody": "During the pilot, HavenSpace is open to registered therapists and trainees we can verify. If you think this is a mistake, reply to any of our emails."
   },
   "admin": {
     "title": "Admin",
@@ -746,10 +746,10 @@
     "noDocuments": "No document uploaded. Check the register link instead."
   },
   "accessEmail": {
-    "approvedSubject": "Your CouchNote account is ready",
-    "approvedBody": "Good news: your CouchNote pilot account has been approved.\n\nSign in here: {link}\n\nDuring the pilot, please use role-play sessions only — no real clients yet.\n\nWarm wishes,\nThe CouchNote team",
-    "invitedSubject": "You’re invited to the CouchNote pilot",
-    "invitedBody": "Thank you for your interest in CouchNote. A place in the pilot is ready for you.\n\nCreate your account here (use this email address): {link}\n\nDuring the pilot, please use role-play sessions only — no real clients yet.\n\nWarm wishes,\nThe CouchNote team"
+    "approvedSubject": "Your HavenSpace account is ready",
+    "approvedBody": "Good news: your HavenSpace pilot account has been approved.\n\nSign in here: {link}\n\nDuring the pilot, please use role-play sessions only — no real clients yet.\n\nWarm wishes,\nThe HavenSpace team",
+    "invitedSubject": "You’re invited to the HavenSpace pilot",
+    "invitedBody": "Thank you for your interest in HavenSpace. A place in the pilot is ready for you.\n\nCreate your account here (use this email address): {link}\n\nDuring the pilot, please use role-play sessions only — no real clients yet.\n\nWarm wishes,\nThe HavenSpace team"
   },
   "arch": {
     "listeningTag": "Listening",
@@ -762,7 +762,7 @@
     "resting": "Audio deleted, door closed. Nothing is listening now.",
     "helloTag": "Hello",
     "hello": "Hi, I'm Arch. You do the real work in the room. I take care of the paperwork after.",
-    "sayHello": "Arch, the CouchNote companion. Press to say hello.",
+    "sayHello": "Arch, the HavenSpace companion. Press to say hello.",
     "scenes": "What Arch does",
     "pause": "Pause Arch",
     "play": "Play Arch",
@@ -787,8 +787,8 @@
     "thinking": "Thinking about your technique: what went well, and one thing to try next time."
   },
   "authEmail": {
-    "subject": "{code} is your CouchNote sign-in code",
-    "body": "Your CouchNote sign-in code is:\n\n{code}\n\nType it on the sign-in screen. It works for 10 minutes.\n\nIf you didn't ask for this, you can ignore this email. Nobody can sign in without the code."
+    "subject": "{code} is your HavenSpace sign-in code",
+    "body": "Your HavenSpace sign-in code is:\n\n{code}\n\nType it on the sign-in screen. It works for 10 minutes.\n\nIf you didn't ask for this, you can ignore this email. Nobody can sign in without the code."
   },
   "passkeyPrompt": {
     "title": "Sign in faster next time",
@@ -808,7 +808,7 @@
     "tooBig": "That file is too large (max 4 MB). A photo usually works.",
     "tooMany": "You can add up to 5 documents.",
     "failed": "The upload didn't work. Please try again.",
-    "privacy": "Seen only by the CouchNote team. Deleted 30 days after we decide."
+    "privacy": "Seen only by the HavenSpace team. Deleted 30 days after we decide."
   },
   "clientApp": {
     "title": "Client app",
@@ -829,7 +829,7 @@
     "copyMessage": "Copy message",
     "copied": "Copied",
     "share": "Share",
-    "inviteMessage": "Hello! I'd like to share homework and session reminders with you through CouchNote, a small private app.\n\nOpen this link: {url}\nor go to the CouchNote website and enter the code {code}.\n\nYou'll sign in with your own email. The link works once and expires in 7 days.",
+    "inviteMessage": "Hello! I'd like to share homework and session reminders with you through HavenSpace, a small private app.\n\nOpen this link: {url}\nor go to the HavenSpace website and enter the code {code}.\n\nYou'll sign in with your own email. The link works once and expires in 7 days.",
     "homeworkTitle": "Homework",
     "homeworkEmpty": "Nothing set yet.",
     "done": "Done",
@@ -862,9 +862,9 @@
     "mood5": "Very good"
   },
   "join": {
-    "title": "Join your therapist on CouchNote",
+    "title": "Join your therapist on HavenSpace",
     "eyebrow": "An invitation",
-    "invitedBy": "{name} invited you to CouchNote",
+    "invitedBy": "{name} invited you to HavenSpace",
     "whatItIs": "Homework from {name}, your next session date, and a private mood diary.",
     "seesTitle": "{name} can see",
     "sees1": "Homework you finish, and your replies",
@@ -938,7 +938,7 @@
     "leaveButton": "Delete my account",
     "disconnectedTitle": "Your therapist has closed this app",
     "disconnectedBody": "Your account is no longer linked to a therapist. If this is unexpected, talk to your therapist. You can delete your account below.",
-    "crisis": "CouchNote isn't monitored in real time. In an emergency call 112 or 999, or Samaritans on 116 123 (free, 24/7).",
+    "crisis": "HavenSpace isn't monitored in real time. In an emergency call 112 or 999, or Samaritans on 116 123 (free, 24/7).",
     "downloadData": "Download my data first",
     "settingsTitle": "Settings",
     "urgentTitle": "If you need urgent help",

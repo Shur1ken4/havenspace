@@ -1,4 +1,4 @@
-# CouchNote: testing guide
+# HavenSpace: testing guide
 
 For pilot testers. **Role-play only:** never use real client details, names or sessions.
 

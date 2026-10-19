@@ -12,7 +12,7 @@ const appUrl = process.env.APP_URL ?? "http://localhost:3000";
 const sessionHours = Number(process.env.SESSION_HOURS ?? 12);
 
 export const auth = betterAuth({
-  appName: "CouchNote",
+  appName: "HavenSpace",
   baseURL: appUrl,
   secret: process.env.BETTER_AUTH_SECRET,
   database: pool,
@@ -60,8 +60,8 @@ export const auth = betterAuth({
         await sendEmail({ to: email, subject: t("subject", { code: otp }), text: t("body", { code: otp }) });
       },
     }),
-    passkey({ rpName: "CouchNote", rpID: new URL(appUrl).hostname, origin: appUrl }),
-    twoFactor({ issuer: "CouchNote", allowPasswordless: true }),
+    passkey({ rpName: "HavenSpace", rpID: new URL(appUrl).hostname, origin: appUrl }),
+    twoFactor({ issuer: "HavenSpace", allowPasswordless: true }),
     nextCookies(),
   ],
 });

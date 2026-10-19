@@ -15,7 +15,7 @@ import { ROOT } from "./env.mjs";
 
 const PROD = path.join(ROOT, ".env.production");
 const SECRETS = path.join(ROOT, ".env.production.secrets");
-const SSH_KEY = path.join(process.env.HOME, ".ssh", "couchnote_hetzner");
+const SSH_KEY = path.join(process.env.HOME, ".ssh", "havenspace_hetzner");
 
 function parse(file) {
   if (!existsSync(file)) return {};
@@ -97,7 +97,7 @@ if (cmd === "vercel") {
     DATABASE_URL: appDb,
     BETTER_AUTH_SECRET: s.BETTER_AUTH_SECRET,
     EMAIL_TRANSPORT: "smtp",
-    EMAIL_FROM: `"CouchNote" <${p.GMAIL_ADDRESS}>`,
+    EMAIL_FROM: `"HavenSpace" <${p.GMAIL_ADDRESS}>`,
     SMTP_HOST: "smtp.gmail.com", SMTP_PORT: "587", SMTP_USER: p.GMAIL_ADDRESS, SMTP_PASS: p.GMAIL_APP_PASSWORD.replace(/\s/g, ""),
   };
   write(path.join(ROOT, ".env.vercel"), env, "# Paste everything below into Vercel → Project → Settings → Environment Variables. Private.");
@@ -111,7 +111,7 @@ if (cmd === "worker") {
     LLM_PROVIDER: "anthropic", ANTHROPIC_API_KEY: p.ANTHROPIC_API_KEY,
     LLM_MODEL: "claude-opus-5-5", LIVE_MODEL: "claude-sonnet-5-5", LIVE_WHISPER_MODEL: "small",
     WHISPER_MODEL: "large-v3-turbo", WHISPER_DEVICE: "cpu", WHISPER_COMPUTE_TYPE: "int8",
-    MODELS_DIR: "/opt/couchnote/.data/models",
+    MODELS_DIR: "/opt/havenspace/.data/models",
   };
   const envFile = path.join(ROOT, ".env.worker");
   write(envFile, env, "# Settings for the worker on the Hetzner server. Private.");
@@ -119,51 +119,51 @@ if (cmd === "worker") {
   const ssh = ["-i", SSH_KEY, "-o", "StrictHostKeyChecking=accept-new"];
   const run = (c, a) => execFileSync(c, a, { stdio: "inherit", cwd: ROOT });
   console.log("Copying the worker to the server…");
-  run("ssh", [...ssh, host, "mkdir -p /opt/couchnote/services /opt/couchnote/packages /opt/couchnote/evals"]);
+  run("ssh", [...ssh, host, "mkdir -p /opt/havenspace/services /opt/havenspace/packages /opt/havenspace/evals"]);
   run("rsync", ["-az", "--delete", "-e", `ssh ${ssh.join(" ")}`, "--exclude", ".venv", "--exclude", ".data", "--exclude", "__pycache__",
-    "--exclude", ".pytest_cache", "services/worker", `${host}:/opt/couchnote/services/`]);
-  run("rsync", ["-az", "--delete", "-e", `ssh ${ssh.join(" ")}`, "packages/shared", `${host}:/opt/couchnote/packages/`]);
-  run("rsync", ["-az", "-e", `ssh ${ssh.join(" ")}`, "evals/forbidden_terms.txt", `${host}:/opt/couchnote/evals/`]);
-  run("scp", [...ssh, envFile, `${host}:/opt/couchnote/.env`]);
+    "--exclude", ".pytest_cache", "services/worker", `${host}:/opt/havenspace/services/`]);
+  run("rsync", ["-az", "--delete", "-e", `ssh ${ssh.join(" ")}`, "packages/shared", `${host}:/opt/havenspace/packages/`]);
+  run("rsync", ["-az", "-e", `ssh ${ssh.join(" ")}`, "evals/forbidden_terms.txt", `${host}:/opt/havenspace/evals/`]);
+  run("scp", [...ssh, envFile, `${host}:/opt/havenspace/.env`]);
   console.log("Installing and (re)starting…");
   execFileSync("ssh", [...ssh, host, "bash -s"], { stdio: ["pipe", "inherit", "inherit"], input: REMOTE_SETUP });
-  console.log("Worker is running. Logs: ssh -i ~/.ssh/couchnote_hetzner " + host + " journalctl -u couchnote-worker -f");
+  console.log("Worker is running. Logs: ssh -i ~/.ssh/havenspace_hetzner " + host + " journalctl -u havenspace-worker -f");
 }
 
 // Runs on the server (Ubuntu 24.04): installs uv, the Python packages and a
 // systemd service that restarts the worker if it stops.
 const REMOTE_SETUP = String.raw`
 set -euo pipefail
-chmod 600 /opt/couchnote/.env
-id couchnote >/dev/null 2>&1 || useradd --system --home /opt/couchnote --shell /usr/sbin/nologin couchnote
+chmod 600 /opt/havenspace/.env
+id havenspace >/dev/null 2>&1 || useradd --system --home /opt/havenspace --shell /usr/sbin/nologin havenspace
 if [ ! -x /usr/local/bin/uv ]; then curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR=/usr/local/bin sh; fi
-mkdir -p /opt/couchnote/.data/models
-chown -R couchnote:couchnote /opt/couchnote
-cd /opt/couchnote/services/worker
-sudo -u couchnote env UV_CACHE_DIR=/opt/couchnote/.cache/uv UV_PYTHON_INSTALL_DIR=/opt/couchnote/.python /usr/local/bin/uv sync --no-dev --frozen
-cat >/etc/systemd/system/couchnote-worker.service <<'UNIT'
+mkdir -p /opt/havenspace/.data/models
+chown -R havenspace:havenspace /opt/havenspace
+cd /opt/havenspace/services/worker
+sudo -u havenspace env UV_CACHE_DIR=/opt/havenspace/.cache/uv UV_PYTHON_INSTALL_DIR=/opt/havenspace/.python /usr/local/bin/uv sync --no-dev --frozen
+cat >/etc/systemd/system/havenspace-worker.service <<'UNIT'
 [Unit]
-Description=CouchNote worker (speech-to-text and AI drafting)
+Description=HavenSpace worker (speech-to-text and AI drafting)
 After=network-online.target
 Wants=network-online.target
 
 [Service]
-User=couchnote
-WorkingDirectory=/opt/couchnote/services/worker
-Environment=PYTHONUNBUFFERED=1 PYTHONWARNINGS=ignore UV_CACHE_DIR=/opt/couchnote/.cache/uv UV_PYTHON_INSTALL_DIR=/opt/couchnote/.python
+User=havenspace
+WorkingDirectory=/opt/havenspace/services/worker
+Environment=PYTHONUNBUFFERED=1 PYTHONWARNINGS=ignore UV_CACHE_DIR=/opt/havenspace/.cache/uv UV_PYTHON_INSTALL_DIR=/opt/havenspace/.python
 ExecStart=/usr/local/bin/uv run --no-dev --frozen python -m worker
 Restart=always
 RestartSec=5
 NoNewPrivileges=true
 ProtectSystem=strict
-ReadWritePaths=/opt/couchnote
+ReadWritePaths=/opt/havenspace
 
 [Install]
 WantedBy=multi-user.target
 UNIT
 systemctl daemon-reload
-systemctl enable --now couchnote-worker
-systemctl restart couchnote-worker
+systemctl enable --now havenspace-worker
+systemctl restart havenspace-worker
 sleep 3
-systemctl --no-pager --lines=5 status couchnote-worker || true
+systemctl --no-pager --lines=5 status havenspace-worker || true
 `;

@@ -1,4 +1,4 @@
-# CouchNote — AI assistant for therapists
+# HavenSpace — AI assistant for therapists
 
 A calm assistant for therapists, used **after** a session. It:
 

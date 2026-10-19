@@ -11,8 +11,8 @@ export async function notifyAdminsOfRequest() {
   const { rows } = await pool.query<{ email: string }>("select admin_emails() as email");
   await Promise.all(rows.map(({ email }) => sendEmail({
     to: email,
-    subject: "CouchNote: a new access request is waiting",
-    text: `A therapist has asked to join the CouchNote pilot.\n\nReview it here: ${appUrl()}/admin\n`,
+    subject: "HavenSpace: a new access request is waiting",
+    text: `A therapist has asked to join the HavenSpace pilot.\n\nReview it here: ${appUrl()}/admin\n`,
   })));
 }
 
