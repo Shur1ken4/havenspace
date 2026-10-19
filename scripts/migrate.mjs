@@ -52,13 +52,21 @@ for (const [name, password, rls] of roles) {
   try {
     await client.query(sql(rls));
   } catch (err) {
-    // Managed providers may refuse BYPASSRLS; the worker then relies on the
-    // explicit worker_all policies (0008_worker_policies.sql).
-    if (rls !== "bypassrls") throw err;
-    await client.query(sql(""));
-    console.log("note: provider refused BYPASSRLS for worker_user; using worker policies instead");
+    if (!exists && rls !== "bypassrls") throw err;
+    try {
+      // Managed providers (e.g. Neon) may refuse BYPASSRLS or role options; the
+      // worker then relies on the explicit worker_all policies (0008).
+      await client.query(exists ? `alter role ${name} with login password ${pw}` : sql(""));
+      if (rls === "bypassrls") console.log(`note: provider refused BYPASSRLS for ${name}; using worker policies instead`);
+    } catch {
+      // The role exists and the provider won't let us change it: keep it as it is.
+      console.log(`note: kept existing role ${name} unchanged`);
+    }
   }
 }
+// app_user must never skip row-level security, whatever happened above.
+const { rows: [appRole] } = await client.query("select rolbypassrls or rolsuper as unsafe from pg_roles where rolname = 'app_user'");
+if (appRole?.unsafe) throw new Error("app_user must not bypass row-level security");
 // Our SECURITY DEFINER functions (access requests, client invites) run as the
 // migration role and rely on it skipping row-level security.
 const { rows: [owner] } = await client.query("select rolsuper or rolbypassrls as ok from pg_roles where rolname = current_user");
