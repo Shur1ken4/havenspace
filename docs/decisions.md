@@ -398,6 +398,6 @@ Shurik wants CouchNote for both the EU and Russia.
 # ADR-16: Rename to HavenSpace
 Status: Accepted (working name)   Date: 2026-10-19   Deciders: Shurik
 
-The product is renamed from CouchNote to **HavenSpace**. Only the display name and internal labels changed; the logo, colours and Arch stay the same. The live address is still couchnote.vercel.app until a new address is chosen.
+The product is renamed from CouchNote to **HavenSpace**. Only the display name and internal labels changed; the logo, colours and Arch stay the same. The live address is still havenspace-app.vercel.app until a new address is chosen.
 
 **Name check (quick web search, not legal advice):** there is a small "Haven" AI wellbeing hobby project hosted at havenspace-support (a free site builder), "The Haven Space" (a coaching page), and many counselling centres called "Haven". There is no large company with this name, but "Haven" is common in mental health. Search TMview/EUIPO (classes 9, 42, 44) before buying a domain or paying for branding.
