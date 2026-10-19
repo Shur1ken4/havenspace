@@ -5,6 +5,8 @@ import signal
 import threading
 import time
 
+import psycopg
+
 from . import config, db, pipeline, retention
 from .agent.providers import InvalidOutputError, RefusalError, get_provider
 from .log import log
@@ -51,10 +53,22 @@ def main() -> None:
         LiveRunner(provider, _live_stop).start()
     last_retention = 0.0
     while not _stop:
-        if time.time() - last_retention > RETENTION_EVERY:
-            retention.run(conn)
-            last_retention = time.time()
-        job = db.claim_job(conn)
+        try:
+            if conn.closed:
+                conn = db.connect()
+            if time.time() - last_retention > RETENTION_EVERY:
+                retention.run(conn)
+                last_retention = time.time()
+            job = db.claim_job(conn)
+        except psycopg.OperationalError:
+            # The database dropped the connection (e.g. a hosted database paused); reconnect shortly.
+            log("worker.reconnect")
+            time.sleep(5)
+            try:
+                conn = db.connect()
+            except psycopg.OperationalError:
+                pass
+            continue
         if job is None:
             time.sleep(POLL_SECONDS)
             continue

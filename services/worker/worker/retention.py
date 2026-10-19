@@ -51,6 +51,8 @@ def run(conn: psycopg.Connection) -> int:
         store().remove([r["path"] for r in docs])
         conn.execute("update therapist_documents set deleted_at = now() where id = any(%s)", ([r["id"] for r in docs],))
         log("retention.documents_deleted", deleted=len(docs))
+    # Pilot database storage: nothing stays longer than 48 hours, whatever happened.
+    conn.execute("delete from blob_store where created_at < now() - interval '48 hours'")
     conn.execute("delete from client_invites where used_at is null and expires_at < now() - interval '1 day'")
     conn.execute('delete from "verification" where "expiresAt" < now()')
     conn.execute('delete from "session" where "expiresAt" < now()')

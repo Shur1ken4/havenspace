@@ -51,11 +51,43 @@ class S3Store:
                 self.client.delete_objects(Bucket=self.bucket, Delete={"Objects": batch, "Quiet": True})
 
 
-_store: LocalStore | S3Store | None = None
+class DbStore:
+    """Pilot fallback: objects kept in Postgres (blob_store) until EU object storage is connected."""
+
+    def __init__(self) -> None:
+        self._conn = None
+
+    def _run(self, sql: str, args: tuple):
+        import psycopg
+
+        for attempt in (1, 2):  # reconnect once if the database closed an idle connection
+            try:
+                if self._conn is None or self._conn.closed:
+                    self._conn = psycopg.connect(config.DATABASE_URL, autocommit=True)
+                return self._conn.execute(sql, args)
+            except psycopg.OperationalError:
+                self._conn = None
+                if attempt == 2:
+                    raise
+        raise RuntimeError("unreachable")
+
+    def get(self, key: str) -> bytes:
+        row = self._run("select body from blob_store where key = %s", (_safe(key),)).fetchone()
+        if row is None:
+            raise FileNotFoundError(key)
+        return bytes(row[0])
+
+    def remove(self, keys: list[str]) -> None:
+        if keys:
+            self._run("delete from blob_store where key = any(%s)", ([_safe(k) for k in keys],))
 
 
-def store() -> LocalStore | S3Store:
+_store: LocalStore | S3Store | DbStore | None = None
+
+
+def store() -> LocalStore | S3Store | DbStore:
     global _store
     if _store is None:
-        _store = S3Store() if config.env("STORAGE_DRIVER") == "s3" else LocalStore()
+        driver = config.env("STORAGE_DRIVER")
+        _store = S3Store() if driver == "s3" else DbStore() if driver == "db" else LocalStore()
     return _store

@@ -2,6 +2,7 @@ import "server-only";
 import { existsSync } from "node:fs";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { withUser } from "./db";
 
 // Short-lived audio storage. "local" for development, "s3" for any
 // S3-compatible EU object storage in production. Keys look like
@@ -70,7 +71,34 @@ class S3Store implements ObjectStore {
   }
 }
 
+/** Pilot fallback: objects live in Postgres (blob_store), owned via the key's
+ *  "<kind>/<user>/" prefix and row-level security. Callers authorise first. */
+class DbStore implements ObjectStore {
+  private owner(key: string) {
+    const m = /^(?:audio|documents)\/([^/]+)\//.exec(safeKey(key));
+    if (!m) throw new Error("invalid storage key");
+    return m[1];
+  }
+  async put(key: string, body: Uint8Array, contentType: string) {
+    await withUser(this.owner(key), (db) => db.query(
+      "insert into blob_store (key, body, mime) values ($1, $2, $3) on conflict (key) do update set body = excluded.body, mime = excluded.mime",
+      [key, Buffer.from(body), contentType],
+    ));
+  }
+  async get(key: string) {
+    const { rows } = await withUser(this.owner(key), (db) => db.query("select body from blob_store where key = $1", [key]));
+    if (!rows[0]) throw new Error("not found");
+    return new Uint8Array(rows[0].body as Buffer);
+  }
+  async remove(keys: string[]) {
+    const byOwner = new Map<string, string[]>();
+    for (const k of keys) byOwner.set(this.owner(k), [...(byOwner.get(this.owner(k)) ?? []), k]);
+    for (const [owner, ks] of byOwner) await withUser(owner, (db) => db.query("delete from blob_store where key = any($1)", [ks]));
+  }
+}
+
 let store: ObjectStore | undefined;
 export function storage(): ObjectStore {
-  return (store ??= process.env.STORAGE_DRIVER === "s3" ? new S3Store() : new LocalStore());
+  const driver = process.env.STORAGE_DRIVER;
+  return (store ??= driver === "s3" ? new S3Store() : driver === "db" ? new DbStore() : new LocalStore());
 }
