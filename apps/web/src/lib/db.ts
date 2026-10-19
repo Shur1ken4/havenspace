@@ -8,7 +8,9 @@ const globalForPool = globalThis as unknown as { __pgPool?: Pool };
 
 export const pool =
   globalForPool.__pgPool ??
-  new Pool({ connectionString: process.env.DATABASE_URL, max: 10 });
+  // APP_DATABASE_URL (restricted app_user) wins over DATABASE_URL, which a
+  // hosting integration may set to the owner account that skips row-level security.
+  new Pool({ connectionString: process.env.APP_DATABASE_URL ?? process.env.DATABASE_URL, max: 10 });
 if (process.env.NODE_ENV !== "production") globalForPool.__pgPool = pool;
 
 export type Db = PoolClient;
