@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useRef, useState, useTransition } from "react";
+import { useMemo, useRef, useState, useTransition, useCallback, useEffect } from "react";
 import { useFormatter, useTranslations } from "next-intl";
 import { Copy, Download, FileText, Lock, Search, ArrowLeftRight } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -22,6 +22,8 @@ export type ReviewProps = {
   reflection: { content: ReflectionContent; modalityName: string; dimensions: Rubric[]; dropped: number } | null;
   segments: Segment[];
   speakerNames: Record<string, string>;
+  /** Open the transcript at this segment (e.g. from a link Arch gave). */
+  initialMoment?: number;
 };
 
 function msToClock(ms: number) {
@@ -47,7 +49,7 @@ export function Review(props: ReviewProps) {
   const [highlight, setHighlight] = useState<number[]>([]);
   const transcriptRef = useRef<HTMLDivElement>(null);
 
-  function showMoment(ids: number[]) {
+  const showMoment = useCallback((ids: number[]) => {
     setHighlight(ids);
     setTab("transcript");
     requestAnimationFrame(() => {
@@ -55,7 +57,13 @@ export function Review(props: ReviewProps) {
       el?.scrollIntoView({ behavior: "smooth", block: "center" });
       (el as HTMLElement | null)?.focus({ preventScroll: true });
     });
-  }
+  }, []);
+
+  useEffect(() => {
+    if (props.initialMoment === undefined) return;
+    const id = setTimeout(() => showMoment([props.initialMoment!]), 50);
+    return () => clearTimeout(id);
+  }, [props.initialMoment, showMoment]);
 
   return (
     <Tabs value={tab} onValueChange={setTab} className="space-y-6">

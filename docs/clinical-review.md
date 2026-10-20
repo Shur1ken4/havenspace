@@ -28,3 +28,10 @@ the Clinical Lead before real clients. In code, these places are marked
 1. Run `npm run eval` (with an AI key in `.env`) and open the report in `evals/reports/`.
 2. Rate every item 1–5 and click **Download ratings**. The M4 goal is an average of 4 or more.
 3. Edit any of the files above (or send comments) — prompts carry a `version:` line; bump it when you change them.
+
+## 18. Arch, the AI practice agent (ADR-19)
+File: `apps/web/src/lib/arch/prompt.ts`. Please review:
+- the role description and tone;
+- the limits: no diagnosis or speculation, no risk rating, no treatment decisions, general textbook information allowed;
+- **the rule that Arch never volunteers safety-related content the therapist didn't ask about** (to stay clear of risk alerts), and the wording when asked;
+- whether proposing homework is acceptable, given the therapist approves every item.

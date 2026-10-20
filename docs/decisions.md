@@ -441,3 +441,20 @@ Accounts used to be created by the first 6-digit email code, with an optional pa
 - Easier: a pattern everyone knows; password managers work; fewer emails day to day.
 - Harder: passwords to protect (hashed by the auth library, 10+ characters, rate-limited sign-in).
 - Existing accounts without a password sign in with a code or use "Forgot password?" once.
+
+
+# ADR-19: Arch as an AI practice agent ("Ask Arch")
+Status: Accepted (pilot, role-play data)   Date: 2026-10-21   Deciders: Shurik
+## Context
+Shurik wants Arch to be a real AI agent, not only a mascot: competitors (Upheal, Blueprint, Heidi) lead with an assistant you can ask. Our positioning guardrail (ADR-4) still applies: no diagnosis, no risk scoring or alerts, no in-session advice.
+## Decision
+- "Ask Arch" page (button in the app header) and "Brief me" on each client page. Claude with tool use, streamed.
+- Tools run as the therapist inside row-level security: list clients, client overview, search transcripts, one session, practice numbers. Answers cite the exact transcript moments as links (`/sessions/<id>?moment=<segment>` opens the transcript there).
+- Actions are only proposed (homework, next session); nothing changes until the therapist presses Approve, which is validated again on the server.
+- Limits in the instructions (CLINICAL-REVIEW item 18): no diagnosis or speculation, no risk rating, no treatment decisions, no unasked "flags" of safety content; asked about safety, Arch shows what was said and points to safeguarding and supervision.
+- Conversations aren't stored; the audit log records only that Arch was asked. 150 questions per therapist per day.
+- Claude API direct while ALLOW_REAL_CLIENT_DATA=false; Arch switches off when real data is allowed until Claude in the EU (Bedrock, ADR-3) is wired in.
+## Consequences
+- Easier: the product is visibly an AI agent; therapists find things in seconds; admin done with one click.
+- Harder: another AI surface to evaluate; the Clinical Lead must review the instructions and refusals.
+- Next: after-session autopilot (proposals bundled on the review screen), supervision-pack agent, nudges, voice.

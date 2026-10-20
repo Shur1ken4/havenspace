@@ -70,9 +70,12 @@ export default async function ClientPage({ params }: PageProps<"/clients/[id]">)
             <Chip tone={data.consent ? "sage" : "amber"}>{data.consent ? t("clients.consentActive") : t("clients.consentMissing")}</Chip>
           </Link>
         </div>
-        <Link href={data.consent || videoEnabled() ? `/sessions/new?client=${id}` : `/clients/${id}/consent`} className={buttonClass("primary", "lg")}>
-          {t("clients.startSession")}
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link href={`/arch?client=${id}&brief=1`} className={buttonClass("secondary", "lg")}>{t("askArch.briefMe")}</Link>
+          <Link href={data.consent || videoEnabled() ? `/sessions/new?client=${id}` : `/clients/${id}/consent`} className={buttonClass("primary", "lg")}>
+            {t("clients.startSession")}
+          </Link>
+        </div>
       </div>
       {!data.consent && <Notice tone="attention">{t("consent.required")}</Notice>}
 

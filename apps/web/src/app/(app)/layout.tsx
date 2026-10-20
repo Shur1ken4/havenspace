@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Logo } from "@/components/illustrations";
 import { AppNav } from "@/components/app/nav";
 import { AccountMenu } from "@/components/account/account-menu";
+import { Arch } from "@/components/arch";
 import { FeedbackWidget } from "@/components/app/feedback-widget";
 import { realDataAllowed, requireTherapist } from "@/lib/session";
 
@@ -25,7 +26,14 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
             <Logo name={t("common.appName")} size="sm" />
           </Link>
           <div className="order-last -mx-1 w-full sm:order-none sm:mx-0 sm:w-auto"><AppNav isAdmin={therapist.is_admin} /></div>
-          <AccountMenu name={session.user.name || therapist.display_name} email={session.user.email} image={session.user.image ?? null} accountHref="/settings/account" />
+          <div className="flex items-center gap-2">
+            <Link href="/arch" data-paused="true"
+              className="flex items-center gap-1.5 rounded-full border border-line bg-surface p-1 text-sm font-medium min-[400px]:pr-3 text-ink hover:border-primary hover:bg-primary-soft/50">
+              <Arch className="h-7 w-7" />
+              <span className="sr-only min-[400px]:not-sr-only">{t("askArch.button")}</span>
+            </Link>
+            <AccountMenu name={session.user.name || therapist.display_name} email={session.user.email} image={session.user.image ?? null} accountHref="/settings/account" />
+          </div>
         </div>
       </header>
       <main id="main" className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">{children}</main>

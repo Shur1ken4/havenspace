@@ -17,7 +17,10 @@ export async function generateMetadata() {
   return { title: (await getTranslations("meta"))("session") };
 }
 
-export default async function SessionPage({ params }: PageProps<"/sessions/[id]">) {
+export default async function SessionPage({ params, searchParams }: PageProps<"/sessions/[id]">) {
+  // ?moment=<segment> opens the transcript at that moment (links from Arch).
+  const momentParam = Number((await searchParams).moment);
+  const moment = Number.isInteger(momentParam) && momentParam >= 0 ? momentParam : undefined;
   const { id } = await params;
   const { therapist } = await requireTherapist();
   const t = await getTranslations();
@@ -61,6 +64,7 @@ export default async function SessionPage({ params }: PageProps<"/sessions/[id]"
       {s.status === "failed" && <Failed sessionId={id} canRetry={s.error_code !== "consent_withdrawn"} />}
       {s.status === "ready" && (
         <Review
+          initialMoment={moment}
           sessionId={id}
           isRecap={s.capture_mode === "recap"}
           segments={data.segments}
