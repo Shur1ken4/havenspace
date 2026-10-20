@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import {
-  ArrowRight, Check, Download, EyeOff, Lightbulb, Minimize2, SmilePlus, UserCheck, GlobeLock, HandHeart, KeyRound, Mic, NotebookPen, ShieldCheck, Sprout, Users,
+  ArrowRight, Check, EyeOff, GlobeLock, KeyRound, Mic, NotebookPen, ShieldCheck, Sprout,
 } from "lucide-react";
 import { PlantIllustration, WindowIllustration } from "@/components/illustrations";
 import { ArchStage } from "@/components/marketing/arch-stage";
+import { HeroDemo } from "@/components/marketing/hero-demo";
 import { SignupForm } from "@/components/marketing/signup-form";
 import { Pricing } from "@/components/marketing/pricing";
-import { PrivacyBadges } from "@/components/privacy-badges";
 import { buttonClass } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
@@ -15,6 +15,7 @@ import { Chip } from "@/components/ui/chip";
 export default async function LandingPage() {
   const t = await getTranslations("landing");
   const a = await getTranslations("arch");
+  const b = await getTranslations("badges");
 
   const steps = [
     { icon: Mic, title: t("step1Title"), body: t("step1Body") },
@@ -25,33 +26,45 @@ export default async function LandingPage() {
     { icon: ShieldCheck, title: t("promise1Title"), body: t("promise1Body") },
     { icon: GlobeLock, title: t("promise2Title"), body: t("promise2Body") },
     { icon: EyeOff, title: t("promise3Title"), body: t("promise3Body") },
-    { icon: Users, title: t("promise4Title"), body: t("promise4Body") },
-    { icon: HandHeart, title: t("promise5Title"), body: t("promise5Body") },
-    { icon: Download, title: t("promise6Title"), body: t("promise6Body") },
   ];
+  const worksWith = ["works1", "works2", "works3", "works4", "works5", "works6"] as const;
   // CLINICAL-REVIEW: how Arch is described to therapists.
   const archPoints = [
-    { icon: Lightbulb, title: a("lightTitle"), body: a("lightBody") },
-    { icon: SmilePlus, title: a("neverTitle"), body: a("neverBody") },
-    { icon: Minimize2, title: a("stillTitle"), body: a("stillBody") },
-    { icon: UserCheck, title: a("decideTitle"), body: a("decideBody") },
+    { title: a("lightTitle"), body: a("lightBody") },
+    { title: a("neverTitle"), body: a("neverBody") },
+    { title: a("decideTitle"), body: a("decideBody") },
   ];
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6">
       {/* Hero */}
-      <section className="grid items-center gap-10 py-10 md:grid-cols-[1fr_1fr] md:py-16">
+      <section className="grid items-center gap-6 pb-12 [&>*]:min-w-0 pt-6 md:grid-cols-[1fr_1.1fr] md:gap-10 md:pb-16 md:pt-12">
         <div className="fade-up space-y-6">
-          <p className="text-sm uppercase tracking-[0.12em] text-muted">{t("eyebrow")}</p>
-          <h1 className="text-4xl text-ink sm:text-5xl md:text-[3.4rem]">{t("heroTitle")}</h1>
+          <h1 className="text-[2.6rem] leading-[1.08] text-ink sm:text-5xl md:text-[3.6rem]">
+            {t.rich("heroTitle", { em: (chunks) => <span className="hero-accent">{chunks}</span> })}
+          </h1>
           <p className="max-w-xl text-lg text-muted">{t("heroBody")}</p>
           <div className="flex flex-wrap gap-3">
-            <a href="#join" className={buttonClass("primary", "lg")}>{t("heroCta")} <ArrowRight size={18} aria-hidden /></a>
-            <a href="#how" className={buttonClass("secondary", "lg")}>{t("heroSecondary")}</a>
+            <Link href="/signup" className={buttonClass("primary", "lg")}>{t("heroCta")} <ArrowRight size={18} aria-hidden /></Link>
+            <a href="#join" className={buttonClass("secondary", "lg")}>{t("heroSecondary")}</a>
           </div>
-          <PrivacyBadges className="pt-2" />
+          <p className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-muted">
+            <span className="flex items-center gap-1.5"><ShieldCheck size={15} className="text-primary-strong" aria-hidden /> {b("audioDeleted")}</span>
+            <span className="flex items-center gap-1.5"><GlobeLock size={15} className="text-primary-strong" aria-hidden /> {b("euStored")}</span>
+            <span className="flex items-center gap-1.5"><EyeOff size={15} className="text-primary-strong" aria-hidden /> {b("noTraining")}</span>
+          </p>
         </div>
-        <ArchStage />
+        <HeroDemo />
+      </section>
+
+      {/* Works wherever sessions happen */}
+      <section aria-labelledby="works-title" className="border-y border-line py-6">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-8">
+          <h2 id="works-title" className="shrink-0 font-sans text-sm text-muted">{t("worksTitle")}</h2>
+          <ul className="flex flex-wrap gap-x-7 gap-y-2 font-serif text-lg text-ink/80 sm:text-xl">
+            {worksWith.map((k) => <li key={k}>{t(k)}</li>)}
+          </ul>
+        </div>
       </section>
 
       {/* How it works */}
@@ -77,23 +90,20 @@ export default async function LandingPage() {
       </section>
 
       {/* Arch */}
-      <section id="arch" aria-labelledby="arch-title" className="scroll-mt-20 py-16">
-        <p className="text-sm uppercase tracking-[0.12em] text-muted">{a("meetEyebrow")}</p>
-        <h2 id="arch-title" className="mt-2 text-3xl text-ink sm:text-4xl">{a("meetTitle")}</h2>
-        <p className="mt-3 max-w-2xl text-lg text-muted">{a("meetIntro")}</p>
-        <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {archPoints.map((p) => (
-            <li key={p.title}>
-              <Card className="h-full space-y-2">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent-soft text-ink">
-                  <p.icon size={20} aria-hidden />
-                </span>
-                <h3 className="font-sans text-lg font-medium text-ink">{p.title}</h3>
-                <p className="text-muted">{p.body}</p>
-              </Card>
-            </li>
-          ))}
-        </ul>
+      <section id="arch" aria-labelledby="arch-title" className="scroll-mt-20 grid items-center gap-10 py-16 md:grid-cols-[1fr_1.1fr]">
+        <div className="order-2 md:order-1"><ArchStage /></div>
+        <div className="order-1 space-y-5 md:order-2">
+          <h2 id="arch-title" className="text-3xl text-ink sm:text-4xl">{a("meetTitle")}</h2>
+          <p className="text-lg text-muted">{a("meetIntro")}</p>
+          <ul className="space-y-4">
+            {archPoints.map((p) => (
+              <li key={p.title} className="flex gap-3">
+                <Check size={18} className="mt-1 shrink-0 text-primary-strong" aria-hidden />
+                <p><span className="font-medium text-ink">{p.title}.</span> <span className="text-muted">{p.body}</span></p>
+              </li>
+            ))}
+          </ul>
+        </div>
       </section>
 
       {/* Reflection */}
@@ -135,7 +145,7 @@ export default async function LandingPage() {
       <section id="privacy" aria-labelledby="privacy-title" className="scroll-mt-20 py-16">
         <h2 id="privacy-title" className="text-3xl text-ink sm:text-4xl">{t("privacyTitle")}</h2>
         <p className="mt-3 max-w-2xl text-lg text-muted">{t("privacyIntro")}</p>
-        <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-10 grid gap-8 sm:grid-cols-3">
           {promises.map((p) => (
             <li key={p.title} className="space-y-2">
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-soft text-primary-strong">
@@ -146,16 +156,17 @@ export default async function LandingPage() {
             </li>
           ))}
         </ul>
-        <Card className="mt-10 space-y-3 border-dashed bg-transparent shadow-none">
-          <h3 className="flex items-center gap-2 font-sans text-lg font-medium"><KeyRound size={18} aria-hidden /> {t("notTitle")}</h3>
+        <p className="mt-8 text-muted">{t("privacyAlso")}</p>
+        <div className="mt-6 space-y-2 rounded-[16px] border border-dashed border-line p-5">
+          <h3 className="flex items-center gap-2 font-sans text-base font-medium"><KeyRound size={17} aria-hidden /> {t("notTitle")}</h3>
           <ul className="list-disc space-y-1 pl-6 text-muted">
             <li>{t("not1")}</li>
             <li>{t("not2")}</li>
             <li>{t("not3")}</li>
           </ul>
-        </Card>
+        </div>
         <p className="mt-6">
-          <Link href="/privacy" className="text-primary-strong underline underline-offset-4">{t("privacyTitle")} →</Link>
+          <Link href="/privacy" className="text-primary-strong underline underline-offset-4">{t("privacyMore")} →</Link>
         </p>
       </section>
 

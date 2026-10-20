@@ -1,7 +1,9 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { Check, Gift } from "lucide-react";
+import { Check, Gift, Video } from "lucide-react";
+import { buttonClass } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 // Planned prices after the pilot (nothing is billed yet). Yearly = 20% off,
@@ -9,12 +11,11 @@ import { Card } from "@/components/ui/card";
 const YEARLY_DISCOUNT = 0.2;
 const yearly = (monthly: number) => Math.round((monthly * 12 * (1 - YEARLY_DISCOUNT)) / 5) * 5;
 
-type Plan = { key: "Free" | "Solo" | "Growth" | "Supervisor"; monthly: number; perks: string[]; featured?: boolean };
+type Plan = { key: "Free" | "Solo" | "Growth"; monthly: number; perks: string[]; featured?: boolean };
 const PLANS: Plan[] = [
   { key: "Free", monthly: 0, perks: ["perkFree1", "perkFree2"] },
   { key: "Solo", monthly: 39, perks: ["perkSolo1", "perkSolo2", "perkSolo3", "perkSolo4"], featured: true },
   { key: "Growth", monthly: 59, perks: ["perkGrowth1", "perkGrowth2", "perkGrowth3", "perkGrowth4"] },
-  { key: "Supervisor", monthly: 0, perks: ["perkSup1", "perkSup2"] },
 ];
 
 export function Pricing() {
@@ -30,13 +31,13 @@ export function Pricing() {
           </button>
         ))}
       </div>
-      <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className="grid gap-5 md:grid-cols-3">
         {PLANS.map((p) => {
           const paid = p.monthly > 0;
           const shown = paid && period === "year" ? Math.floor(yearly(p.monthly) / 12) : p.monthly;
           return (
             <li key={p.key}>
-              <Card className={`h-full space-y-3 ${p.featured ? "border-primary" : ""}`}>
+              <Card className={`flex h-full flex-col gap-3 ${p.featured ? "border-primary" : ""}`}>
                 <h3 className="font-sans text-lg font-medium">{t(`plan${p.key}`)}</h3>
                 <div>
                   <p><span className="font-serif text-4xl">€{shown}</span><span className="text-muted">{t("perMonth")}</span></p>
@@ -47,17 +48,21 @@ export function Pricing() {
                   )}
                 </div>
                 <p className="font-medium text-ink">{t(`plan${p.key}Body`)}</p>
-                {p.key === "Supervisor" && <p className="text-sm text-muted">{t("supervisorWhat")}</p>}
                 <ul className="space-y-1.5 text-sm text-muted">
                   {p.perks.map((perk) => (
                     <li key={perk} className="flex gap-2"><Check size={16} className="mt-0.5 shrink-0 text-primary-strong" aria-hidden />{t(perk)}</li>
                   ))}
                 </ul>
+                <Link href="/signup" className={buttonClass(p.featured ? "primary" : "secondary", "md", "mt-auto w-full")}>{t("planCta")}</Link>
               </Card>
             </li>
           );
         })}
       </ul>
+      <p className="flex items-start gap-2 text-muted">
+        <Video size={18} className="mt-0.5 shrink-0 text-primary-strong" aria-hidden />
+        <span><span className="font-medium text-ink">{t("videoTitle")}</span> {t("videoBody")}</span>
+      </p>
       <p className="flex items-start gap-2 text-muted">
         <Gift size={18} className="mt-0.5 shrink-0 text-primary-strong" aria-hidden />
         <span><span className="font-medium text-ink">{t("referTitle")}</span> {t("referBody")}</span>

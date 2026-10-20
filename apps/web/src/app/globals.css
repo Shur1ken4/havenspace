@@ -242,6 +242,17 @@ a, button, input, select, textarea, [role="tab"] {
 
 .highlight-moment { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
 
+/* ── Landing hero demo: a session turning into a note ───────────────────── */
+@keyframes demo-type { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+.demo-type { animation: demo-type 1.4s steps(28, end) both; }
+@keyframes demo-wave { 0%, 100% { transform: scaleY(0.25); } 50% { transform: scaleY(1); } }
+.demo-wave span { display: block; width: 3px; border-radius: 9999px; transform-origin: center; animation: demo-wave 1.1s ease-in-out infinite; }
+@keyframes demo-shimmer { 0% { background-position: -200px 0; } 100% { background-position: 200px 0; } }
+.demo-shimmer { background: linear-gradient(90deg, var(--surface-2) 0, var(--primary-soft) 50%, var(--surface-2) 100%); background-size: 400px 100%; animation: demo-shimmer 1.6s linear infinite; }
+/* Anything scrolled out of view rests: no animation work for the browser. */
+[data-paused="true"], [data-paused="true"] *, [data-paused="true"] *::before, [data-paused="true"] *::after { animation-play-state: paused !important; }
+.hero-accent { color: var(--primary-strong); }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }

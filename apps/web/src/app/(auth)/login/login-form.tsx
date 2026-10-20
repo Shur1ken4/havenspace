@@ -12,7 +12,7 @@ import { Notice } from "@/components/ui/notice";
 
 const RESEND_SECONDS = 30;
 
-export function LoginForm({ next, fresh, devMailbox }: { next: string; fresh: boolean; devMailbox: boolean }) {
+export function LoginForm({ next, fresh, devMailbox, signup = false }: { next: string; fresh: boolean; devMailbox: boolean; signup?: boolean }) {
   const t = useTranslations("auth");
   const tc = useTranslations("common");
   const router = useRouter();
@@ -117,9 +117,9 @@ export function LoginForm({ next, fresh, devMailbox }: { next: string; fresh: bo
 
   return (
     <Card className="space-y-5">
-      <h1 className="text-3xl">{t("title")}</h1>
+      <h1 className="text-3xl">{signup ? t("signupTitle") : t("title")}</h1>
       {fresh && <Notice tone="attention">{t("freshNeeded")}</Notice>}
-      <p className="text-muted">{t("intro")}</p>
+      <p className="text-muted">{signup ? t("signupIntro") : t("intro")}</p>
       <form onSubmit={usePassword ? signInWithPassword : sendCode} className="space-y-4">
         <Field label={t("email")} htmlFor="email" error={!usePassword ? error ?? undefined : undefined}>
           <Input id="email" type="email" autoComplete={usePassword ? "username" : "email webauthn"} required value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -132,17 +132,27 @@ export function LoginForm({ next, fresh, devMailbox }: { next: string; fresh: bo
         <Button type="submit" className="w-full" disabled={pending}>
           {usePassword ? (pending ? t("signingIn") : t("signIn")) : (pending ? t("sending") : t("send"))}
         </Button>
-        <button type="button" className="w-full text-center text-sm text-primary-strong underline underline-offset-4"
-          onClick={() => { setUsePassword((u) => !u); setError(null); }}>
-          {usePassword ? t("useCodeInstead") : t("usePassword")}
-        </button>
+        {/* New accounts have no password or passkey yet, so sign-up offers only the code. */}
+        {!signup && (
+          <button type="button" className="w-full text-center text-sm text-primary-strong underline underline-offset-4"
+            onClick={() => { setUsePassword((u) => !u); setError(null); }}>
+            {usePassword ? t("useCodeInstead") : t("usePassword")}
+          </button>
+        )}
       </form>
-      <div className="flex items-center gap-3 text-sm text-muted"><span className="h-px flex-1 bg-line" />{t("orPasskey")}<span className="h-px flex-1 bg-line" /></div>
-      <Button variant="secondary" className="w-full" onClick={passkey} title={t("passkeyHint")}><KeyRound size={18} aria-hidden /> {t("passkey")}</Button>
-      <p className="border-t border-line pt-4 text-sm text-muted">
-        {t("newHere")}{" "}
-        {t("clientHint")} <Link href="/join" className="text-primary-strong underline underline-offset-4">{t("clientLink")}</Link>
-      </p>
+      {!signup && (
+        <>
+          <div className="flex items-center gap-3 text-sm text-muted"><span className="h-px flex-1 bg-line" />{t("orPasskey")}<span className="h-px flex-1 bg-line" /></div>
+          <Button variant="secondary" className="w-full" onClick={passkey} title={t("passkeyHint")}><KeyRound size={18} aria-hidden /> {t("passkey")}</Button>
+        </>
+      )}
+      <div className="space-y-1 border-t border-line pt-4 text-sm text-muted">
+        <p>
+          {signup ? t("haveAccount") : t("newHere")}{" "}
+          <Link href={signup ? "/login" : "/signup"} className="text-primary-strong underline underline-offset-4">{signup ? t("signInLink") : t("createLink")}</Link>
+        </p>
+        <p>{t("clientHint")} <Link href="/join" className="text-primary-strong underline underline-offset-4">{t("clientLink")}</Link></p>
+      </div>
       {devMailbox && (
         <a href="/dev/login" className="block text-center text-sm text-primary-strong underline underline-offset-4">{t("devQuick")}</a>
       )}

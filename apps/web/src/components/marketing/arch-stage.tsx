@@ -1,8 +1,9 @@
 "use client";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { Ear, NotebookPen, Pause, Play, DoorClosed, Check, Lightbulb } from "lucide-react";
 import { Arch, type ArchMood } from "@/components/arch";
+import { useInView } from "@/lib/use-in-view";
 
 /** The hero: Arch acts out one session, from listening to closing the door. */
 const SCENES: { mood: ArchMood; key: string; icon: typeof Ear }[] = [
@@ -27,7 +28,9 @@ export function ArchStage() {
   // null = the visitor hasn't chosen; then play unless they prefer reduced motion.
   const [choice, setChoice] = useState<boolean | null>(null);
   const reduced = useSyncExternalStore(subscribeMotion, () => window.matchMedia(REDUCED).matches, () => false);
-  const playing = choice ?? !reduced;
+  const root = useRef<HTMLDivElement>(null);
+  const visible = useInView(root);
+  const playing = (choice ?? !reduced) && visible;
   const [hello, setHello] = useState(false);
 
   useEffect(() => {
@@ -45,7 +48,7 @@ export function ArchStage() {
   const mood: ArchMood = hello ? "hello" : current.mood;
 
   return (
-    <div className="relative mx-auto flex w-full max-w-md flex-col items-center gap-5">
+    <div ref={root} data-paused={!visible} className="relative mx-auto flex w-full max-w-md flex-col items-center gap-5">
       <div
         aria-hidden
         className="absolute left-1/2 top-[38%] -z-10 h-[115%] w-[115%] -translate-x-1/2 -translate-y-1/2 rounded-full"
@@ -78,11 +81,11 @@ export function ArchStage() {
         </ol>
         <button
           type="button"
-          onClick={() => setChoice(!playing)}
-          aria-label={playing ? t("pause") : t("play")}
+          onClick={() => setChoice(!(choice ?? !reduced))}
+          aria-label={(choice ?? !reduced) ? t("pause") : t("play")}
           className="flex h-9 w-9 items-center justify-center rounded-full text-muted hover:bg-surface-2 hover:text-ink"
         >
-          {playing ? <Pause size={16} aria-hidden /> : <Play size={16} aria-hidden />}
+          {(choice ?? !reduced) ? <Pause size={16} aria-hidden /> : <Play size={16} aria-hidden />}
         </button>
       </div>
     </div>
