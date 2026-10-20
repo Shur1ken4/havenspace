@@ -49,7 +49,20 @@ class LiveRunner(threading.Thread):
         log("live.start", provider=self.provider.name, model=config.LIVE_MODEL)
         while not self.stop_event.is_set():
             try:
+                if conn.closed:
+                    conn = db.connect()
                 worked = self.transcribe_clips(conn) + self.write_insights(conn)
+            except psycopg.OperationalError:
+                # The database dropped the connection (e.g. a hosted database paused):
+                # reconnect after a short wait instead of failing every second.
+                log("live.reconnect")
+                self.stop_event.wait(5)
+                try:
+                    conn.close()
+                    conn = db.connect()
+                except psycopg.OperationalError:
+                    pass
+                continue
             except Exception as err:  # noqa: BLE001 — class name only, never content
                 log("live.error", error=type(err).__name__)
                 worked = 0
