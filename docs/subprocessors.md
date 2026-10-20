@@ -8,6 +8,7 @@ pilot** — the final list is confirmed (and contracts/DPAs signed) before
 | Company | What they do | Where | Data they see | Status |
 |---|---|---|---|---|
 | Vercel Inc. (US company) | Hosts the web app; server functions pinned to Frankfurt (`fra1`) | EU (Frankfurt) | Requests pass through while in use; nothing stored | Planned |
+| LiveKit Inc. (US company) — LiveKit Cloud | Carries in-app video calls between a therapist and their client (ADR-17) | EU (Frankfurt project region) | Live audio/video passes through while the call runs; nothing recorded by LiveKit; agent observability switched off | Pilot (role-play only) |
 | EU managed Postgres (choose: Supabase Postgres Frankfurt, Scaleway, OVH or Hetzner) | Database | EU | All app data, encrypted at rest | To choose (ADR-5) |
 | EU S3-compatible object storage (choose: Scaleway, Hetzner, OVH or AWS eu-central-1) | Short-lived audio | EU | Audio for minutes (or 7 days if the therapist chooses) | To choose |
 | Hetzner Online GmbH (German company) | GPU server running our speech-to-text and worker | Germany / Finland | Audio and transcripts while processing | Planned |

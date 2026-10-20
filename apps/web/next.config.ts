@@ -12,7 +12,8 @@ const csp = [
   "img-src 'self' data: blob:",
   "font-src 'self'",
   "media-src 'self' blob:",
-  `connect-src 'self'${isDev ? " ws:" : ""}`,
+  // In-app video (ADR-17): the call's signalling goes to our LiveKit project in the EU.
+  `connect-src 'self' wss://*.livekit.cloud https://*.livekit.cloud${isDev ? " ws:" : ""}`,
   "frame-ancestors 'none'",
   "form-action 'self'",
   "base-uri 'self'",
@@ -25,7 +26,7 @@ const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" },
-  { key: "Permissions-Policy", value: "microphone=(self), display-capture=(self), camera=(), geolocation=(), interest-cohort=()" },
+  { key: "Permissions-Policy", value: "microphone=(self), display-capture=(self), camera=(self), geolocation=(), interest-cohort=()" },
   { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
 ];
 

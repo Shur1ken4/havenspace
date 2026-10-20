@@ -401,3 +401,24 @@ Status: Accepted (working name)   Date: 2026-10-19   Deciders: Shurik
 The product is renamed from CouchNote to **HavenSpace**. Only the display name and internal labels changed; the logo, colours and Arch stay the same. The live address is still havenspace-app.vercel.app until a new address is chosen.
 
 **Name check (quick web search, not legal advice):** there is a small "Haven" AI wellbeing hobby project hosted at havenspace-support (a free site builder), "The Haven Space" (a coaching page), and many counselling centres called "Haven". There is no large company with this name, but "Haven" is common in mental health. Search TMview/EUIPO (classes 9, 42, 44) before buying a domain or paying for branding.
+
+
+# ADR-17: In-app video sessions with LiveKit
+Status: Accepted (pilot)   Date: 2026-10-20   Deciders: Shurik
+## Context
+Therapists asked to hold sessions inside HavenSpace instead of Zoom, with booking later. Video and booking will be included in every plan, Free too (Shurik's decision), so HavenSpace becomes the place therapists open every day.
+## Decision
+Build our own video room on **LiveKit Cloud** (project region: EU, Frankfurt; agent observability off). HavenSpace decides who may enter (row-level security on `video_rooms`) and hands out short-lived entry passes; LiveKit only carries the media.
+- The therapist opens a room from the client page; a linked client sees "Join now" in the client app.
+- Nothing is recorded by default. "Record for notes" creates an ordinary online-call session, so the **consent gate** applies, and records the therapist's microphone and the client's audio as two separate tracks (`mic`, `tab`), so the existing worker labels speakers exactly as for browser tab capture.
+- Ending the session closes the room for both people.
+## Options considered
+| Option | Complexity | Cost (pilot) | Privacy / EU | Time to build |
+|---|---|---|---|---|
+| **LiveKit Cloud (chosen)** | Medium: we build the screens | Free tier 5,000 participant-minutes/month | EU project region; can move to self-hosted LiveKit on our own EU server later | 1–2 days |
+| Whereby Embedded | Low: ready-made room in an iframe | Free tier 2,000 minutes/month | EU hosting available; their UI and branding | ~1 day |
+| Zoom / Meet links | None | Therapist's own subscription | Third party in the room; no clean two-track audio | — |
+## Consequences
+- Easier: notes from video sessions get two clean speaker tracks; one product for the whole session.
+- Harder: we maintain the call screen; LiveKit becomes a sub-processor (listed) and must be in the DPIA.
+- Revisit: one-time guest links for clients without the app; booking; end-to-end encryption; self-hosting LiveKit in the EU before real client data.

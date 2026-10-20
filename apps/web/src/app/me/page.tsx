@@ -6,6 +6,8 @@ import { Arch } from "@/components/arch";
 import { Card } from "@/components/ui/card";
 import { Notice } from "@/components/ui/notice";
 import { HomeworkItem, LeaveApp, MoodCheckIn, MoodList } from "./parts";
+import { VideoJoinBanner } from "@/components/video/join-banner";
+import { videoEnabled } from "@/lib/video";
 
 export async function generateMetadata() {
   return { title: (await getTranslations("me"))("title") };
@@ -50,6 +52,8 @@ export default async function ClientHome({ searchParams }: PageProps<"/me">) {
           <p className="text-ink"><span className="font-medium text-brand-ink">Arch:</span> {open > 0 ? t("archOpen", { count: open }) : t("archNone")}</p>
         </div>
       </section>
+
+      {videoEnabled() && <VideoJoinBanner therapist={data.therapist} />}
 
       <Card className="flex items-center gap-4">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary-strong"><CalendarClock size={20} aria-hidden /></span>
