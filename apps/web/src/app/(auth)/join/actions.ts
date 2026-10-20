@@ -1,27 +1,10 @@
 "use server";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { pool, withUser } from "@/lib/db";
+import { withUser } from "@/lib/db";
 import { requireUser } from "@/lib/session";
-import { hashInviteCode, normaliseInviteCode } from "@/lib/invites";
+import { allowJoinAttempt, hashInviteCode, normaliseInviteCode } from "@/lib/invites";
 
 export type JoinError = "invalid" | "too_many" | "therapist_account" | "already_linked" | "generic";
-
-/** Counts a code attempt for this visitor; false when they've tried too often. */
-export async function allowJoinAttempt(): Promise<boolean> {
-  const h = await headers();
-  const ip = (h.get("x-vercel-forwarded-for") ?? h.get("x-forwarded-for") ?? "local").split(",")[0].trim().slice(0, 64);
-  const { rows } = await pool.query("select note_join_attempt($1) as ok", [ip]);
-  return Boolean(rows[0].ok);
-}
-
-/** Looks up an invite before sign-in: the inviting therapist's name, or null. */
-export async function previewInvite(code: string): Promise<string | null> {
-  const normal = normaliseInviteCode(code);
-  if (!normal) return null;
-  const { rows } = await pool.query("select client_invite_preview($1) as name", [hashInviteCode(normal)]);
-  return rows[0].name ?? null;
-}
 
 /** After sign-in: links this account to the invited client, then opens the client app. */
 export async function joinWithCode(code: string): Promise<{ error: JoinError }> {

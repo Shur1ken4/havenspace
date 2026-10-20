@@ -5,7 +5,7 @@ import { getSession, loadRole } from "@/lib/session";
 import { normaliseInviteCode } from "@/lib/invites";
 import { buttonClass } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { allowJoinAttempt, previewInvite } from "../actions";
+import { allowJoinAttempt, previewInvite } from "@/lib/invites";
 import { JoinFlow } from "./join-flow";
 
 export async function generateMetadata() {

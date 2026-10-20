@@ -287,3 +287,68 @@ describe("client app", () => {
     expect((await su.query("select count(*)::int as n from clients where id = $1", [c])).rows[0].n).toBe(1);
   });
 });
+
+describe("video rooms", () => {
+  const link = async (therapist: string, client: string) => {
+    const h = `v-${Math.random().toString(36).slice(2)}`;
+    await asUser(app, therapist, () => app.query(
+      "insert into client_invites (therapist_id, client_id, code_hash, expires_at) values ($1, $2, $3, now() + interval '1 day')", [therapist, client, h]));
+    const user = await makeUser(su);
+    await asUser(app, user, () => app.query("select redeem_client_invite($1)", [h]));
+    return user;
+  };
+
+  it("only the therapist and their own linked client can see a room", async () => {
+    const client = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'Video A') returning id", [alice])).rows[0].id;
+    const otherClient = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'Video B') returning id", [alice])).rows[0].id;
+    const room = (await asUser(app, alice, () => app.query("insert into video_rooms (therapist_id, client_id) values ($1, $2) returning id", [alice, client]))).rows[0].id;
+    const dana = await link(alice, client);
+    const erin = await link(alice, otherClient);
+    const sees = async (u: string) => (await asUser(app, u, () => app.query("select id from video_rooms where id = $1", [room]))).rows.length;
+    expect(await sees(alice)).toBe(1);
+    expect(await sees(dana)).toBe(1);
+    expect(await sees(erin)).toBe(0);
+    expect(await sees(bob)).toBe(0);
+    // Nobody but the therapist can open rooms, and a client cannot end or change one.
+    await expect(asUser(app, dana, () => app.query("insert into video_rooms (therapist_id, client_id) values ($1, $2)", [alice, client]))).rejects.toThrow();
+    expect((await asUser(app, dana, () => app.query("update video_rooms set ended_at = now() where id = $1", [room]))).rowCount).toBe(0);
+    // Once ended, the client no longer sees it.
+    await asUser(app, alice, () => app.query("update video_rooms set ended_at = now() where id = $1", [room]));
+    expect(await sees(dana)).toBe(0);
+  });
+
+  it("a one-time link works only while the room is open and only with the right code", async () => {
+    const client = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'Video C') returning id", [alice])).rows[0].id;
+    const room = (await asUser(app, alice, () => app.query(
+      "insert into video_rooms (therapist_id, client_id, guest_token_hash, guest_expires_at) values ($1, $2, 'right', now() + interval '4 hours') returning id",
+      [alice, client]))).rows[0].id;
+    const lookup = async (h: string) => (await app.query("select * from video_guest_room($1)", [h])).rows;
+    expect(await lookup("right")).toHaveLength(1);
+    expect(Object.keys((await lookup("right"))[0]).sort()).toEqual(["room_id", "room_name", "therapist_name"]);
+    expect(await lookup("wrong")).toHaveLength(0);
+    // Signed-out visitors can't read rooms directly, only through the function.
+    expect((await app.query("select id from video_rooms")).rows).toHaveLength(0);
+    await asUser(app, alice, () => app.query("update video_rooms set ended_at = now() where id = $1", [room]));
+    expect(await lookup("right")).toHaveLength(0);
+  });
+
+  it("a paused account cannot open video rooms", async () => {
+    const paused = await makeTherapist(su);
+    const client = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'Video D') returning id", [paused])).rows[0].id;
+    await su.query("update therapists set access_status = 'declined' where id = $1", [paused]);
+    await expect(asUser(app, paused, () => app.query("insert into video_rooms (therapist_id, client_id) values ($1, $2)", [paused, client]))).rejects.toThrow(/access_pending/);
+  });
+});
+
+describe("database file storage", () => {
+  it("each therapist can only store and read files under their own folder", async () => {
+    const key = `audio/${alice}/s1/mic/000-000000.bin`;
+    await asUser(app, alice, () => app.query("insert into blob_store (key, body) values ($1, '\\x00')", [key]));
+    expect((await asUser(app, alice, () => app.query("select key from blob_store where key = $1", [key]))).rows).toHaveLength(1);
+    expect((await asUser(app, bob, () => app.query("select key from blob_store where key = $1", [key]))).rows).toHaveLength(0);
+    expect((await app.query("select key from blob_store")).rows).toHaveLength(0);
+    await expect(asUser(app, bob, () => app.query("insert into blob_store (key, body) values ($1, '\\x00')", [`audio/${alice}/x.bin`]))).rejects.toThrow(/row-level security/);
+    await expect(asUser(app, alice, () => app.query("insert into blob_store (key, body) values ($1, '\\x00')", [`secrets/${alice}/x.bin`]))).rejects.toThrow(/row-level security/);
+    await expect(asUser(app, alice, () => app.query("insert into blob_store (key, body) values ($1, '\\x00')", [`audio/${alice}/../x.bin`]))).rejects.toThrow();
+  });
+});

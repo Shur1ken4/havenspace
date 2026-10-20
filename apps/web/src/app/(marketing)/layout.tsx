@@ -11,7 +11,8 @@ export default async function MarketingLayout({ children }: LayoutProps<"/">) {
   const t = await getTranslations();
   const current = (await getLocale()).startsWith("ru") ? "ru" : "en";
   // People who are already signed in go straight to their work; no need to sign in again.
-  const signedIn = Boolean(await getSession());
+  // A database hiccup must never take the public homepage down.
+  const signedIn = await getSession().then(Boolean).catch(() => false);
   return (
     <>
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-surface focus:px-4 focus:py-2">

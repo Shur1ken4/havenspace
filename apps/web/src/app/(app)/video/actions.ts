@@ -57,8 +57,16 @@ export async function endVideo(roomId: string): Promise<void> {
   z.uuid().parse(roomId);
   const room = await withUser(therapist.id, async (db) => {
     const { rows: [r] } = await db.query(
-      "update video_rooms set ended_at = coalesce(ended_at, now()), guest_token_hash = null where id = $1 returning room_name", [roomId]);
-    if (r) await audit(db, therapist.id, "video.end", "video_room", roomId);
+      "update video_rooms set ended_at = coalesce(ended_at, now()), guest_token_hash = null where id = $1 returning room_name, session_id", [roomId]);
+    if (!r) return null;
+    await audit(db, therapist.id, "video.end", "video_room", roomId);
+    // "Record for notes" was pressed but nothing was recorded (e.g. the client never
+    // joined): remove the empty draft so it doesn't sit in the client's timeline.
+    if (r.session_id) {
+      await db.query(
+        `delete from sessions s where s.id = $1 and s.status = 'draft'
+           and not exists (select 1 from audio_chunks a where a.session_id = s.id)`, [r.session_id]);
+    }
     return r;
   });
   if (room) await closeVideoRoom(room.room_name);
