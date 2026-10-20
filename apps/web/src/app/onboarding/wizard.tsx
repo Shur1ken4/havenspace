@@ -21,7 +21,7 @@ function Choice({ selected, onClick, children }: { selected: boolean; onClick: (
     <button
       type="button" aria-pressed={selected} onClick={onClick}
       className={cn(
-        "w-full rounded-[14px] border px-4 py-3 text-left",
+        "w-full rounded-card border px-4 py-3 text-left",
         selected ? "border-primary bg-primary-soft text-ink" : "border-line bg-surface hover:bg-surface-2",
       )}
     >
@@ -79,7 +79,7 @@ export function OnboardingWizard({ initialLanguage, initialCountry }: { initialL
           <Field label={t("onboarding.fullNameLabel")} hint={t("onboarding.fullNameHint")} htmlFor="full-name">
             <Input id="full-name" value={form.fullName} maxLength={120} required onChange={(e) => set("fullName", e.target.value)} autoComplete="name" />
           </Field>
-          <div className="space-y-4 rounded-[14px] border border-line p-4 sm:p-5">
+          <div className="space-y-4 rounded-card border border-line p-4 sm:p-5">
             <div className="space-y-1">
               <p className="font-medium text-ink">{t("onboarding.verifyTitle")}</p>
               <p className="text-sm text-muted">{t("onboarding.verifyBody")}</p>

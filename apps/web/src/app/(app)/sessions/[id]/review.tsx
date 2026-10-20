@@ -171,7 +171,7 @@ function ReflectionTab({ reflection, segments, onMoment }: {
   const ItemCard = ({ item, tone }: { item: ReflectionItem; tone: "sage" | "blue" | "clay" }) => (
     <Card className="space-y-3 p-5">
       <p className="leading-relaxed text-ink">{item.text}</p>
-      {item.quote && <blockquote className="border-l-2 border-accent pl-3 text-[15px] italic text-muted">“{item.quote}”</blockquote>}
+      {item.quote && <blockquote className="border-l-2 border-accent pl-3 text-ui italic text-muted">“{item.quote}”</blockquote>}
       <Button variant="ghost" size="sm" onClick={() => onMoment(item.segment_ids)} className="-ml-2">
         <Chip tone={tone}>{msToClock(startOf(item.segment_ids))}</Chip> {t("seeMoment")}
       </Button>
@@ -236,7 +236,7 @@ function TranscriptTab({ sessionId, segments, names, highlight, isRecap }: {
   const nameOf = (sp: string) => names[sp] || (t.has(`speaker_${sp}`) ? t(`speaker_${sp}`) : sp);
   const q = query.trim().toLowerCase();
   const shown = q ? segments.filter((s) => s.text.toLowerCase().includes(q)) : segments;
-  const color = (sp: string) => (sp === "therapist" ? "text-primary-strong" : sp === "client" ? "text-[color:var(--calm-blue)]" : "text-accent");
+  const color = (sp: string) => (sp === "therapist" ? "text-primary-strong" : sp === "client" ? "text-calm-blue-strong" : "text-accent");
 
   return (
     <Card className="space-y-5">
@@ -257,7 +257,7 @@ function TranscriptTab({ sessionId, segments, names, highlight, isRecap }: {
         {shown.map((s) => (
           <li
             key={s.idx} data-idx={s.idx} tabIndex={-1}
-            className={cn("grid grid-cols-[56px_1fr] gap-3 rounded-[10px] px-3 py-2.5 sm:grid-cols-[56px_110px_1fr]", highlight.includes(s.idx) && "highlight-moment")}
+            className={cn("grid grid-cols-[56px_1fr] gap-3 rounded-inner px-3 py-2.5 sm:grid-cols-[56px_110px_1fr]", highlight.includes(s.idx) && "highlight-moment")}
           >
             <span className="pt-0.5 text-sm tabular-nums text-muted">{msToClock(s.start_ms)}</span>
             <span className={cn("text-sm font-medium sm:pt-0.5", color(s.speaker))}>{nameOf(s.speaker)}</span>
@@ -269,7 +269,7 @@ function TranscriptTab({ sessionId, segments, names, highlight, isRecap }: {
         <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); start(async () => { await renameSpeakers(sessionId, draftNames); setRenaming(false); }); }}>
           {speakers.map((sp) => (
             <label key={sp} className="block space-y-1.5">
-              <span className="text-[15px] font-medium">{t("speakerName", { speaker: t.has(`speaker_${sp}`) ? t(`speaker_${sp}`) : sp })}</span>
+              <span className="text-ui font-medium">{t("speakerName", { speaker: t.has(`speaker_${sp}`) ? t(`speaker_${sp}`) : sp })}</span>
               <Input value={draftNames[sp] ?? ""} placeholder={nameOf(sp)} maxLength={30} onChange={(e) => setDraftNames({ ...draftNames, [sp]: e.target.value })} />
             </label>
           ))}

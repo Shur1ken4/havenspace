@@ -7,5 +7,5 @@ export function BrowserCheck() {
   const t = useTranslations("session");
   const ok = useSyncExternalStore(() => () => {}, canCaptureTabAudio, () => true);
   if (ok) return null;
-  return <p className="text-sm text-attention">{t("browserCheckFail")}</p>;
+  return <p className="text-sm text-attention-strong">{t("browserCheckFail")}</p>;
 }

@@ -157,7 +157,7 @@ export default async function LandingPage() {
           ))}
         </ul>
         <p className="mt-8 text-muted">{t("privacyAlso")}</p>
-        <div className="mt-6 space-y-2 rounded-[16px] border border-dashed border-line p-5">
+        <div className="mt-6 space-y-2 rounded-card border border-dashed border-line p-5">
           <h3 className="flex items-center gap-2 font-sans text-base font-medium"><KeyRound size={17} aria-hidden /> {t("notTitle")}</h3>
           <ul className="list-disc space-y-1 pl-6 text-muted">
             <li>{t("not1")}</li>

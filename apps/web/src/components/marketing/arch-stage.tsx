@@ -56,7 +56,7 @@ export function ArchStage() {
       />
       <Arch mood={mood} followPointer onClick={() => setHello(true)} label={t("sayHello")} className="h-64 w-64 sm:h-80 sm:w-80" />
 
-      <div className="w-full rounded-[18px] border border-line bg-surface p-4 shadow-[var(--shadow)]" aria-live="polite">
+      <div className="w-full rounded-card border border-line bg-surface p-4 shadow-[var(--shadow)]" aria-live="polite">
         <p className="flex items-center gap-2 text-xs uppercase tracking-[0.12em] text-muted">
           <span className="font-medium text-brand-ink">Arch</span> · {hello ? t("helloTag") : t(`${current.key}Tag`)}
         </p>

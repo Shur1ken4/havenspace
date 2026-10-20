@@ -115,10 +115,12 @@ export function LogoMark({ className }: Props) {
 }
 
 /** Mark + "HavenSpace" wordmark, with an optional small descriptor underneath. */
-export function Logo({ name, tagline, size = "md", taglineFrom }: {
+export function Logo({ name, tagline, size = "md", taglineFrom, compactBelow360 = false }: {
   name: string; tagline?: string; size?: "sm" | "md" | "lg";
   /** Hide the descriptor on narrow screens (e.g. a crowded header). */
   taglineFrom?: "sm";
+  /** Show only the mark on the narrowest phones (the name stays for screen readers). */
+  compactBelow360?: boolean;
 }) {
   const mark = { sm: "h-7 w-7", md: "h-8 w-8 min-[360px]:h-9 min-[360px]:w-9", lg: "h-11 w-11" }[size];
   const word = { sm: "text-lg", md: "text-lg min-[360px]:text-xl sm:text-2xl", lg: "text-3xl" }[size];
@@ -126,7 +128,7 @@ export function Logo({ name, tagline, size = "md", taglineFrom }: {
     <span className="flex items-center gap-2 text-brand-ink min-[360px]:gap-2.5">
       <LogoMark className={`${mark} shrink-0`} />
       <span className="flex flex-col leading-none">
-        <span className={`font-serif ${word} tracking-tight`}>{name}</span>
+        <span className={`font-serif ${word} tracking-tight ${compactBelow360 ? "max-[359px]:sr-only" : ""}`}>{name}</span>
         {tagline && <span className={`mt-1 ${taglineFrom === "sm" ? "hidden sm:block" : "block"} whitespace-nowrap text-[11px] uppercase tracking-[0.14em] text-muted`}>{tagline}</span>}
       </span>
     </span>

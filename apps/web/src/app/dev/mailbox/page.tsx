@@ -13,7 +13,7 @@ export default function DevMailbox() {
       {devMailbox.map((m, i) => {
         const link = m.text.match(/https?:\/\/\S+/)?.[0];
         return (
-          <article key={i} className="rounded-[14px] border border-line bg-surface p-5">
+          <article key={i} className="rounded-card border border-line bg-surface p-5">
             <p className="text-sm text-muted">{m.at} · to {m.to}</p>
             <p className="font-medium">{m.subject}</p>
             {link && <a className="mt-2 inline-block break-all text-primary-strong underline" href={link}>{link}</a>}

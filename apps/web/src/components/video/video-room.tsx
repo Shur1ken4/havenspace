@@ -243,7 +243,7 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, deviceErro
         )}
       </div>
 
-      <div className="relative aspect-[3/4] overflow-hidden rounded-[22px] border border-line bg-[#1E2421] sm:aspect-video">
+      <div className="relative aspect-[3/4] overflow-hidden rounded-panel border border-line bg-[#1E2421] sm:aspect-video">
         {remoteCam ? (
           <VideoTrack trackRef={remoteCam as TrackReference} className="h-full w-full object-cover" />
         ) : (

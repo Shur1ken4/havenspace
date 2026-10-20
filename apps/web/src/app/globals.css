@@ -2,27 +2,33 @@
 
 /*
   Design tokens — "a quiet room". All colours in the app come from here.
-  Two values differ slightly from the brief for WCAG AA contrast:
-  --muted (#6E7A73 → #66726B) and --primary-strong (added for text on sage).
+  A few values are darker than the brief so all text meets WCAG AA (4.5:1):
+  --muted (#6E7A73 → #616D66), --primary-strong (text and buttons on sage),
+  --destructive (#B5654A → #A3573F). Text in blue or amber uses the *-strong
+  tokens; text on a filled sage button uses --on-primary (white in light mode,
+  deep charcoal in dark mode, where the sage is light).
 */
 :root {
   --bg: #FAF8F5;
   --surface: #FFFFFF;
   --surface-2: #F3F0EA;
   --ink: #2F3A35;
-  --muted: #66726B;
+  --muted: #616D66;
   --primary: #6B8F7B;
-  --primary-strong: #4F7361;
+  --primary-strong: #4A6D5B;
+  --on-primary: #FFFFFF;
   --primary-soft: #E6EEE9;
   --accent: #C9A38A;
   --accent-soft: #F3E9E1;
   --calm-blue: #8FA9B8;
   --calm-blue-soft: #E7EEF2;
+  --calm-blue-strong: #527486;
   --attention: #C98A5B;
   --attention-soft: #F6EADF;
-  --destructive: #B5654A;
+  --attention-strong: #8F5C2D;
+  --destructive: #A3573F;
   --border: #E7E2DA;
-  --focus: #4F7361;
+  --focus: #4A6D5B;
   --brand: #2E6E6A;        /* HavenSpace logo teal */
   --brand-ink: #1E3D3B;    /* HavenSpace wordmark */
   --shadow: 0 1px 2px rgba(47, 58, 53, 0.04), 0 8px 24px rgba(47, 58, 53, 0.05);
@@ -38,6 +44,7 @@
     --muted: #A2ACA5;
     --primary: #8AAA97;
     --primary-strong: #9DBBA9;
+    --on-primary: #1E2421;
     --primary-soft: #2D3A33;
     --brand: #7FB8B0;
     --brand-ink: #E3EEEA;
@@ -45,8 +52,10 @@
     --accent-soft: #3A322C;
     --calm-blue: #8EA5B2;
     --calm-blue-soft: #2A343A;
+    --calm-blue-strong: #8EA5B2;
     --attention: #D2A07A;
     --attention-soft: #3B3129;
+    --attention-strong: #D2A07A;
     --destructive: #D08670;
     --border: #353E39;
     --focus: #9DBBA9;
@@ -62,6 +71,7 @@
   --muted: #A2ACA5;
   --primary: #8AAA97;
   --primary-strong: #9DBBA9;
+    --on-primary: #1E2421;
   --primary-soft: #2D3A33;
   --brand: #7FB8B0;
   --brand-ink: #E3EEEA;
@@ -69,8 +79,10 @@
   --accent-soft: #3A322C;
   --calm-blue: #8EA5B2;
   --calm-blue-soft: #2A343A;
+    --calm-blue-strong: #8EA5B2;
   --attention: #D2A07A;
   --attention-soft: #3B3129;
+    --attention-strong: #D2A07A;
   --destructive: #D08670;
   --border: #353E39;
   --focus: #9DBBA9;
@@ -93,15 +105,24 @@
   --color-accent-soft: var(--accent-soft);
   --color-calm-blue: var(--calm-blue);
   --color-calm-blue-soft: var(--calm-blue-soft);
+  --color-calm-blue-strong: var(--calm-blue-strong);
+  --color-on-primary: var(--on-primary);
   --color-attention: var(--attention);
   --color-attention-soft: var(--attention-soft);
+  --color-attention-strong: var(--attention-strong);
   --color-destructive: var(--destructive);
   --color-line: var(--border);
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-fraunces), ui-serif, Georgia, serif;
-  --radius-soft: 14px;
+  /* Corners: inner (inside another rounded box), control (buttons, inputs),
+     card (cards, notices, panels), panel (large hero and video surfaces). */
+  --radius-inner: 10px;
+  --radius-control: 12px;
+  --radius-card: 16px;
+  --radius-panel: 22px;
   --shadow-soft: var(--shadow);
   --ease-calm: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --text-ui: 15px;
 }
 
 @layer base {
@@ -118,6 +139,9 @@ h1, h2, h3, .font-serif { font-family: var(--font-serif); font-weight: 400; lett
 
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 6px; }
 ::selection { background: var(--primary-soft); }
+/* Grid items may shrink below their content's width, so a long word or button
+   never pushes a page wider than a phone screen. */
+.grid > * { min-width: 0; }
 }
 
 /* Gentle transitions everywhere; none for people who prefer reduced motion. */

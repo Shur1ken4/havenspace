@@ -53,7 +53,7 @@ export default async function TodayPage() {
 
   const SessionLink = ({ s }: { s: Row }) => (
     <li>
-      <Link href={`/sessions/${s.id}`} className="flex items-center justify-between gap-3 rounded-[12px] px-3 py-3 hover:bg-surface-2">
+      <Link href={`/sessions/${s.id}`} className="flex items-center justify-between gap-3 rounded-control px-3 py-3 hover:bg-surface-2">
         <span>
           <span className="font-medium text-ink">{s.pseudonym}</span>{" "}
           <span className="text-muted">· {format.dateTime(s.started_at, { weekday: "short", day: "numeric", month: "short" })} · {t(`session.short_${s.capture_mode}`)}</span>

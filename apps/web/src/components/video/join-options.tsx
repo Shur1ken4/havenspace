@@ -24,7 +24,7 @@ export function JoinOptions({ roomId, clientName, linked }: { roomId: string; cl
   };
 
   return (
-    <div className="space-y-3 rounded-[16px] border border-line bg-surface p-4 text-left">
+    <div className="space-y-3 rounded-card border border-line bg-surface p-4 text-left">
       <p className="font-medium text-ink">{t("howJoins", { name: clientName })}</p>
       {linked && (
         <p className="flex gap-2 text-sm text-ink"><Smartphone size={17} className="mt-0.5 shrink-0 text-primary-strong" aria-hidden /> {t("joinsInApp", { name: clientName })}</p>
@@ -34,14 +34,14 @@ export function JoinOptions({ roomId, clientName, linked }: { roomId: string; cl
         {url ? (
           <div className="flex flex-col gap-2 sm:flex-row">
             <input readOnly value={url} onFocus={(e) => e.target.select()} aria-label={t("linkLabel")}
-              className="min-w-0 flex-1 rounded-[12px] border border-line bg-surface-2 px-3 py-2 text-sm text-ink" />
+              className="min-w-0 flex-1 rounded-control border border-line bg-surface-2 px-3 py-2 text-sm text-ink" />
             <Button variant="secondary" onClick={copy}>{copied ? <><Check size={16} aria-hidden /> {t("copied")}</> : <><Copy size={16} aria-hidden /> {t("copy")}</>}</Button>
           </div>
         ) : (
           <Button variant="secondary" size="sm" onClick={make} disabled={pending}>{t("makeLink")}</Button>
         )}
         {url && <p className="text-xs text-muted">{t("linkNote")}</p>}
-        {failed && <p className="text-sm text-attention">{t("gone")}</p>}
+        {failed && <p className="text-sm text-attention-strong">{t("gone")}</p>}
       </div>
     </div>
   );

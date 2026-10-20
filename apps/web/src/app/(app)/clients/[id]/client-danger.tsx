@@ -22,7 +22,7 @@ export function ClientDanger({ clientId, pseudonym, archived }: { clientId: stri
       <Dialog open={open} onOpenChange={setOpen} title={t("deleteClient")} description={t("deleteClientBody", { pseudonym })}>
         <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); start(async () => { await deleteClient(clientId, confirm); }); }}>
           <label className="block space-y-1.5">
-            <span className="text-[15px] font-medium">{t("deleteConfirmLabel")}</span>
+            <span className="text-ui font-medium">{t("deleteConfirmLabel")}</span>
             <Input value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="off" />
           </label>
           <Button type="submit" variant="destructive" disabled={pending || confirm.trim() !== pseudonym}>{t("deleteClient")}</Button>

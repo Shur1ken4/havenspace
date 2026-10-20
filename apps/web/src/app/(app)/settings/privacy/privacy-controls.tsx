@@ -14,7 +14,7 @@ export function RetentionChoice({ value }: { value: "delete_after_transcription"
   return (
     <fieldset className="space-y-2" disabled={pending}>
       {(["delete_after_transcription", "keep_7_days"] as const).map((v) => (
-        <label key={v} className="flex items-start gap-3 rounded-[12px] border border-line px-4 py-3 has-[:checked]:border-primary has-[:checked]:bg-primary-soft">
+        <label key={v} className="flex items-start gap-3 rounded-control border border-line px-4 py-3 has-[:checked]:border-primary has-[:checked]:bg-primary-soft">
           <input type="radio" name="retention" className="mt-1 accent-[var(--primary-strong)]" defaultChecked={value === v} onChange={() => start(() => setRetention(v))} />
           <span>{t(`retention_${v}`)}</span>
         </label>
@@ -58,7 +58,7 @@ export function DeleteAccount() {
       <Dialog open={open} onOpenChange={setOpen} title={t("deleteTitle")} description={t("deleteBody")}>
         <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); start(async () => { await deleteAccount(value); }); }}>
           <label className="block space-y-1.5">
-            <span className="text-[15px] font-medium">{t("deleteConfirmLabel")}</span>
+            <span className="text-ui font-medium">{t("deleteConfirmLabel")}</span>
             <Input value={value} onChange={(e) => setValue(e.target.value)} autoComplete="off" />
           </label>
           <Button type="submit" variant="destructive" disabled={pending || value.trim().toUpperCase() !== "DELETE"}>{t("deleteCta")}</Button>

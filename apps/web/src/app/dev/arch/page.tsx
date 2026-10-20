@@ -12,7 +12,7 @@ export default function ArchGallery() {
       <h1 className="mb-6 text-3xl">Arch moods</h1>
       <ul className="grid grid-cols-2 gap-6 sm:grid-cols-5">
         {MOODS.map((m) => (
-          <li key={m} className="flex flex-col items-center gap-2 rounded-[16px] border border-line bg-surface p-4">
+          <li key={m} className="flex flex-col items-center gap-2 rounded-card border border-line bg-surface p-4">
             <Arch mood={m} alive={m === "idle"} className="h-32 w-32" />
             <span className="text-sm text-muted">{m}</span>
           </li>

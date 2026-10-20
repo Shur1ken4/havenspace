@@ -23,7 +23,7 @@ export default async function Subprocessors() {
       <h1 className="text-4xl">{t("title")}</h1>
       <p className="text-lg text-muted">{t("intro")}</p>
       <Card className="overflow-x-auto p-0">
-        <table className="w-full min-w-[640px] text-left text-[15px]">
+        <table className="w-full min-w-[640px] text-left text-ui">
           <thead className="border-b border-line bg-surface-2 text-sm text-muted">
             <tr><th className="p-4 font-medium">{t("name")}</th><th className="p-4 font-medium">{t("purpose")}</th><th className="p-4 font-medium">{t("location")}</th><th className="p-4 font-medium">{t("data")}</th></tr>
           </thead>

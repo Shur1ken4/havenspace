@@ -86,8 +86,8 @@ export function ClientAppPanel({ clientId, active, data }: { clientId: string; a
         )}
 
         {invite && (
-          <div className="grid gap-4 rounded-[14px] border border-line bg-surface-2 p-4 sm:grid-cols-[auto_1fr] sm:items-center fade-up">
-            <div className="mx-auto h-36 w-36 rounded-[10px] bg-white p-2" aria-label={t("qrLabel")} role="img" dangerouslySetInnerHTML={{ __html: invite.qr }} />
+          <div className="grid gap-4 rounded-card border border-line bg-surface-2 p-4 sm:grid-cols-[auto_1fr] sm:items-center fade-up">
+            <div className="mx-auto h-36 w-36 rounded-inner bg-white p-2" aria-label={t("qrLabel")} role="img" dangerouslySetInnerHTML={{ __html: invite.qr }} />
             <div className="min-w-0 space-y-2">
               <p className="text-sm text-muted">{t("codeLabel")}</p>
               <p className="font-serif text-3xl tracking-[0.15em] text-ink">{invite.code}</p>
@@ -149,7 +149,7 @@ function Homework({ clientId, items }: { clientId: string; items: ClientAppData[
       {items.length === 0 ? <p className="text-sm text-muted">{t("homeworkEmpty")}</p> : (
         <ul className="space-y-3">
           {items.map((a) => (
-            <li key={a.id} className="rounded-[12px] border border-line p-3">
+            <li key={a.id} className="rounded-control border border-line p-3">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 space-y-1">
                   <p className="font-medium text-ink">{a.title}</p>
@@ -158,7 +158,7 @@ function Homework({ clientId, items }: { clientId: string; items: ClientAppData[
                     {a.done_at ? <Chip tone="sage">{t("done")}</Chip> : <Chip tone="plain">{t("notDone")}</Chip>}
                     {a.due_on && <Chip tone="plain">{t("due", { date: f.dateTime(new Date(`${a.due_on}T12:00:00`), { dateStyle: "medium" }) })}</Chip>}
                   </div>
-                  {a.client_reply && <p className="mt-1 rounded-[10px] bg-surface-2 px-3 py-2 text-sm text-ink"><span className="text-muted">{t("reply")}: </span>{a.client_reply}</p>}
+                  {a.client_reply && <p className="mt-1 rounded-inner bg-surface-2 px-3 py-2 text-sm text-ink"><span className="text-muted">{t("reply")}: </span>{a.client_reply}</p>}
                 </div>
                 <button type="button" className="rounded-full p-1.5 text-muted hover:bg-surface-2 hover:text-ink" aria-label={t("archive")}
                   onClick={() => start(() => archiveAssignment(clientId, a.id))}><X size={16} aria-hidden /></button>
@@ -211,7 +211,7 @@ function NextSession({ clientId, startsAt }: { clientId: string; startsAt: strin
         </div>
         <Button type="submit" variant="secondary" disabled={pending || !value}>{t("save")}</Button>
       </form>
-      {error && <p className="text-sm text-attention">{t("pastDate")}</p>}
+      {error && <p className="text-sm text-attention-strong">{t("pastDate")}</p>}
       <p className="text-xs text-muted">{t("nextSessionHint")}</p>
     </Card>
   );

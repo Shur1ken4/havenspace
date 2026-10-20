@@ -26,10 +26,10 @@ export function SignupForm() {
   return (
     <form action={action} className="space-y-5">
       <fieldset>
-        <legend className="mb-2 text-[15px] font-medium">{t("signup.choose")}</legend>
+        <legend className="mb-2 text-ui font-medium">{t("signup.choose")}</legend>
         <div className="grid gap-3 sm:grid-cols-2">
           {options.map((o) => (
-            <label key={o.id} className={cn("flex cursor-pointer gap-3 rounded-[14px] border p-4", interest === o.id ? "border-primary bg-primary-soft" : "border-line bg-surface hover:bg-surface-2")}>
+            <label key={o.id} className={cn("flex cursor-pointer gap-3 rounded-card border p-4", interest === o.id ? "border-primary bg-primary-soft" : "border-line bg-surface hover:bg-surface-2")}>
               <input type="radio" name="interest" value={o.id} checked={interest === o.id} onChange={() => setInterest(o.id)} className="sr-only" aria-label={o.title} />
               <o.icon size={20} className="mt-0.5 shrink-0 text-primary-strong" aria-hidden />
               <span><span className="block font-medium text-ink">{o.title}</span><span className="block text-sm text-muted">{o.body}</span></span>
@@ -58,7 +58,7 @@ export function SignupForm() {
         </Field>
       </div>
       <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
-      <label className="flex items-start gap-3 text-[15px] text-ink">
+      <label className="flex items-start gap-3 text-ui text-ink">
         <input type="checkbox" name="consent" required className="mt-1 h-4 w-4 accent-[var(--primary-strong)]" />
         <span>{t("signup.consent")}</span>
       </label>

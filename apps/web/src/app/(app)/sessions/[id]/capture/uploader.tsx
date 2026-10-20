@@ -46,7 +46,7 @@ export function Uploader({ sessionId }: { sessionId: string }) {
     <Card className="space-y-5 sm:p-8">
       <h2 className="text-2xl">{t("uploadTitle")}</h2>
       <p className="text-muted">{t("uploadHint")}</p>
-      <label className="flex cursor-pointer flex-col items-center gap-2 rounded-[14px] border-2 border-dashed border-line bg-surface-2 px-6 py-10 text-center hover:border-primary">
+      <label className="flex cursor-pointer flex-col items-center gap-2 rounded-card border-2 border-dashed border-line bg-surface-2 px-6 py-10 text-center hover:border-primary">
         <Upload className="text-primary-strong" aria-hidden />
         <span className="font-medium">{file ? file.name : t("uploadChoose")}</span>
         {file && <span className="text-sm text-muted">{(file.size / 1024 / 1024).toFixed(1)} MB</span>}

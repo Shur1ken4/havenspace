@@ -37,7 +37,7 @@ export function FeedbackWidget() {
             }}
           >
             <fieldset>
-              <legend className="mb-2 text-[15px] font-medium">{t("feedbackRating")}</legend>
+              <legend className="mb-2 text-ui font-medium">{t("feedbackRating")}</legend>
               <div className="flex gap-2">
                 {[1, 2, 3, 4, 5].map((n) => (
                   <button
@@ -48,7 +48,7 @@ export function FeedbackWidget() {
               </div>
             </fieldset>
             <label className="block space-y-1.5">
-              <span className="text-[15px] font-medium">{t("feedbackMessage")}</span>
+              <span className="text-ui font-medium">{t("feedbackMessage")}</span>
               <Textarea value={message} onChange={(e) => setMessage(e.target.value)} maxLength={2000} />
             </label>
             <Button type="submit" disabled={pending || (!rating && !message.trim())}>{t("feedbackSend")}</Button>

@@ -17,12 +17,14 @@ export default async function ClientLayout({ children }: LayoutProps<"/me">) {
     <div className="min-h-dvh">
       <header className="border-b border-line bg-surface/70">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
-          <Link href="/me" aria-label={t("common.appName")}><Logo name={t("common.appName")} size="sm" /></Link>
-          <div className="flex items-center gap-1">
+          <Link href="/me" className="min-w-0" aria-label={t("common.appName")}><Logo name={t("common.appName")} size="sm" compactBelow360 /></Link>
+          <div className="flex shrink-0 items-center gap-1">
             <ThemeSwitch initial={await currentTheme()} compact />
             <form action={setPublicLocale}>
               <input type="hidden" name="lang" value={other} />
-              <button className="rounded-[10px] px-3 py-2 text-sm text-muted hover:bg-surface-2 hover:text-ink">{other === "ru" ? "Русский" : "English"}</button>
+              <button lang={other} aria-label={other === "ru" ? "Русский" : "English"} className="rounded-inner px-2 py-2 text-sm text-muted hover:bg-surface-2 hover:text-ink sm:px-3">
+                <span className="sm:hidden" aria-hidden>{other.toUpperCase()}</span><span className="hidden sm:inline">{other === "ru" ? "Русский" : "English"}</span>
+              </button>
             </form>
             <AccountMenu name={session.user.name ?? ""} email={session.user.email} image={session.user.image ?? null} accountHref="/me/settings" />
           </div>

@@ -86,7 +86,7 @@ export function Security({ twoFactorOn }: { twoFactorOn: boolean }) {
       </Card>
 
       <Card className="space-y-4">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="flex items-center gap-2 text-2xl"><ShieldCheck size={20} aria-hidden /> {t("twoFactor")}</h2>
           <Chip tone={twoFactorOn ? "sage" : "plain"}>{twoFactorOn ? t("twoFactorOn") : t("twoFactorOff")}</Chip>
         </div>
@@ -94,7 +94,7 @@ export function Security({ twoFactorOn }: { twoFactorOn: boolean }) {
         {setup ? (
           <div className="space-y-4">
             <p>{t("twoFactorScan")}</p>
-            <div className="h-44 w-44 rounded-[12px] bg-white p-2" dangerouslySetInnerHTML={{ __html: setup.qr }} />
+            <div className="h-44 w-44 rounded-control bg-white p-2" dangerouslySetInnerHTML={{ __html: setup.qr }} />
             <p className="break-all font-mono text-sm text-muted">{setup.secret}</p>
             <Notice tone="info" title={t("twoFactorBackup")}>
               <p className="font-mono text-sm">{setup.backup.join("  ")}</p>

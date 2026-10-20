@@ -86,7 +86,7 @@ export function HeroDemo() {
         <Arch mood={MOOD[phase]} className="-mb-[6px] h-32 w-32 shrink-0 sm:-mb-[8px] sm:h-44 sm:w-44" />
       </div>
 
-      <div aria-hidden className="overflow-hidden rounded-[22px] border border-line bg-surface shadow-[0_24px_60px_-24px_rgba(47,58,53,0.25)]">
+      <div aria-hidden className="overflow-hidden rounded-panel border border-line bg-surface shadow-[0_24px_60px_-24px_rgba(47,58,53,0.25)]">
         {/* Window bar */}
         <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
           <div className="flex items-center gap-1.5">
@@ -128,7 +128,7 @@ export function HeroDemo() {
               </div>
               {lines.slice(0, Math.min(4, step + 1)).map((l, i) => (
                 <div key={i} className="fade-up flex gap-3 text-sm">
-                  <span className={`w-14 shrink-0 text-xs font-medium leading-6 ${l.who === "you" ? "text-primary-strong" : "text-calm-blue"}`}>
+                  <span className={`w-14 shrink-0 text-xs font-medium leading-6 ${l.who === "you" ? "text-primary-strong" : "text-calm-blue-strong"}`}>
                     {l.who === "you" ? t("you") : t("client")}
                   </span>
                   <p className="text-ink">{l.text}</p>
@@ -150,7 +150,7 @@ export function HeroDemo() {
               {phase === "done" && (
                 <div className="fade-up flex items-center justify-between gap-3 border-t border-line pt-3">
                   <p className="flex items-center gap-1.5 text-sm text-muted"><Check size={15} className="text-primary-strong" /> {t("ready")}</p>
-                  <span className="rounded-full bg-primary px-3.5 py-1.5 text-xs font-medium text-white">{t("approve")}</span>
+                  <span className="rounded-full bg-primary-strong px-3.5 py-1.5 text-xs font-medium text-on-primary">{t("approve")}</span>
                 </div>
               )}
             </div>

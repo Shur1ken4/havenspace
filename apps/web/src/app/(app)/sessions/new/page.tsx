@@ -76,7 +76,7 @@ export default async function NewSessionPage({ searchParams }: PageProps<"/sessi
           <input type="hidden" name="clientId" value={client.id} />
           <button type="submit" className="w-full text-left">
             <Card className="flex flex-col gap-4 border-primary p-5 hover:bg-primary-soft/40 sm:flex-row sm:items-center">
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-white"><Video size={22} aria-hidden /></span>
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-strong text-on-primary"><Video size={22} aria-hidden /></span>
               <span className="space-y-1">
                 <span className="flex flex-wrap items-center gap-2 text-lg font-medium text-ink">{t("session.mode_video")} <Chip>{t("session.newBadge")}</Chip></span>
                 <span className="block text-muted">{t("session.mode_video_body")}</span>

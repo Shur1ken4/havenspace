@@ -67,7 +67,7 @@ export function DocumentUpload() {
       {docs.length > 0 && (
         <ul className="space-y-2">
           {docs.map((d) => (
-            <li key={d.id} className="flex items-center gap-2 rounded-[12px] border border-line bg-surface px-3 py-2 text-sm">
+            <li key={d.id} className="flex items-center gap-2 rounded-control border border-line bg-surface px-3 py-2 text-sm">
               <FileCheck2 size={16} className="shrink-0 text-primary-strong" aria-hidden />
               <a href={`/api/documents/${d.id}`} target="_blank" rel="noreferrer" className="min-w-0 flex-1 truncate text-ink hover:underline">{d.filename}</a>
               <button type="button" onClick={() => remove(d.id)} aria-label={t("remove")} className="rounded-full p-1 text-muted hover:bg-surface-2 hover:text-ink"><Trash2 size={15} aria-hidden /></button>

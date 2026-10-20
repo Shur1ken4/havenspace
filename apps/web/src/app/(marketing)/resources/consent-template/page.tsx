@@ -18,7 +18,7 @@ export default async function ConsentTemplate() {
         <PrintButton label={t("print")} />
       </div>
       <ConsentText />
-      <section className="space-y-6 rounded-[14px] border border-line p-6">
+      <section className="space-y-6 rounded-card border border-line p-6">
         <p>{t("agree")}</p>
         <div className="grid gap-8 sm:grid-cols-2">
           {[t("clientSignature"), t("therapistSignature")].map((label) => (

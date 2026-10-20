@@ -28,7 +28,7 @@ export default async function MarketingLayout({ children }: LayoutProps<"/">) {
         <Link href="/" className="shrink-0" aria-label={t("common.appName")}>
           <Logo name={t("common.appName")} tagline={t("common.tagline")} taglineFrom="sm" />
         </Link>
-        <nav aria-label="Main" className="hidden items-center gap-6 text-[15px] text-muted md:flex">
+        <nav aria-label="Main" className="hidden items-center gap-6 text-ui text-muted md:flex">
           <Link href="/#how" className="hover:text-ink">{t("nav.how")}</Link>
           <Link href="/#reflection" className="hover:text-ink">{t("nav.reflection")}</Link>
           <Link href="/privacy" className="hover:text-ink">{t("nav.privacy")}</Link>

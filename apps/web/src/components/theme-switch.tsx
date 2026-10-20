@@ -27,11 +27,11 @@ export function ThemeSwitch({ initial, compact = false }: { initial: Theme; comp
     applyTheme(next);
   }
   return (
-    <div role="radiogroup" aria-label={t("label")} className="inline-flex rounded-full border border-line bg-surface p-1">
+    <div role="radiogroup" aria-label={t("label")} className={compact ? "inline-flex shrink-0 rounded-full border border-line bg-surface p-1" : "inline-flex max-w-full flex-wrap rounded-card border border-line bg-surface p-1 sm:rounded-full"}>
       {OPTIONS.map(({ value, icon: Icon }) => (
         <button key={value} type="button" role="radio" aria-checked={theme === value} onClick={() => choose(value)}
           title={t(value)} aria-label={compact ? t(value) : undefined}
-          className={`flex items-center gap-1.5 rounded-full ${compact ? "p-1.5" : "px-3 py-1.5"} text-sm ${theme === value ? "bg-primary-soft text-primary-strong" : "text-muted hover:text-ink"}`}>
+          className={`flex items-center gap-1.5 rounded-full ${compact ? "p-1.5" : "px-2.5 py-1.5 sm:px-3"} text-sm ${theme === value ? "bg-primary-soft text-primary-strong" : "text-muted hover:text-ink"}`}>
           <Icon size={15} aria-hidden />{!compact && t(value)}
         </button>
       ))}

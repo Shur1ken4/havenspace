@@ -26,7 +26,7 @@ export function VoiceCheck({ onDone }: { onDone?: () => void }) {
 
   return (
     <div className="space-y-4">
-      <blockquote className="rounded-[14px] border border-line bg-surface-2 px-5 py-4 font-serif text-xl text-ink">
+      <blockquote className="rounded-card border border-line bg-surface-2 px-5 py-4 font-serif text-xl text-ink">
         “{t("voiceSentence")}”
       </blockquote>
       {state === "recording" && (

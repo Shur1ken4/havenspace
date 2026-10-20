@@ -54,10 +54,10 @@ export function MoodCheckIn({ therapist }: { therapist: string }) {
     <Card className="space-y-4 p-5">
       <form ref={form} action={action} className="space-y-4">
         <fieldset className="space-y-2">
-          <legend className="text-[15px] font-medium text-ink">{t("moodQuestion")}</legend>
+          <legend className="text-ui font-medium text-ink">{t("moodQuestion")}</legend>
           <div className="flex flex-wrap gap-2">
             {[1, 2, 3, 4, 5].map((m) => (
-              <label key={m} className={`flex cursor-pointer flex-col items-center gap-1 rounded-[14px] border px-3 py-2 ${mood === m ? "border-primary bg-primary-soft" : "border-line hover:border-primary/60"}`}>
+              <label key={m} className={`flex cursor-pointer flex-col items-center gap-1 rounded-card border px-3 py-2 ${mood === m ? "border-primary bg-primary-soft" : "border-line hover:border-primary/60"}`}>
                 <input type="radio" name="mood" value={m} className="sr-only" required onChange={() => setMood(m)} />
                 <MoodFace mood={m} className="h-10 w-10" />
                 <span className="text-xs text-muted">{t(`mood${m}`)}</span>
@@ -66,10 +66,10 @@ export function MoodCheckIn({ therapist }: { therapist: string }) {
           </div>
         </fieldset>
         <div className="space-y-1.5">
-          <label htmlFor="mood-note" className="text-[15px] font-medium text-ink">{t("noteLabel")}</label>
+          <label htmlFor="mood-note" className="text-ui font-medium text-ink">{t("noteLabel")}</label>
           <Textarea id="mood-note" name="note" maxLength={1000} className="min-h-20" placeholder={t("notePlaceholder")} />
         </div>
-        <label className="flex items-start gap-3 text-[15px] text-ink">
+        <label className="flex items-start gap-3 text-ui text-ink">
           <input type="checkbox" name="shared" defaultChecked className="mt-1 h-4 w-4 accent-[var(--primary-strong)]" />
           <span>{t("shareWith", { name: therapist })}</span>
         </label>
@@ -114,7 +114,7 @@ export function LeaveApp() {
   const [word, setWord] = useState("");
   const [pending, start] = useTransition();
   return (
-    <details className="rounded-[16px] border border-line bg-surface p-5">
+    <details className="rounded-card border border-line bg-surface p-5">
       <summary className="cursor-pointer text-muted">{t("leaveTitle")}</summary>
       <div className="mt-4 space-y-3">
         <p className="text-muted">{t("leaveBody")}</p>

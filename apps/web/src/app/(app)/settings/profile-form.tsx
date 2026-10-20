@@ -36,10 +36,10 @@ export function ProfileForm({ therapist }: { therapist: Therapist }) {
           </Field>
         </div>
         <fieldset className="space-y-2">
-          <legend className="text-[15px] font-medium">{t("onboarding.modalityTitle")}</legend>
+          <legend className="text-ui font-medium">{t("onboarding.modalityTitle")}</legend>
           <div className="grid gap-2 sm:grid-cols-2">
             {modalities.map((m) => (
-              <label key={m} className="flex items-center gap-3 rounded-[12px] border border-line px-4 py-2.5 has-[:checked]:border-primary has-[:checked]:bg-primary-soft">
+              <label key={m} className="flex items-center gap-3 rounded-control border border-line px-4 py-2.5 has-[:checked]:border-primary has-[:checked]:bg-primary-soft">
                 <input type="checkbox" name="modalities" value={m} checked={chosen.includes(m)} className="h-4 w-4 accent-[var(--primary-strong)]"
                   onChange={(e) => setChosen(e.target.checked ? [...chosen, m] : chosen.filter((x) => x !== m))} />
                 {t(`modalities.${m}`)}

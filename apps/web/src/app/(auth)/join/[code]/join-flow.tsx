@@ -87,7 +87,7 @@ export function JoinFlow({ code, therapistName, who, email: signedInEmail }: { c
           </div>
         </div>
         <Notice tone="info">{t("notMonitored")}</Notice>
-        <label className="flex items-start gap-3 text-[15px] text-ink">
+        <label className="flex items-start gap-3 text-ui text-ink">
           <input type="checkbox" className="mt-1 h-4 w-4 accent-[var(--primary-strong)]" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
           <span>{t.rich("agree", { privacy: (c) => <a href="/privacy" target="_blank" className="text-primary-strong underline underline-offset-4">{c}</a> })}</span>
         </label>

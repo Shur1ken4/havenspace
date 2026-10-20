@@ -15,7 +15,7 @@ export function AppNav({ isAdmin = false }: { isAdmin?: boolean }) {
   const t = useTranslations("nav");
   const path = usePathname();
   return (
-    <nav aria-label="App" className="flex gap-1 overflow-x-auto">
+    <nav aria-label="App" className="flex gap-0.5 overflow-x-auto sm:gap-1">
       {[...items, ...(isAdmin ? [{ href: "/admin", key: "admin" } as const] : [])].map((it) => {
         const active = path === it.href || path.startsWith(it.href + "/");
         return (
@@ -24,7 +24,7 @@ export function AppNav({ isAdmin = false }: { isAdmin?: boolean }) {
             href={it.href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "rounded-[10px] px-3 py-2 text-[15px]",
+              "shrink-0 whitespace-nowrap rounded-inner px-2 py-2 text-sm sm:px-3 sm:text-ui",
               active ? "bg-primary-soft text-primary-strong" : "text-muted hover:bg-surface-2 hover:text-ink",
             )}
           >

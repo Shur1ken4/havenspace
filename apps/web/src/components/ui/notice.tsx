@@ -11,9 +11,9 @@ export function Notice({ tone = "info", title, children, className }: {
     success: "bg-primary-soft border-primary/40",
   }[tone];
   return (
-    <div role={tone === "attention" ? "status" : undefined} className={cn("rounded-[14px] border px-5 py-4", styles, className)}>
+    <div role={tone === "attention" ? "status" : undefined} className={cn("rounded-card border px-5 py-4", styles, className)}>
       {title && <p className="font-medium text-ink">{title}</p>}
-      {children && <div className="text-[15px] text-ink/90">{children}</div>}
+      {children && <div className="text-ui text-ink/90">{children}</div>}
     </div>
   );
 }

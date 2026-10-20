@@ -53,11 +53,11 @@ export default async function SupervisionPage({ searchParams }: PageProps<"/supe
         ))}
       </nav>
 
-      <section className="grid gap-6 lg:grid-cols-[1fr_380px]">
+      <section className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
         <Card className="space-y-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-2xl">{t("packTitle", { month: monthLabel })}</h2>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {ai && <a className={buttonClass("secondary", "sm")} href={`/api/supervision/${month}`}><Download size={16} aria-hidden /> {t("exportPdf")}</a>}
               <BuildPack month={month} building={Boolean(data.pack?.building)} hasPack={Boolean(ai)} disabled={data.hours.approved === 0} />
             </div>
@@ -86,13 +86,13 @@ export default async function SupervisionPage({ searchParams }: PageProps<"/supe
         <Card className="space-y-4 self-start">
           <h2 className="text-2xl">{t("hoursLog")}</h2>
           <dl className="grid grid-cols-3 gap-2 text-center">
-            <div className="rounded-[12px] bg-surface-2 p-3"><dt className="text-xs text-muted">{t("clientHours")}</dt><dd className="font-serif text-2xl">{clientHours.toFixed(1)}</dd></div>
-            <div className="rounded-[12px] bg-surface-2 p-3"><dt className="text-xs text-muted">{t("supervisionHours")}</dt><dd className="font-serif text-2xl">{supHours.toFixed(1)}</dd></div>
-            <div className="rounded-[12px] bg-surface-2 p-3"><dt className="text-xs text-muted">{t("ratio")}</dt><dd className="font-serif text-2xl">{supHours > 0 ? `1:${(clientHours / supHours).toFixed(1)}` : "—"}</dd></div>
+            <div className="rounded-control bg-surface-2 p-3"><dt className="text-xs text-muted">{t("clientHours")}</dt><dd className="font-serif text-2xl">{clientHours.toFixed(1)}</dd></div>
+            <div className="rounded-control bg-surface-2 p-3"><dt className="text-xs text-muted">{t("supervisionHours")}</dt><dd className="font-serif text-2xl">{supHours.toFixed(1)}</dd></div>
+            <div className="rounded-control bg-surface-2 p-3"><dt className="text-xs text-muted">{t("ratio")}</dt><dd className="font-serif text-2xl">{supHours > 0 ? `1:${(clientHours / supHours).toFixed(1)}` : "—"}</dd></div>
           </dl>
           <p className="text-sm text-muted">{t("ratioHint")}</p>
           {data.supervision.length > 0 && (
-            <ul className="divide-y divide-line text-[15px]">
+            <ul className="divide-y divide-line text-ui">
               {data.supervision.map((h) => (
                 <li key={h.id} className="flex items-center justify-between gap-2 py-2">
                   <span>{format.dateTime(new Date(h.occurred_on), { dateStyle: "medium" })} · {h.minutes} min · {t(`kind_${h.kind}`)}{h.supervisor ? ` · ${h.supervisor}` : ""}</span>

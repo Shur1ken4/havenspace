@@ -45,7 +45,7 @@ export default async function PrivacySettings() {
       <Card className="space-y-3">
         <h2 className="text-2xl">{t("auditTitle")}</h2>
         {log.length === 0 ? <p className="text-muted">{t("auditEmpty")}</p> : (
-          <ul className="divide-y divide-line text-[15px]">
+          <ul className="divide-y divide-line text-ui">
             {log.map((l, i) => (
               <li key={i} className="flex justify-between gap-4 py-2">
                 <span>{ta.has(l.action.replace(".", "__")) ? ta(l.action.replace(".", "__")) : l.action}</span>

@@ -86,7 +86,7 @@ export default async function ClientPage({ params }: PageProps<"/clients/[id]">)
               {data.sessions.map((s) => (
                 <li key={s.id} className="relative">
                   <span className={`absolute -left-[31px] top-2 h-3 w-3 rounded-full border-2 border-bg ${s.note_status === "approved" ? "bg-primary" : "bg-accent"}`} aria-hidden />
-                  <Link href={`/sessions/${s.id}`} className="block rounded-[14px] border border-line bg-surface p-4 hover:border-primary">
+                  <Link href={`/sessions/${s.id}`} className="block rounded-card border border-line bg-surface p-4 hover:border-primary">
                     <p className="font-medium text-ink">{format.dateTime(s.started_at, { dateStyle: "medium" })}</p>
                     <p className="text-sm text-muted">
                       {t(`session.short_${s.capture_mode}`)}

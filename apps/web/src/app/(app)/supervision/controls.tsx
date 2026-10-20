@@ -44,7 +44,7 @@ export function ExcerptPicker({ month, moments, selected }: { month: string; mom
     <ul className="max-h-[28rem] space-y-2 overflow-y-auto pr-1" aria-busy={pending}>
       {moments.map((m) => (
         <li key={m.key}>
-          <label className="flex items-start gap-3 rounded-[12px] border border-line p-3 has-[:checked]:border-primary has-[:checked]:bg-primary-soft">
+          <label className="flex items-start gap-3 rounded-control border border-line p-3 has-[:checked]:border-primary has-[:checked]:bg-primary-soft">
             <input type="checkbox" className="mt-1 accent-[var(--primary-strong)]" checked={chosen.includes(m.key)} onChange={() => toggle(m.key)} />
             <span className="space-y-1">
               <span className="flex flex-wrap gap-2 text-sm text-muted"><Chip tone="plain">{label[m.kind]}</Chip> {m.pseudonym} · {m.date}</span>

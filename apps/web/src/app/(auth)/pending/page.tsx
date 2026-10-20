@@ -20,7 +20,7 @@ export default async function PendingPage() {
       <h1 className="text-3xl">{declined ? t("declinedTitle") : t("title")}</h1>
       <p className="text-muted">{declined ? t("declinedBody") : t("body", { email: therapist.email })}</p>
       {!declined && <p className="text-sm text-muted">{t("meanwhile")}</p>}
-      {!declined && <div className="rounded-[14px] border border-line p-4 text-left"><DocumentUpload /></div>}
+      {!declined && <div className="rounded-card border border-line p-4 text-left"><DocumentUpload /></div>}
       <div className="flex justify-center pt-2"><SignOutButton /></div>
     </Card>
   );

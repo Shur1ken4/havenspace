@@ -29,7 +29,7 @@ export function AccountMenu({ name, email, image, accountHref }: { name: string;
         <Avatar name={name} email={email} image={image} size={36} />
       </button>
       {open && (
-        <div role="menu" className="absolute right-0 z-40 mt-2 w-64 rounded-[14px] border border-line bg-surface p-2 shadow-[var(--shadow)] fade-up">
+        <div role="menu" className="absolute right-0 z-40 mt-2 w-64 rounded-card border border-line bg-surface p-2 shadow-[var(--shadow)] fade-up">
           <div className="flex items-center gap-3 px-2 py-2">
             <Avatar name={name} email={email} image={image} size={40} />
             <div className="min-w-0">
@@ -38,11 +38,11 @@ export function AccountMenu({ name, email, image, accountHref }: { name: string;
             </div>
           </div>
           <div className="my-1 h-px bg-line" />
-          <Link role="menuitem" href={accountHref} onClick={() => setOpen(false)} className="flex items-center gap-2 rounded-[10px] px-2 py-2 text-ink hover:bg-surface-2">
+          <Link role="menuitem" href={accountHref} onClick={() => setOpen(false)} className="flex items-center gap-2 rounded-inner px-2 py-2 text-ink hover:bg-surface-2">
             <UserRound size={16} aria-hidden /> {t("account")}
           </Link>
           <button role="menuitem" type="button" onClick={async () => { await authClient.signOut(); router.push("/"); router.refresh(); }}
-            className="flex w-full items-center gap-2 rounded-[10px] px-2 py-2 text-left text-ink hover:bg-surface-2">
+            className="flex w-full items-center gap-2 rounded-inner px-2 py-2 text-left text-ink hover:bg-surface-2">
             <LogOut size={16} aria-hidden /> {t("signOut")}
           </button>
         </div>
