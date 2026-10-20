@@ -15,13 +15,13 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
         {t("common.skipToContent")}
       </a>
       {!realDataAllowed() && (
-        <div className="no-print border-b border-attention/30 bg-attention-soft px-4 py-2 text-center text-sm text-ink">
+        <aside aria-label={t("common.demoLabel")} className="no-print border-b border-attention/30 bg-attention-soft px-4 py-2 text-center text-sm text-ink">
           {t("common.demoBanner")}
-        </div>
+        </aside>
       )}
       <header className="no-print border-b border-line bg-surface/70">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
-          <Link href="/today" aria-label={t("common.appName")}>
+          <Link href="/today">
             <Logo name={t("common.appName")} size="sm" />
           </Link>
           <div className="order-last -mx-1 w-full sm:order-none sm:mx-0 sm:w-auto"><AppNav isAdmin={therapist.is_admin} /></div>

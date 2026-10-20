@@ -118,7 +118,7 @@ function NoteTab({ sessionId, note }: { sessionId: string; note: ReviewProps["no
         {hasChecks && !locked && <Notice tone="attention">{t("checkHint")}</Notice>}
         {sections.map((s, i) => (
           <section key={s.key} className="space-y-2">
-            <h3 className="font-sans text-sm font-medium uppercase tracking-wider text-muted">{label(s.key)}</h3>
+            <h2 className="font-sans text-sm font-medium uppercase tracking-wider text-muted">{label(s.key)}</h2>
             {locked ? (
               <p className="whitespace-pre-wrap leading-relaxed"><WithChecks text={s.text} /></p>
             ) : (

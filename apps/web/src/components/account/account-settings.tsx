@@ -29,7 +29,7 @@ export function AccountSettings({ name: initialName, email, image: initialImage,
   const file = useRef<HTMLInputElement>(null);
   const [name, setName] = useState(initialName);
   const [image, setImage] = useState<string | null>(initialImage);
-  const [profileMsg, setProfileMsg] = useState<"saved" | "error" | null>(null);
+  const [profileMsg, setProfileMsg] = useState<"saved" | "error" | "photo" | null>(null);
   const [pending, start] = useTransition();
 
   const [current, setCurrent] = useState("");
@@ -40,7 +40,7 @@ export function AccountSettings({ name: initialName, email, image: initialImage,
 
   async function pick(f: File | undefined) {
     if (!f) return;
-    try { setImage(await toAvatar(f)); setProfileMsg(null); } catch { setProfileMsg("error"); }
+    try { setImage(await toAvatar(f)); setProfileMsg(null); } catch { setProfileMsg("photo"); }
     if (file.current) file.current.value = "";
   }
   const saveProfile = () => start(async () => {
@@ -64,7 +64,7 @@ export function AccountSettings({ name: initialName, email, image: initialImage,
         <div className="flex flex-wrap items-center gap-4">
           <Avatar name={name} email={email} image={image} size={80} />
           <div className="flex flex-wrap gap-2">
-            <input ref={file} type="file" accept="image/*" className="sr-only" onChange={(e) => pick(e.target.files?.[0])} />
+            <input ref={file} type="file" accept="image/*" className="sr-only" tabIndex={-1} aria-label={image ? t("changePhoto") : t("addPhoto")} onChange={(e) => pick(e.target.files?.[0])} />
             <Button variant="secondary" onClick={() => file.current?.click()}><Camera size={16} aria-hidden /> {image ? t("changePhoto") : t("addPhoto")}</Button>
             {image && <Button variant="ghost" onClick={() => setImage(null)}><Trash2 size={16} aria-hidden /> {t("removePhoto")}</Button>}
           </div>
@@ -79,7 +79,7 @@ export function AccountSettings({ name: initialName, email, image: initialImage,
         </div>
         <div className="flex items-center gap-3">
           <Button onClick={saveProfile} disabled={pending || !name.trim()}>{tc("save")}</Button>
-          {profileMsg && <span className="text-sm text-muted" aria-live="polite">{profileMsg === "saved" ? t("saved") : tc("somethingWrong")}</span>}
+          {profileMsg && <span className="text-sm text-muted" aria-live="polite">{profileMsg === "saved" ? t("saved") : profileMsg === "photo" ? t("photoUnreadable") : tc("somethingWrong")}</span>}
         </div>
       </Card>
 

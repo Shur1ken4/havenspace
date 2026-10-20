@@ -24,8 +24,10 @@ export function AccountMenu({ name, email, image, accountHref }: { name: string;
   }, [open]);
   return (
     <div ref={box} className="relative">
-      <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-haspopup="menu" aria-label={t("menu")}
+      <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-haspopup="menu"
         className="flex items-center gap-2 rounded-full p-0.5 hover:ring-2 hover:ring-primary-soft">
+        {/* Named by hidden text, not aria-label: the initials shown are decoration. */}
+        <span className="sr-only">{t("menu")}</span>
         <Avatar name={name} email={email} image={image} size={36} />
       </button>
       {open && (

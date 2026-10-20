@@ -18,14 +18,14 @@ export default async function MarketingLayout({ children }: LayoutProps<"/">) {
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-surface focus:px-4 focus:py-2">
         {t("common.skipToContent")}
       </a>
-      <div className="border-b border-line bg-primary-soft/60 px-4 py-2 text-center text-sm text-ink">
+      <aside aria-label={t("landing.announceLabel")} className="border-b border-line bg-primary-soft/60 px-4 py-2 text-center text-sm text-ink">
         <span className="breathing-dot mr-2 !h-2 !w-2 align-middle" aria-hidden />
         <span className="sm:hidden">{t("landing.announceShort")}</span>
         <span className="hidden sm:inline">{t("landing.announce")}</span>{" "}
         <Link href="/signup" className="whitespace-nowrap font-medium text-primary-strong underline-offset-4 hover:underline">{t("landing.announceCta")} →</Link>
-      </div>
+      </aside>
       <header className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-5 sm:gap-4 sm:px-6">
-        <Link href="/" className="shrink-0" aria-label={t("common.appName")}>
+        <Link href="/" className="shrink-0">
           <Logo name={t("common.appName")} tagline={t("common.tagline")} taglineFrom="sm" />
         </Link>
         <nav aria-label="Main" className="hidden items-center gap-6 text-ui text-muted md:flex">

@@ -187,7 +187,7 @@ export function Arch({ mood: given = "idle", className, label, followPointer = f
 
   if (!clickable) return picture;
   return (
-    <button type="button" onClick={handleClick} className="arch-button rounded-panel" aria-label={label}>
+    <button type="button" onClick={handleClick} className="arch-button rounded-panel" aria-label={label ?? "Arch"}>
       {picture}
     </button>
   );

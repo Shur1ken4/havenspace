@@ -23,7 +23,8 @@
     "somethingWrong": "Something didn't work. Please try again in a moment.",
     "skipToContent": "Skip to content",
     "language": "Language",
-    "tagline": "AI assistant for therapists"
+    "tagline": "AI assistant for therapists",
+    "demoLabel": "Demo mode"
   },
   "badges": {
     "audioDeleted": "Audio deleted after transcription",
@@ -146,7 +147,8 @@
     "videoTitle": "Coming soon, in every plan:",
     "videoBody": "secure video sessions with your clients and online booking, right inside HavenSpace.",
     "announceShort": "Pilot places are open.",
-    "planCta": "Start free"
+    "planCta": "Start free",
+    "announceLabel": "Announcement"
   },
   "professions": {
     "counsellor": "Counsellor",
@@ -1000,7 +1002,8 @@
     "pwError_mismatch": "The two passwords don't match.",
     "pwError_wrong_current": "Your current password isn't right.",
     "pwError_fresh": "For your security, please sign out and sign in again with an email code, then set your password within 15 minutes.",
-    "pwError_generic": "Something went wrong. Please try again."
+    "pwError_generic": "Something went wrong. Please try again.",
+    "photoUnreadable": "We couldn't read that picture. Please choose a JPG or PNG photo."
   },
   "heroDemo": {
     "label": "Example: a role-play session becomes a draft note and a reflection.",

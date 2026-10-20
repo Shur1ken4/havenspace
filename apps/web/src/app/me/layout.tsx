@@ -17,7 +17,7 @@ export default async function ClientLayout({ children }: LayoutProps<"/me">) {
     <div className="min-h-dvh">
       <header className="border-b border-line bg-surface/70">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
-          <Link href="/me" className="min-w-0" aria-label={t("common.appName")}><Logo name={t("common.appName")} size="sm" compactBelow360 /></Link>
+          <Link href="/me" className="min-w-0"><Logo name={t("common.appName")} size="sm" compactBelow360 /></Link>
           <div className="flex shrink-0 items-center gap-1">
             <ThemeSwitch initial={await currentTheme()} compact />
             <form action={setPublicLocale}>

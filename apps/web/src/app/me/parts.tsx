@@ -19,7 +19,7 @@ export function HomeworkItem({ item }: { item: Homework }) {
   const [pending, start] = useTransition();
   const save = (done: boolean) => start(async () => { await updateHomework(item.id, done, reply); setSaved(true); });
   return (
-    <Card className={`space-y-3 p-5 ${item.done ? "opacity-80" : ""}`}>
+    <Card className={`space-y-3 p-5 ${item.done ? "bg-surface-2/60" : ""}`}>
       <label className="flex items-start gap-3">
         <input type="checkbox" className="mt-1.5 h-5 w-5 shrink-0 accent-[var(--primary-strong)]" checked={item.done} disabled={pending}
           onChange={(e) => save(e.target.checked)} />
