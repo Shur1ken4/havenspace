@@ -7,6 +7,8 @@ import { buttonClass } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { allowJoinAttempt, previewInvite } from "@/lib/invites";
 import { JoinFlow } from "./join-flow";
+import { SignupWizard } from "../../signup/signup-wizard";
+import { devLoginEnabled } from "@/lib/dev-login";
 
 export async function generateMetadata() {
   return { title: (await getTranslations("join"))("title"), robots: { index: false } };
@@ -48,5 +50,7 @@ export default async function JoinCodePage({ params }: PageProps<"/join/[code]">
       </Card>
     );
   }
+  // New here: create an account as this therapist's client. Already signed in: just connect.
+  if (who === "none") return <SignupWizard invite={{ code: code!, therapistName }} devMailbox={devLoginEnabled()} />;
   return <JoinFlow code={code!} therapistName={therapistName} who={who} email={session?.user.email ?? null} />;
 }

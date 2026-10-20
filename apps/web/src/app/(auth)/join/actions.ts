@@ -2,7 +2,7 @@
 import { redirect } from "next/navigation";
 import { withUser } from "@/lib/db";
 import { requireUser } from "@/lib/session";
-import { allowJoinAttempt, hashInviteCode, normaliseInviteCode } from "@/lib/invites";
+import { allowJoinAttempt, hashInviteCode, normaliseInviteCode, previewInvite } from "@/lib/invites";
 
 export type JoinError = "invalid" | "too_many" | "therapist_account" | "already_linked" | "generic";
 
@@ -28,4 +28,14 @@ export async function joinWithCode(code: string): Promise<{ error: JoinError }> 
 export async function goToCode(form: FormData) {
   const normal = normaliseInviteCode(String(form.get("code") ?? ""));
   redirect(normal ? `/join/${normal}` : "/join?invalid=1");
+}
+
+/** Sign-up as a client without a link: checks the code the therapist gave them.
+ *  Returns the therapist's name, or an error (attempts are limited per visitor). */
+export async function checkInvite(code: string): Promise<{ code: string; therapistName: string } | { error: "invalid" | "too_many" }> {
+  const normal = normaliseInviteCode(code);
+  if (!normal) return { error: "invalid" };
+  if (!(await allowJoinAttempt())) return { error: "too_many" };
+  const therapistName = await previewInvite(normal);
+  return therapistName ? { code: normal, therapistName } : { error: "invalid" };
 }

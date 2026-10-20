@@ -56,6 +56,13 @@ def run(conn: psycopg.Connection) -> int:
     conn.execute("delete from client_invites where used_at is null and expires_at < now() - interval '1 day'")
     conn.execute('delete from "verification" where "expiresAt" < now()')
     conn.execute('delete from "session" where "expiresAt" < now()')
+    # Accounts whose email was never confirmed (ADR-18) are removed after two days,
+    # so nobody can hold on to someone else's address. They never signed in.
+    conn.execute(
+        'delete from "user" u where u."emailVerified" = false and u."createdAt" < now() - interval \'2 days\' '
+        "and not exists (select 1 from therapists t where t.id = u.id) "
+        "and not exists (select 1 from client_accounts c where c.user_id = u.id)"
+    )
     # Rows for deleted audio carry no content; drop them after 30 days.
     conn.execute("delete from audio_chunks where deleted_at < now() - interval '30 days'")
     if rows:

@@ -30,13 +30,13 @@ function Choice({ selected, onClick, children }: { selected: boolean; onClick: (
   );
 }
 
-export function OnboardingWizard({ initialLanguage, initialCountry }: { initialLanguage: "en" | "ru"; initialCountry: Country }) {
+export function OnboardingWizard({ initialLanguage, initialCountry, initialName = "" }: { initialLanguage: "en" | "ru"; initialCountry: Country; initialName?: string }) {
   const t = useTranslations();
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [pending, start] = useTransition();
   const [form, setForm] = useState<OnboardingInput>({
-    fullName: "", displayName: "", profession: "counsellor", accreditationStage: "pre_accredited",
+    fullName: initialName, displayName: "", profession: "counsellor", accreditationStage: "pre_accredited",
     professionalBody: defaultBodyFor(initialCountry), professionalBodyOther: "", registrationNumber: "", country: initialCountry,
     modalities: [], noteFormat: "SOAP", language: initialLanguage,
   });

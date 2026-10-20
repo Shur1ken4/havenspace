@@ -7,7 +7,7 @@ You need two browsers or devices: one for the **therapist** and one for the **cl
 ---
 
 ## A. Therapist: sign up (≈5 min)
-1. Open the website and click **Sign in**. Enter your email and type the 6-digit code from your inbox.
+1. Open the website and click **Get started**, then **I'm a therapist**. Enter your name, email and a password, then type the 6-digit code from your inbox to confirm your email. Add a photo or skip.
 2. Fill in the 4 short steps:
    - your profession and full name;
    - your registration number (optionally, a photo of your licence);
@@ -31,8 +31,8 @@ You need two browsers or devices: one for the **therapist** and one for the **cl
 
 ## D. Client: join (≈2 min, on a phone)
 1. Open the link, or go to **/join** and type the code.
-2. Read the short screen, tick the box, and enter an email. *(Use a different email from the therapist's.)*
-3. Type the 6-digit code from your inbox. You're in.
+2. Read the short screen and tick the box. Enter your name, an email *(different from the therapist's)* and a password.
+3. Type the 6-digit code from your inbox, add a photo or skip. You're in.
 4. Mark the homework done, write a short reply, and add a mood diary entry. Try one entry that is shared and one that isn't.
 
 **Tell us:** Did you understand what your therapist can see? Was anything confusing or too long?
@@ -60,6 +60,8 @@ You need two browsers or devices: one for the **therapist** and one for the **cl
 - Use an old or used invite link. You should get a clear "can't be used" message.
 - As the client, open `/today` or `/clients`. You should land back in your own space.
 - Enter a wrong sign-in code, or ask for many codes quickly. You should get a polite message.
+- Sign out, then sign in with your password. Then try **Forgot password?**.
+- Try to create a second account with the same email. The screen looks normal; the email owner gets a "you already have an account" message.
 
 ## Reporting
 Use the **Pilot feedback** button in the app, or write to Shurik with:

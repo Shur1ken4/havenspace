@@ -424,3 +424,18 @@ Build our own video room on **LiveKit Cloud** (project region: EU, Frankfurt; ag
 - Revisit: booking; end-to-end encryption; self-hosting LiveKit in the EU before real client data.
 
 **Update 2026-10-20: entry point and one-time links.** A video call is chosen like any other session: *Start session → client → "Video call in HavenSpace"* (first option, no consent needed for the call itself; recording still needs consent). In the room, "How [client] joins" offers the client app (automatic "Join now") and a **one-time link** for clients without the app. Links carry 32 random bytes; only a hash is stored; they work while the room is open, for at most 4 hours, and stop when the session ends or a new link is made. A guest joins with the same identity as the client, so a forwarded link replaces rather than adds a person. The guest page shows only the therapist's name.
+
+
+# ADR-18: Accounts with email and password, chosen role at sign-up
+Status: Accepted   Date: 2026-10-21   Deciders: Shurik
+## Context
+Accounts used to be created by the first 6-digit email code, with an optional password later. Shurik wants the familiar pattern: a clear "Create account" with a password, a confirmed email, a name and a photo, and a separate "Sign in".
+## Decision
+- **Sign up** (`/signup`): "I'm a therapist" / "I'm a client" → (clients: the therapist's invite, by link or typed code) → first name, last name, email, password (10+ characters) → a 6-digit code confirms the email (it signs them in) → optional photo. Therapists continue to professional details and admin approval (ADR-11); clients are connected to their therapist (ADR-14). Invite links skip the role question.
+- **Sign in** (`/login`): email + password; or a passkey (Touch ID, Face ID, Windows Hello); "Forgot password?" resets with an email code; signing in with only an email code stays as a fallback (and for older accounts without a password).
+- Codes **never create accounts**. An account whose email was never confirmed cannot sign in until it is, and is deleted after 2 days.
+- Signing up with an address that already has an account looks identical on screen; the owner is emailed instead. Nobody can learn who uses HavenSpace (and so who may be in therapy).
+## Consequences
+- Easier: a pattern everyone knows; password managers work; fewer emails day to day.
+- Harder: passwords to protect (hashed by the auth library, 10+ characters, rate-limited sign-in).
+- Existing accounts without a password sign in with a code or use "Forgot password?" once.

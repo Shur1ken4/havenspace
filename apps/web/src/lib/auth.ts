@@ -9,6 +9,14 @@ import { pool } from "./db";
 import { sendEmail } from "./email";
 
 const appUrl = process.env.APP_URL ?? "http://localhost:3000";
+
+/** Email language: the language chosen on the site, else the browser's. */
+function emailLocale(request?: Request | null): "en" | "ru" {
+  const cookie = request?.headers.get("cookie") ?? "";
+  const chosen = /(?:^|;\s*)locale=(en|ru)(?:;|$)/.exec(cookie)?.[1] as "en" | "ru" | undefined;
+  const browser = (request?.headers.get("accept-language") ?? "").trim().toLowerCase().startsWith("ru") ? "ru" : "en";
+  return chosen ?? browser;
+}
 const sessionHours = Number(process.env.SESSION_HOURS ?? 12);
 
 export const auth = betterAuth({
@@ -34,30 +42,48 @@ export const auth = betterAuth({
       "/email-otp/send-verification-otp": { window: 60, max: 3 },
       "/sign-in/email-otp": { window: 60, max: 10 },
       "/sign-in/email": { window: 60, max: 10 },
+      "/sign-up/email": { window: 60, max: 5 },
+      "/email-otp/verify-email": { window: 60, max: 10 },
+      "/email-otp/reset-password": { window: 60, max: 5 },
     },
   },
-  // Optional password, set from the profile page. Accounts are still created
-  // with an email code (which proves the address), so password sign-up is off;
-  // a forgotten password is never a lock-out because the email code always works.
-  emailAndPassword: { enabled: true, disableSignUp: true, minPasswordLength: 10, maxPasswordLength: 128 },
+  // Accounts are created with email + password (ADR-18). The address is proved
+  // by a 6-digit code before the first sign-in; a forgotten password is reset
+  // with an email code, and the code sign-in stays as a fallback.
+  emailAndPassword: {
+    enabled: true,
+    minPasswordLength: 10,
+    maxPasswordLength: 128,
+    requireEmailVerification: true,
+    // Signing up with an address that already has an account looks the same as a
+    // new sign-up on screen, so nobody can find out who uses HavenSpace (and so,
+    // who may be in therapy). The owner gets an email explaining what to do.
+    async onExistingUserSignUp({ user }, request) {
+      const t = await getTranslations({ locale: emailLocale(request), namespace: "authEmail" });
+      await sendEmail({ to: user.email, subject: t("existsSubject"), text: t("existsBody", { url: `${appUrl}/login` }) });
+    },
+  },
+  emailVerification: { autoSignInAfterVerification: true },
   advanced: { useSecureCookies: appUrl.startsWith("https://") },
   plugins: [
-    // Sign-in by a 6-digit code sent by email. Unlike a one-time link, a code
-    // isn't used up by email security scanners (common on work email), and it
-    // works when the email is opened on a different device. New emails create
-    // an account; pilot access is approved separately (ADR-11).
+    // 6-digit codes by email: confirming a new address, resetting a password,
+    // and signing in without a password. Unlike a one-time link, a code isn't
+    // used up by email security scanners (common on work email), and it works
+    // when the email is opened on a different device. Codes never create
+    // accounts (that's the sign-up form's job); pilot access is approved
+    // separately (ADR-11).
     emailOTP({
+      disableSignUp: true,
+      sendVerificationOnSignUp: true,
       otpLength: 6,
       expiresIn: 10 * 60,
       allowedAttempts: 5,
       storeOTP: "hashed",
-      async sendVerificationOTP({ email, otp }, ctx) {
-        const cookie = ctx?.request?.headers.get("cookie") ?? "";
-        const chosen = /(?:^|;\s*)locale=(en|ru)(?:;|$)/.exec(cookie)?.[1];
-        const browser = (ctx?.request?.headers.get("accept-language") ?? "").trim().toLowerCase().startsWith("ru") ? "ru" : "en";
-        const locale = chosen ?? browser;
-        const t = await getTranslations({ locale, namespace: "authEmail" });
-        await sendEmail({ to: email, subject: t("subject", { code: otp }), text: t("body", { code: otp }) });
+      async sendVerificationOTP({ email, otp, type }, ctx) {
+        const t = await getTranslations({ locale: emailLocale(ctx?.request), namespace: "authEmail" });
+        // Same code, worded for what the person is doing.
+        const kind = type === "email-verification" ? "verify" : type === "forget-password" ? "reset" : "signin";
+        await sendEmail({ to: email, subject: t(`${kind}Subject`, { code: otp }), text: t(`${kind}Body`, { code: otp }) });
       },
     }),
     passkey({ rpName: "HavenSpace", rpID: new URL(appUrl).hostname, origin: appUrl }),
