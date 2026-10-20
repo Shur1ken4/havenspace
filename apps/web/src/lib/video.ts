@@ -1,4 +1,5 @@
 import "server-only";
+import { createHash, randomBytes } from "node:crypto";
 import { AccessToken, RoomServiceClient } from "livekit-server-sdk";
 
 // In-app video (ADR-17). LiveKit carries the audio and video; HavenSpace decides
@@ -25,3 +26,9 @@ export async function closeVideoRoom(room: string): Promise<void> {
   const svc = new RoomServiceClient(host, process.env.LIVEKIT_API_KEY, process.env.LIVEKIT_API_SECRET);
   await svc.deleteRoom(room).catch(() => {});
 }
+
+/** One-time join links: 32 random bytes in the link, only a hash in the database. */
+export const newGuestToken = () => randomBytes(32).toString("base64url");
+export const hashGuestToken = (token: string) => createHash("sha256").update(`video-guest:${token}`).digest("hex");
+export const isGuestToken = (token: string) => /^[A-Za-z0-9_-]{43}$/.test(token);
+export const guestLinkUrl = (token: string) => `${process.env.APP_URL ?? "http://localhost:3210"}/v/${token}`;

@@ -4,7 +4,7 @@ import { z } from "zod";
 import { isDbError, withUser } from "@/lib/db";
 import { requireTherapist } from "@/lib/session";
 import { audit } from "@/lib/audit";
-import { closeVideoRoom, videoEnabled } from "@/lib/video";
+import { closeVideoRoom, guestLinkUrl, hashGuestToken, newGuestToken, videoEnabled } from "@/lib/video";
 
 /** Opens a video room for one client and takes the therapist into it. */
 export async function startVideo(form: FormData) {
@@ -57,9 +57,24 @@ export async function endVideo(roomId: string): Promise<void> {
   z.uuid().parse(roomId);
   const room = await withUser(therapist.id, async (db) => {
     const { rows: [r] } = await db.query(
-      "update video_rooms set ended_at = coalesce(ended_at, now()) where id = $1 returning room_name", [roomId]);
+      "update video_rooms set ended_at = coalesce(ended_at, now()), guest_token_hash = null where id = $1 returning room_name", [roomId]);
     if (r) await audit(db, therapist.id, "video.end", "video_room", roomId);
     return r;
   });
   if (room) await closeVideoRoom(room.room_name);
+}
+
+/** A fresh one-time link for this session. Making a new one switches the old one off. */
+export async function createGuestLink(roomId: string): Promise<{ url: string } | { error: "gone" }> {
+  const { therapist } = await requireTherapist();
+  z.uuid().parse(roomId);
+  const token = newGuestToken();
+  const ok = await withUser(therapist.id, async (db) => {
+    const { rowCount } = await db.query(
+      `update video_rooms set guest_token_hash = $2, guest_expires_at = now() + interval '4 hours'
+        where id = $1 and ended_at is null`, [roomId, hashGuestToken(token)]);
+    if (rowCount) await audit(db, therapist.id, "video.guest_link", "video_room", roomId);
+    return Boolean(rowCount);
+  });
+  return ok ? { url: guestLinkUrl(token) } : { error: "gone" };
 }

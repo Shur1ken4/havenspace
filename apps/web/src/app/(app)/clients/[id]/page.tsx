@@ -11,9 +11,7 @@ import { Notice } from "@/components/ui/notice";
 import { TimelineList } from "./timeline-list";
 import { ClientDanger } from "./client-danger";
 import { ClientAppPanel, type ClientAppData } from "./client-app-panel";
-import { Video } from "lucide-react";
 import { videoEnabled } from "@/lib/video";
-import { startVideo } from "../../video/actions";
 
 export async function generateMetadata() {
   return { title: (await getTranslations("meta"))("client") };
@@ -72,17 +70,9 @@ export default async function ClientPage({ params }: PageProps<"/clients/[id]">)
             <Chip tone={data.consent ? "sage" : "amber"}>{data.consent ? t("clients.consentActive") : t("clients.consentMissing")}</Chip>
           </Link>
         </div>
-        <div className="flex flex-wrap gap-3">
-          {videoEnabled() && data.app.link && (
-            <form action={startVideo}>
-              <input type="hidden" name="clientId" value={id} />
-              <button type="submit" className={buttonClass("secondary", "lg")}><Video size={18} aria-hidden /> {t("video.start")}</button>
-            </form>
-          )}
-          <Link href={data.consent ? `/sessions/new?client=${id}` : `/clients/${id}/consent`} className={buttonClass("primary", "lg")}>
-            {t("clients.startSession")}
-          </Link>
-        </div>
+        <Link href={data.consent || videoEnabled() ? `/sessions/new?client=${id}` : `/clients/${id}/consent`} className={buttonClass("primary", "lg")}>
+          {t("clients.startSession")}
+        </Link>
       </div>
       {!data.consent && <Notice tone="attention">{t("consent.required")}</Notice>}
 

@@ -17,6 +17,7 @@ import { Notice } from "@/components/ui/notice";
 import { pickMimeType } from "@/lib/client/audio";
 import { UploadQueue } from "@/lib/client/upload-queue";
 import { endVideo, startVideoRecording } from "@/app/(app)/video/actions";
+import { JoinOptions } from "./join-options";
 
 type Role = "therapist" | "client";
 type Stage = "lobby" | "joining" | "in" | "ended" | "error";
@@ -26,8 +27,12 @@ type Stage = "lobby" | "joining" | "in" | "ended" | "error";
  * is ours. The therapist can record for notes: their microphone and the client's
  * audio are saved as two separate tracks, exactly like an online-call recording.
  */
-export function VideoRoom({ roomId, role, otherName, clientId, consent = false }: {
+export function VideoRoom({ roomId, role, otherName, clientId, consent = false, linked = false, guestToken }: {
   roomId: string; role: Role; otherName: string; clientId?: string; consent?: boolean;
+  /** Therapist: the client uses the client app and gets "Join now" there. */
+  linked?: boolean;
+  /** Someone joining from a one-time link, without an account. */
+  guestToken?: string;
 }) {
   const t = useTranslations("video");
   const router = useRouter();
@@ -39,7 +44,9 @@ export function VideoRoom({ roomId, role, otherName, clientId, consent = false }
   async function join() {
     setStage("joining");
     setError(null);
-    const res = await fetch(`/api/video/${roomId}/token`, { cache: "no-store" }).catch(() => null);
+    const res = await (guestToken
+      ? fetch("/api/video/guest", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ token: guestToken }), cache: "no-store" })
+      : fetch(`/api/video/${roomId}/token`, { cache: "no-store" })).catch(() => null);
     if (!res?.ok) {
       setError(res?.status === 410 ? "gone" : res?.status === 503 ? "notConfigured" : "failed");
       setStage(res?.status === 410 ? "ended" : "error");
@@ -49,7 +56,8 @@ export function VideoRoom({ roomId, role, otherName, clientId, consent = false }
     setStage("in");
   }
 
-  const back = role === "therapist" ? (clientId ? `/clients/${clientId}` : "/today") : "/me";
+  // Guests have no space in HavenSpace to go back to.
+  const back = role === "therapist" ? (clientId ? `/clients/${clientId}` : "/today") : guestToken ? null : "/me";
 
   if (stage === "ended") {
     return (
@@ -57,7 +65,8 @@ export function VideoRoom({ roomId, role, otherName, clientId, consent = false }
         <Arch mood="resting" className="mx-auto h-24 w-24" />
         <h1 className="text-3xl">{t("ended")}</h1>
         <p className="text-muted">{role === "client" ? t("endedBodyClient") : t("endedBody")}</p>
-        <Link href={back} className={buttonClass("primary")}>{role === "client" ? t("backClient") : t("back")}</Link>
+        {back ? <Link href={back} className={buttonClass("primary")}>{role === "client" ? t("backClient") : t("back")}</Link>
+          : <p className="text-sm text-muted">{t("canClose")}</p>}
       </Card>
     );
   }
@@ -72,12 +81,13 @@ export function VideoRoom({ roomId, role, otherName, clientId, consent = false }
             <h1 className="text-3xl">{t("with", { name: otherName })}</h1>
           </div>
         </div>
-        <p className="text-ink">{role === "therapist" ? t("lobbyTherapist", { name: otherName }) : t("lobbyClient")}</p>
+        <p className="text-ink">{role === "therapist" ? t("lobbyTherapist") : t("lobbyClient")}</p>
         <p className="text-sm text-muted">{role === "therapist" ? t("privacyTherapist") : t("privacyClient")}</p>
         {error && <Notice tone="attention">{t(error)}</Notice>}
         <Button size="lg" className="w-full" onClick={join} disabled={stage === "joining"}>
           {stage === "joining" ? t("joining") : t("join")}
         </Button>
+        {role === "therapist" && <JoinOptions roomId={roomId} clientName={otherName} linked={linked} />}
       </Card>
     );
   }
@@ -95,9 +105,9 @@ export function VideoRoom({ roomId, role, otherName, clientId, consent = false }
       className="mx-auto max-w-5xl"
     >
       <InCall
-        roomId={roomId} role={role} otherName={otherName} consent={consent} clientId={clientId}
+        roomId={roomId} role={role} otherName={otherName} consent={consent} clientId={clientId} linked={linked}
         deviceError={error === "noDevices"}
-        onLeave={(to) => { leaving.current = true; router.push(to); }}
+        onLeave={(to) => { leaving.current = true; if (to) router.push(to); else setStage("ended"); }}
         back={back}
       />
       <RoomAudioRenderer />
@@ -107,9 +117,9 @@ export function VideoRoom({ roomId, role, otherName, clientId, consent = false }
 
 const TIMESLICE_MS = 10_000;
 
-function InCall({ roomId, role, otherName, consent, clientId, deviceError, onLeave, back }: {
-  roomId: string; role: Role; otherName: string; consent: boolean; clientId?: string;
-  deviceError: boolean; onLeave: (to: string) => void; back: string;
+function InCall({ roomId, role, otherName, consent, clientId, linked, deviceError, onLeave, back }: {
+  roomId: string; role: Role; otherName: string; consent: boolean; clientId?: string; linked: boolean;
+  deviceError: boolean; onLeave: (to: string | null) => void; back: string | null;
 }) {
   const t = useTranslations("video");
   const tc = useTranslations("common");
@@ -218,6 +228,7 @@ function InCall({ roomId, role, otherName, consent, clientId, deviceError, onLea
     onLeave(back);
   }
 
+
   const minutes = `${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, "0")}`;
 
   return (
@@ -283,6 +294,7 @@ function InCall({ roomId, role, otherName, consent, clientId, deviceError, onLea
         )}
       </div>
       {role === "therapist" && !consent && recState === "off" && <p className="text-center text-sm text-muted">{t("consentHint")}</p>}
+      {role === "therapist" && !otherHere && <div className="mx-auto max-w-xl"><JoinOptions roomId={roomId} clientName={otherName} linked={linked} /></div>}
 
       <Dialog open={confirmEnd} onOpenChange={setConfirmEnd} title={t("end")} description={rec ? t("endConfirmRecording") : t("endConfirm")}>
         <div className="flex gap-2">

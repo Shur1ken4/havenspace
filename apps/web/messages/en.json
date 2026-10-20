@@ -366,7 +366,7 @@
   },
   "session": {
     "newTitle": "Start a session",
-    "modeTitle": "How are you capturing this session?",
+    "modeTitle": "How will this session happen?",
     "mode_online_call": "Online call",
     "mode_online_call_body": "Zoom, Google Meet or Teams in this browser. You and your client are recorded as separate tracks.",
     "mode_in_person": "In the room",
@@ -421,7 +421,11 @@
     "short_in_person": "In the room",
     "short_upload": "Uploaded audio",
     "short_recap": "Written recap",
-    "elapsed": "Time recorded"
+    "elapsed": "Time recorded",
+    "mode_video": "Video call in HavenSpace",
+    "mode_video_body": "Meet your client right here, no Zoom needed. They join from their app or a one-time link. Record for notes if you like.",
+    "newBadge": "New",
+    "otherWays": "Or capture a session held somewhere else:"
   },
   "review": {
     "progressTitle": "Preparing your session",
@@ -1033,8 +1037,7 @@
   "video": {
     "title": "Video session",
     "with": "Session with {name}",
-    "start": "Video session",
-    "lobbyTherapist": "Your camera and microphone turn on when you join. {name} sees a Join button in their HavenSpace app.",
+    "lobbyTherapist": "Your camera and microphone turn on when you join.",
     "lobbyClient": "Your camera and microphone turn on when you join. Only you and your therapist are in this room.",
     "privacyTherapist": "Calls run on servers in the EU (Frankfurt). Nothing is recorded unless you start recording, with your client's consent.",
     "privacyClient": "Calls run on servers in the EU. Nothing is recorded unless your therapist records it with your consent.",
@@ -1070,6 +1073,18 @@
     "failed": "We couldn't connect. Please try again.",
     "ready": "{name} is ready for your video session.",
     "joinNow": "Join now",
-    "yourTherapist": "your therapist"
+    "yourTherapist": "your therapist",
+    "howJoins": "How {name} joins",
+    "joinsInApp": "{name} uses the client app: a Join now button appears there by itself.",
+    "orLink": "Or send a one-time link (by email or WhatsApp):",
+    "sendLink": "Send {name} a one-time link by email or WhatsApp:",
+    "makeLink": "Create a one-time link",
+    "copy": "Copy",
+    "copied": "Copied",
+    "linkLabel": "One-time join link",
+    "linkNote": "Works only for this session, and stops when you end it. Anyone with the link can join as your client, so send it only to them.",
+    "linkGoneTitle": "This link no longer works",
+    "linkGoneBody": "The session has ended, or your therapist made a new link. Ask them to send you a fresh one.",
+    "canClose": "You can close this page now."
   }
 }

@@ -421,4 +421,6 @@ Build our own video room on **LiveKit Cloud** (project region: EU, Frankfurt; ag
 ## Consequences
 - Easier: notes from video sessions get two clean speaker tracks; one product for the whole session.
 - Harder: we maintain the call screen; LiveKit becomes a sub-processor (listed) and must be in the DPIA.
-- Revisit: one-time guest links for clients without the app; booking; end-to-end encryption; self-hosting LiveKit in the EU before real client data.
+- Revisit: booking; end-to-end encryption; self-hosting LiveKit in the EU before real client data.
+
+**Update 2026-10-20: entry point and one-time links.** A video call is chosen like any other session: *Start session → client → "Video call in HavenSpace"* (first option, no consent needed for the call itself; recording still needs consent). In the room, "How [client] joins" offers the client app (automatic "Join now") and a **one-time link** for clients without the app. Links carry 32 random bytes; only a hash is stored; they work while the room is open, for at most 4 hours, and stop when the session ends or a new link is made. A guest joins with the same identity as the client, so a forwarded link replaces rather than adds a person. The guest page shows only the therapist's name.

@@ -48,6 +48,14 @@ You need two browsers or devices: one for the **therapist** and one for the **cl
 
 **Tell us:** Was the note accurate? Was the reflection useful, or did it feel generic?
 
+## F2. Therapist and client: a video session
+1. **Start session**, choose the client, then **Video call in HavenSpace**. Click **Join** and allow the camera and microphone.
+2. The client either opens their app (a **Join now** button appears within about 15 seconds) or opens a **one-time link** you create under "How … joins" and send them.
+3. Optional: **Record for notes** (needs consent), talk for a few minutes, then **End session**. The note is prepared as usual.
+4. After ending, open the one-time link again: it should say the link no longer works.
+
+**Tell us:** Was the picture and sound clear? Was it obvious how to join?
+
 ## G. Things to try to break
 - Use an old or used invite link. You should get a clear "can't be used" message.
 - As the client, open `/today` or `/clients`. You should land back in your own space.

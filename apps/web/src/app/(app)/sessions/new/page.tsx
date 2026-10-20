@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { MonitorSpeaker, Mic, Upload, PenLine } from "lucide-react";
+import { MonitorSpeaker, Mic, Upload, PenLine, Video } from "lucide-react";
 import { withUser } from "@/lib/db";
 import { requireTherapist } from "@/lib/session";
 import { Card } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
 import { Notice } from "@/components/ui/notice";
 import { createSession } from "../actions";
+import { startVideo } from "../../video/actions";
+import { videoEnabled } from "@/lib/video";
 import { BrowserCheck } from "./browser-check";
 
 export async function generateMetadata() {
@@ -69,6 +71,21 @@ export default async function NewSessionPage({ searchParams }: PageProps<"/sessi
         </Notice>
       )}
       <h2 className="text-2xl">{t("session.modeTitle")}</h2>
+      {videoEnabled() && (
+        <form action={startVideo}>
+          <input type="hidden" name="clientId" value={client.id} />
+          <button type="submit" className="w-full text-left">
+            <Card className="flex flex-col gap-4 border-primary p-5 hover:bg-primary-soft/40 sm:flex-row sm:items-center">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-white"><Video size={22} aria-hidden /></span>
+              <span className="space-y-1">
+                <span className="flex flex-wrap items-center gap-2 text-lg font-medium text-ink">{t("session.mode_video")} <Chip>{t("session.newBadge")}</Chip></span>
+                <span className="block text-muted">{t("session.mode_video_body")}</span>
+              </span>
+            </Card>
+          </button>
+        </form>
+      )}
+      {videoEnabled() && <p className="text-sm text-muted">{t("session.otherWays")}</p>}
       <ul className="grid gap-4 sm:grid-cols-2">
         {modes.map((m) => {
           const needsConsent = m.id !== "recap" && !client.consent;
