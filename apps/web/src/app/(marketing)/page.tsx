@@ -1,10 +1,9 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import {
-  ArrowRight, Check, EyeOff, GlobeLock, KeyRound, Mic, NotebookPen, ShieldCheck, Sprout,
-} from "lucide-react";
-import { PlantIllustration, WindowIllustration } from "@/components/illustrations";
-import { ArchStage } from "@/components/marketing/arch-stage";
+import { ArrowRight, Check, EyeOff, GlobeLock, Link2, ShieldCheck } from "lucide-react";
+import { PlantIllustration } from "@/components/illustrations";
+import { ArchAgentVisual, FeatureGrid, PrivacyVisual, StepsVisual } from "@/components/marketing/visuals";
+import { Devices } from "@/components/marketing/devices";
 import { HeroDemo } from "@/components/marketing/hero-demo";
 import { SignupForm } from "@/components/marketing/signup-form";
 import { Pricing } from "@/components/marketing/pricing";
@@ -14,26 +13,16 @@ import { Chip } from "@/components/ui/chip";
 
 export default async function LandingPage() {
   const t = await getTranslations("landing");
-  const a = await getTranslations("arch");
   const b = await getTranslations("badges");
 
-  const steps = [
-    { icon: Mic, title: t("step1Title"), body: t("step1Body") },
-    { icon: NotebookPen, title: t("step2Title"), body: t("step2Body") },
-    { icon: Sprout, title: t("step3Title"), body: t("step3Body") },
-  ];
-  const promises = [
-    { icon: ShieldCheck, title: t("promise1Title"), body: t("promise1Body") },
-    { icon: GlobeLock, title: t("promise2Title"), body: t("promise2Body") },
-    { icon: EyeOff, title: t("promise3Title"), body: t("promise3Body") },
-  ];
   const worksWith = ["works1", "works2", "works3", "works4", "works5", "works6"] as const;
-  // CLINICAL-REVIEW: how Arch is described to therapists.
-  const archPoints = [
-    { title: a("lightTitle"), body: a("lightBody") },
-    { title: a("neverTitle"), body: a("neverBody") },
-    { title: a("decideTitle"), body: a("decideBody") },
-  ];
+  const tdev = await getTranslations("devices");
+  // Download files for the desktop and Android apps, once published (see docs/desktop-apps.md).
+  const downloads = {
+    mac: process.env.NEXT_PUBLIC_DOWNLOAD_MAC || undefined,
+    windows: process.env.NEXT_PUBLIC_DOWNLOAD_WINDOWS || undefined,
+    android: process.env.NEXT_PUBLIC_DOWNLOAD_ANDROID || undefined,
+  };
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -67,107 +56,59 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* How it works */}
+      {/* How it works: three pictures */}
       <section id="how" aria-labelledby="how-title" className="scroll-mt-20 py-16">
-        <h2 id="how-title" className="text-3xl text-ink sm:text-4xl">{t("howTitle")}</h2>
-        <p className="mt-3 max-w-2xl text-lg text-muted">{t("howIntro")}</p>
-        <ol className="mt-10 grid gap-5 md:grid-cols-3">
-          {steps.map((s, i) => (
-            <li key={s.title}>
-              <Card className="h-full space-y-3">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-soft text-primary-strong">
-                    <s.icon size={20} aria-hidden />
-                  </span>
-                  <span className="text-sm text-muted">{i + 1}</span>
-                </div>
-                <h3 className="text-2xl">{s.title}</h3>
-                <p className="text-muted">{s.body}</p>
-              </Card>
-            </li>
-          ))}
-        </ol>
+        <h2 id="how-title" className="mb-8 text-3xl text-ink sm:text-4xl">{t("howTitle")}</h2>
+        <StepsVisual />
       </section>
 
-      {/* Arch */}
-      <section id="arch" aria-labelledby="arch-title" className="scroll-mt-20 grid items-center gap-10 py-16 md:grid-cols-[1fr_1.1fr]">
-        <div className="order-2 md:order-1"><ArchStage /></div>
-        <div className="order-1 space-y-5 md:order-2">
-          <h2 id="arch-title" className="text-3xl text-ink sm:text-4xl">{a("meetTitle")}</h2>
-          <p className="text-lg text-muted">{a("meetIntro")}</p>
-          <ul className="space-y-4">
-            {archPoints.map((p) => (
-              <li key={p.title} className="flex gap-3">
-                <Check size={18} className="mt-1 shrink-0 text-primary-strong" aria-hidden />
-                <p><span className="font-medium text-ink">{p.title}.</span> <span className="text-muted">{p.body}</span></p>
-              </li>
-            ))}
-          </ul>
-        </div>
+      {/* Arch, the AI practice agent */}
+      <section id="arch" aria-labelledby="arch-title" className="scroll-mt-20 py-16">
+        <ArchAgentVisual />
       </section>
 
       {/* Reflection */}
       <section id="reflection" aria-labelledby="reflect-title" className="scroll-mt-20 grid gap-10 py-16 md:grid-cols-2 md:items-center">
         <div className="space-y-4">
           <h2 id="reflect-title" className="text-3xl text-ink sm:text-4xl">{t("reflectTitle")}</h2>
-          <p className="text-lg text-muted">{t("reflectBody")}</p>
+          <p className="text-lg text-muted">{t("reflectShort")}</p>
           <PlantIllustration className="hidden h-36 w-36 md:block" />
         </div>
         <div className="space-y-3" aria-label={t("reflectSampleLabel")}>
-          <p className="text-sm text-muted">{t("reflectSampleLabel")}</p>
           {[
             { label: t("sampleStrengthLabel"), text: t("sampleStrength"), tone: "sage" as const },
-            { label: t("sampleOpeningLabel"), text: t("sampleOpening"), tone: "blue" as const },
             { label: t("sampleTryLabel"), text: t("sampleTry"), tone: "clay" as const },
           ].map((item) => (
             <Card key={item.label} className="space-y-2 p-5">
               <Chip tone={item.tone}>{item.label}</Chip>
               <p className="text-ink">{item.text}</p>
-              <p className="text-sm text-muted">{t("sampleMoment")}</p>
+              <p className="flex items-center gap-1 text-sm text-muted"><Link2 size={13} aria-hidden /> {t("sampleMoment")}</p>
             </Card>
           ))}
         </div>
       </section>
 
-      {/* Supervision */}
-      <section aria-labelledby="sup-title" className="py-16">
-        <Card className="grid gap-6 bg-surface-2 md:grid-cols-[1fr_auto] md:items-center md:p-10">
-          <div className="space-y-3">
-            <Chip tone="amber">{t("supervisionSoon")}</Chip>
-            <h2 id="sup-title" className="text-3xl">{t("supervisionTitle")}</h2>
-            <p className="max-w-2xl text-lg text-muted">{t("supervisionBody")}</p>
-          </div>
-          <WindowIllustration className="h-40 w-48 justify-self-center" />
-        </Card>
+      {/* Everything in one place */}
+      <section aria-labelledby="features-title" className="py-16">
+        <h2 id="features-title" className="mb-8 text-3xl text-ink sm:text-4xl">{t("featuresTitle")}</h2>
+        <FeatureGrid />
       </section>
 
       {/* Privacy */}
       <section id="privacy" aria-labelledby="privacy-title" className="scroll-mt-20 py-16">
-        <h2 id="privacy-title" className="text-3xl text-ink sm:text-4xl">{t("privacyTitle")}</h2>
-        <p className="mt-3 max-w-2xl text-lg text-muted">{t("privacyIntro")}</p>
-        <ul className="mt-10 grid gap-8 sm:grid-cols-3">
-          {promises.map((p) => (
-            <li key={p.title} className="space-y-2">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-soft text-primary-strong">
-                <p.icon size={20} aria-hidden />
-              </span>
-              <h3 className="font-sans text-lg font-medium text-ink">{p.title}</h3>
-              <p className="text-muted">{p.body}</p>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-8 text-muted">{t("privacyAlso")}</p>
-        <div className="mt-6 space-y-2 rounded-card border border-dashed border-line p-5">
-          <h3 className="flex items-center gap-2 font-sans text-base font-medium"><KeyRound size={17} aria-hidden /> {t("notTitle")}</h3>
-          <ul className="list-disc space-y-1 pl-6 text-muted">
-            <li>{t("not1")}</li>
-            <li>{t("not2")}</li>
-            <li>{t("not3")}</li>
-          </ul>
-        </div>
-        <p className="mt-6">
+        <h2 id="privacy-title" className="mb-8 text-3xl text-ink sm:text-4xl">{t("privacyTitle")}</h2>
+        <PrivacyVisual />
+        <p className="mt-6 text-muted">{t("privacyLine")}</p>
+        <p className="mt-3">
           <Link href="/privacy" className="text-primary-strong underline underline-offset-4">{t("privacyMore")} →</Link>
         </p>
+      </section>
+
+      {/* On every device */}
+      <section id="devices" aria-labelledby="devices-title" className="scroll-mt-20 py-16">
+        <h2 id="devices-title" className="text-3xl text-ink sm:text-4xl">{tdev("title")}</h2>
+        <p className="mb-8 mt-3 text-lg text-muted">{tdev("body")}</p>
+        <Devices downloads={downloads} />
       </section>
 
       {/* Pricing */}
