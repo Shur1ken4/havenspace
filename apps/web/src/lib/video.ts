@@ -16,7 +16,8 @@ export function videoServerUrl(): string {
 /** An entry pass for one person to one room, valid long enough for a session. */
 export async function videoToken(room: string, identity: string, name: string): Promise<string> {
   const at = new AccessToken(process.env.LIVEKIT_API_KEY, process.env.LIVEKIT_API_SECRET, { identity, name, ttl: "3h" });
-  at.addGrant({ room, roomJoin: true, canPublish: true, canSubscribe: true, canPublishData: false });
+  // Only the therapist may set their own attributes (used to show "recording" on the client's screen).
+  at.addGrant({ room, roomJoin: true, canPublish: true, canSubscribe: true, canPublishData: false, canUpdateOwnMetadata: identity === "therapist" });
   return at.toJwt();
 }
 

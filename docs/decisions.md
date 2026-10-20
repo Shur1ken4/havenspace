@@ -425,6 +425,8 @@ Build our own video room on **LiveKit Cloud** (project region: EU, Frankfurt; ag
 
 **Update 2026-10-20: entry point and one-time links.** A video call is chosen like any other session: *Start session → client → "Video call in HavenSpace"* (first option, no consent needed for the call itself; recording still needs consent). In the room, "How [client] joins" offers the client app (automatic "Join now") and a **one-time link** for clients without the app. Links carry 32 random bytes; only a hash is stored; they work while the room is open, for at most 4 hours, and stop when the session ends or a new link is made. A guest joins with the same identity as the client, so a forwarded link replaces rather than adds a person. The guest page shows only the therapist's name.
 
+**Update 2026-10-21: automatic recording and transparency.** Before joining, the therapist can choose "Record for notes automatically when [client] joins" (on by default only when consent is on file). Recording waits for the client's audio, so it starts when they join; if they never join, the empty draft is removed. The client's screen always shows "[therapist] is recording this session for notes" while it records (signalled through the therapist's LiveKit participant attributes; only the therapist's entry pass may set them). For accounts in live research mode (ADR-10, role-play only), live suggestions also work in video, from short clips sent next to the recording.
+
 
 # ADR-18: Accounts with email and password, chosen role at sign-up
 Status: Accepted   Date: 2026-10-21   Deciders: Shurik

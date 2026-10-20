@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Mic, MicOff, Video, VideoOff, PhoneOff, Circle } from "lucide-react";
-import { Track } from "livekit-client";
+import { RoomEvent, Track } from "livekit-client";
 import {
   LiveKitRoom, RoomAudioRenderer, VideoTrack, useLocalParticipant, useRemoteParticipants, useTracks,
   type TrackReference,
@@ -16,6 +16,9 @@ import { Dialog } from "@/components/ui/dialog";
 import { Notice } from "@/components/ui/notice";
 import { pickMimeType } from "@/lib/client/audio";
 import { UploadQueue } from "@/lib/client/upload-queue";
+import { LiveClipper } from "@/lib/client/live";
+import { Chip } from "@/components/ui/chip";
+import { LivePanel } from "@/app/(app)/sessions/[id]/capture/live-panel";
 import { endVideo, startVideoRecording } from "@/app/(app)/video/actions";
 import { JoinOptions } from "./join-options";
 
@@ -27,8 +30,10 @@ type Stage = "lobby" | "joining" | "in" | "ended" | "error";
  * is ours. The therapist can record for notes: their microphone and the client's
  * audio are saved as two separate tracks, exactly like an online-call recording.
  */
-export function VideoRoom({ roomId, role, otherName, clientId, consent = false, linked = false, guestToken }: {
+export function VideoRoom({ roomId, role, otherName, clientId, consent = false, linked = false, guestToken, liveAllowed = false }: {
   roomId: string; role: Role; otherName: string; clientId?: string; consent?: boolean;
+  /** Therapist: live research mode is switched on for this account (ADR-10, role-play only). */
+  liveAllowed?: boolean;
   /** Therapist: the client uses the client app and gets "Join now" there. */
   linked?: boolean;
   /** Someone joining from a one-time link, without an account. */
@@ -39,6 +44,9 @@ export function VideoRoom({ roomId, role, otherName, clientId, consent = false, 
   const [stage, setStage] = useState<Stage>("lobby");
   const [conn, setConn] = useState<{ url: string; token: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Therapist's choices before joining: record automatically, live suggestions (research).
+  const [autoRecord, setAutoRecord] = useState(consent);
+  const [liveOn, setLiveOn] = useState(false);
   const leaving = useRef(false);
 
   async function join() {
@@ -83,6 +91,26 @@ export function VideoRoom({ roomId, role, otherName, clientId, consent = false, 
         </div>
         <p className="text-ink">{role === "therapist" ? t("lobbyTherapist") : t("lobbyClient")}</p>
         <p className="text-sm text-muted">{role === "therapist" ? t("privacyTherapist") : t("privacyClient")}</p>
+        {role === "therapist" && (
+          <div className="space-y-3 rounded-card border border-line p-4">
+            <label className={`flex gap-3 ${consent ? "cursor-pointer" : "opacity-70"}`}>
+              <input type="checkbox" className="mt-1 h-4 w-4 accent-[var(--primary-strong)]" checked={autoRecord && consent} disabled={!consent} onChange={(e) => setAutoRecord(e.target.checked)} />
+              <span className="space-y-0.5">
+                <span className="block font-medium text-ink">{t("autoRecord", { name: otherName })}</span>
+                <span className="block text-sm text-muted">{consent ? t("autoRecordHint", { name: otherName }) : t("autoRecordNoConsent", { name: otherName })}</span>
+              </span>
+            </label>
+            {liveAllowed && consent && (
+              <label className="flex cursor-pointer gap-3">
+                <input type="checkbox" className="mt-1 h-4 w-4 accent-[var(--primary-strong)]" checked={liveOn} onChange={(e) => setLiveOn(e.target.checked)} />
+                <span className="space-y-0.5">
+                  <span className="flex flex-wrap items-center gap-2 font-medium text-ink">{t("live")} <Chip tone="amber">{t("liveBadge")}</Chip></span>
+                  <span className="block text-sm text-muted">{t("liveHint")}</span>
+                </span>
+              </label>
+            )}
+          </div>
+        )}
         {error && <Notice tone="attention">{t(error)}</Notice>}
         <Button size="lg" className="w-full" onClick={join} disabled={stage === "joining"}>
           {stage === "joining" ? t("joining") : t("join")}
@@ -106,6 +134,7 @@ export function VideoRoom({ roomId, role, otherName, clientId, consent = false, 
     >
       <InCall
         roomId={roomId} role={role} otherName={otherName} consent={consent} clientId={clientId} linked={linked}
+        autoRecord={autoRecord && consent} liveOn={liveOn && liveAllowed}
         deviceError={error === "noDevices"}
         onLeave={(to) => { leaving.current = true; if (to) router.push(to); else setStage("ended"); }}
         back={back}
@@ -117,14 +146,19 @@ export function VideoRoom({ roomId, role, otherName, clientId, consent = false, 
 
 const TIMESLICE_MS = 10_000;
 
-function InCall({ roomId, role, otherName, consent, clientId, linked, deviceError, onLeave, back }: {
+function InCall({ roomId, role, otherName, consent, clientId, linked, autoRecord, liveOn, deviceError, onLeave, back }: {
   roomId: string; role: Role; otherName: string; consent: boolean; clientId?: string; linked: boolean;
+  autoRecord: boolean; liveOn: boolean;
   deviceError: boolean; onLeave: (to: string | null) => void; back: string | null;
 }) {
   const t = useTranslations("video");
   const tc = useTranslations("common");
   const { localParticipant, isMicrophoneEnabled, isCameraEnabled } = useLocalParticipant();
-  const remotes = useRemoteParticipants();
+  const remotes = useRemoteParticipants({ updateOnlyOn: [
+    RoomEvent.ParticipantConnected, RoomEvent.ParticipantDisconnected, RoomEvent.ParticipantAttributesChanged, RoomEvent.ConnectionStateChanged,
+  ] });
+  // Client side: the therapist's screen tells everyone in the room when it records.
+  const otherRecording = remotes.some((p) => p.attributes?.recording === "on");
   const cams = useTracks([Track.Source.Camera]);
   const mics = useTracks([Track.Source.Microphone]);
   const remoteCam = cams.find((c) => !c.participant.isLocal);
@@ -143,6 +177,10 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, deviceErro
   const queue = useRef<UploadQueue | null>(null);
   const segment = useRef(0);
   const remoteTrackId = useRef<string | null>(null);
+  // Live research mode: short clips next to the real recording (ADR-10).
+  const clippers = useRef<LiveClipper[]>([]);
+  const liveQueue = useRef<UploadQueue | null>(null);
+  const [liveActive, setLiveActive] = useState(false);
 
   const stopRecorders = useCallback(async () => {
     const stopped = recorders.current.map(({ recorder }) => new Promise<void>((resolve) => {
@@ -151,6 +189,8 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, deviceErro
       recorder.stop();
     }));
     recorders.current = [];
+    clippers.current.forEach((c) => c.stop());
+    clippers.current = [];
     await Promise.all(stopped);
   }, []);
 
@@ -167,11 +207,17 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, deviceErro
       recorder.start(TIMESLICE_MS);
       recorders.current.push(entry);
     }
+    if (liveQueue.current) {
+      const seg = segment.current;
+      clippers.current = (["mic", "tab"] as const).map((name) => new LiveClipper(new MediaStream([name === "mic" ? mine : theirs]),
+        (blob, seq) => liveQueue.current?.push({ track: `live_${name}`, segment: seg, seq, blob })));
+      clippers.current.forEach((c) => c.start());
+    }
     remoteTrackId.current = theirs.id;
     return true;
   }, [localParticipant, remoteMic]);
 
-  async function startRecording() {
+  const startRecording = useCallback(async () => {
     setRecError(null);
     const res = await startVideoRecording(roomId).catch(() => ({ error: "failed" as const }));
     if ("error" in res) { setRecError(res.error === "consent" ? "consent" : "failed"); return; }
@@ -180,9 +226,33 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, deviceErro
     queue.current = new UploadQueue(res.sessionId, (s) => {
       if (s.fatal) { void stopRecorders(); setRecState("off"); setRecError(s.fatal === "consent_required" ? "consent" : "failed"); }
     });
+    if (liveOn) {
+      // A separate queue: if live clips fail, the real recording carries on untouched.
+      const ok = await fetch(`/api/sessions/${res.sessionId}/live`, { method: "POST" }).then((r) => r.ok).catch(() => false);
+      if (ok) {
+        liveQueue.current = new UploadQueue(res.sessionId, (s) => { if (s.fatal) { clippers.current.forEach((c) => c.stop()); setLiveActive(false); } });
+        setLiveActive(true);
+      }
+    }
     setRec({ sessionId: res.sessionId });
     setRecState(startRecorders() ? "on" : "waiting");
-  }
+  }, [roomId, liveOn, startRecorders, stopRecorders]);
+
+  // "Record automatically": start as soon as the therapist is in the room; the
+  // recorders themselves wait for the client's audio, so recording begins when
+  // the client joins.
+  const autoStarted = useRef(false);
+  useEffect(() => {
+    if (role !== "therapist" || !autoRecord || autoStarted.current) return;
+    autoStarted.current = true;
+    void Promise.resolve().then(startRecording);
+  }, [role, autoRecord, startRecording]);
+
+  // Tell the other person's screen whether this session is being recorded.
+  useEffect(() => {
+    if (role !== "therapist") return;
+    localParticipant.setAttributes({ recording: recState === "on" ? "on" : "off" }).catch(() => {});
+  }, [role, recState, localParticipant]);
 
   // If the client drops out and comes back, both tracks restart together in a
   // new segment so they stay in step.
@@ -235,6 +305,11 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, deviceErro
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-2xl sm:text-3xl">{t("with", { name: otherName })}</h1>
+        {role === "client" && otherRecording && (
+          <p className="flex items-center gap-2 text-sm text-muted" aria-live="polite">
+            <span className="breathing-dot" /> {t("beingRecorded", { name: otherName })}
+          </p>
+        )}
         {recState !== "off" && (
           <p className="flex items-center gap-2 text-sm text-muted" aria-live="polite">
             <span className="breathing-dot" data-paused={recState !== "on"} />
@@ -243,6 +318,7 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, deviceErro
         )}
       </div>
 
+      <div className={liveActive ? "grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_360px]" : ""}>
       <div className="relative aspect-[3/4] overflow-hidden rounded-panel border border-line bg-[#1E2421] sm:aspect-video">
         {remoteCam ? (
           <VideoTrack trackRef={remoteCam as TrackReference} className="h-full w-full object-cover" />
@@ -257,11 +333,13 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, deviceErro
             <VideoTrack trackRef={localCam as TrackReference} className="aspect-video w-full -scale-x-100 object-cover" />
           </div>
         )}
-        {recState === "on" && (
+        {(recState === "on" || (role === "client" && otherRecording)) && (
           <div className="absolute left-3 top-3 flex items-center gap-2 rounded-full bg-black/45 px-3 py-1.5 text-xs text-white">
             <Arch mood="listening" className="h-6 w-6" /> {t("recordingBadge")}
           </div>
         )}
+      </div>
+      {liveActive && rec && <LivePanel sessionId={rec.sessionId} active={recState === "on"} />}
       </div>
 
       {deviceError && <Notice tone="attention">{t("noDevices")}</Notice>}

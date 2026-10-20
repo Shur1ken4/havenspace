@@ -1069,7 +1069,7 @@
     "record": "Record for notes",
     "recording": "Recording for notes",
     "recordingBadge": "Recording",
-    "recordingWaiting": "Recording paused until {name} is back",
+    "recordingWaiting": "Recording starts when {name} is here",
     "recordNeedsClient": "Recording starts once your client has joined.",
     "consentHint": "To record for notes, first record this client's consent.",
     "consentNeeded": "Record this client's consent first to record the session.",
@@ -1102,7 +1102,14 @@
     "linkNote": "Works only for this session, and stops when you end it. Anyone with the link can join as your client, so send it only to them.",
     "linkGoneTitle": "This link no longer works",
     "linkGoneBody": "The session has ended, or your therapist made a new link. Ask them to send you a fresh one.",
-    "canClose": "You can close this page now."
+    "canClose": "You can close this page now.",
+    "autoRecord": "Record for notes automatically when {name} joins",
+    "autoRecordHint": "{name} sees that you're recording. You can still end the session at any time.",
+    "autoRecordNoConsent": "To record, first record {name}'s consent on their client page.",
+    "live": "Live suggestions",
+    "liveBadge": "Research",
+    "liveHint": "Role-play sessions only. Short reads of the conversation appear beside the video.",
+    "beingRecorded": "{name} is recording this session for notes"
   },
   "register": {
     "title": "Create your account",
