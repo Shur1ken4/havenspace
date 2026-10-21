@@ -14,3 +14,11 @@ reference/prototype/*
 !.env.example
 .vercel
 .env*
+
+# Private signing keys (never commit)
+.secrets/
+*.keystore
+*.jks
+# Desktop and Android build output
+native/desktop/dist/
+native/android/build/

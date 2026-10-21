@@ -460,3 +460,25 @@ Shurik wants Arch to be a real AI agent, not only a mascot: competitors (Upheal,
 - Easier: the product is visibly an AI agent; therapists find things in seconds; admin done with one click.
 - Harder: another AI surface to evaluate; the Clinical Lead must review the instructions and refusals.
 - Next: after-session autopilot (proposals bundled on the review screen), supervision-pack agent, nudges, voice.
+
+# ADR-20: Downloadable apps for Mac, Windows and Android
+Status: Proposed (waiting for Shurik: publishing the files, Android signing key)   Date: 2026-10-21   Deciders: Shurik
+## Context
+Shurik wants big "Download for Mac / Windows / Android" buttons on the homepage, downloading straight from our site (App Store and Google Play later). The installable web app (PWA) already works, but people expect a real file to download. The apps must keep every feature: video calls, camera, recording for notes and screen sharing.
+## Decision
+- **Mac and Windows: Electron**, a window onto the live HavenSpace site using Chrome's engine (as Slack, Teams and Notion do). Everything behaves as in Chrome. The app holds no data; it only opens havenspace-app.vercel.app, sends other links to the person's browser, and allows the camera, microphone and screen only for HavenSpace. Screen sharing: the macOS system picker on macOS 15+, otherwise our own picker (entire screen or any app window, as in Zoom or Teams). HavenSpace's own windows are left out.
+- **Android: a Trusted Web Activity** (Google's way to package a web app; made with Bubblewrap). It runs in Chrome, so camera, microphone and sign-in work as in Chrome. It shows no address bar once our site lists the app's signing fingerprint (`/.well-known/assetlinks.json`).
+- **Builds happen on GitHub's computers** (`.github/workflows/apps.yml`), so nothing is installed on our Macs. The files would be published as a GitHub release and linked from the homepage.
+- **Test builds are unsigned** (Mac: ad-hoc signature, so it opens via "Open Anyway"; Windows: "More info → Run anyway"). Paid signing comes before launch (Apple Developer $99/year; a Windows certificate about €100–300/year).
+## Options considered
+| Option | Complexity | Cost | Privacy/EU | Notes |
+|---|---|---|---|---|
+| Electron (chosen for desktop) | Low | €0 | Same as browser | ~100 MB download; Chrome engine everywhere, so screen sharing and recording behave the same |
+| Tauri | Low | €0 | Same as browser | ~10 MB, but uses Safari's engine on Mac: screen sharing and recording inside it are uncertain |
+| PWA install only | None | €0 | Same | Already there; not the "download a file" experience Shurik wants |
+| Android Trusted Web Activity (chosen) | Low | €0 | Same | Accepted by Google Play later |
+| Android WebView wrapper | Medium | €0 | Same | Camera and passkeys need extra work |
+## Consequences
+- Easier: one codebase. The apps update themselves because they open the live site.
+- Harder: unsigned test builds show a security step on first open. Passkeys (Touch ID) in the Mac app need the paid Apple signature; email + password works.
+- Waiting on Shurik: OK to publish the files publicly as GitHub releases; creating the Android signing key (kept in `.secrets/`, never committed, plus a locked copy in GitHub secrets).

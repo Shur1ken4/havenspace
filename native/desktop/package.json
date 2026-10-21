@@ -1,0 +1,46 @@
+{
+  "name": "havenspace-desktop",
+  "productName": "HavenSpace",
+  "version": "1.0.0",
+  "description": "HavenSpace for Mac and Windows",
+  "homepage": "https://havenspace-app.vercel.app",
+  "author": "HavenSpace",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist:mac": "electron-builder --mac --universal --publish never",
+    "dist:win": "electron-builder --win --x64 --publish never"
+  },
+  "devDependencies": {
+    "electron": "45.0.0",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "app.havenspace.desktop",
+    "productName": "HavenSpace",
+    "copyright": "© HavenSpace",
+    "directories": { "output": "dist", "buildResources": "build" },
+    "files": ["main.js", "picker.html", "picker.js", "picker-preload.js", "offline.html", "offline.js", "package.json"],
+    "mac": {
+      "target": [{ "target": "dmg", "arch": ["universal"] }],
+      "icon": "build/icon-mac.png",
+      "category": "public.app-category.productivity",
+      "identity": "-",
+      "hardenedRuntime": false,
+      "artifactName": "HavenSpace-Mac.${ext}",
+      "extendInfo": {
+        "NSCameraUsageDescription": "HavenSpace uses your camera for video sessions with your clients or therapist.",
+        "NSMicrophoneUsageDescription": "HavenSpace uses your microphone for video sessions and, if you choose, to record sessions for notes."
+      }
+    },
+    "dmg": { "title": "HavenSpace" },
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "icon": "build/icon.png",
+      "artifactName": "HavenSpace-Windows-Setup.${ext}"
+    },
+    "nsis": { "oneClick": true, "perMachine": false, "createDesktopShortcut": true, "shortcutName": "HavenSpace" }
+  }
+}
