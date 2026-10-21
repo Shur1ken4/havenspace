@@ -2,7 +2,8 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { ArrowRight, Check, EyeOff, GlobeLock, Link2, ShieldCheck } from "lucide-react";
 import { PlantIllustration } from "@/components/illustrations";
-import { ArchAgentVisual, FeatureGrid, PrivacyVisual, StepsVisual } from "@/components/marketing/visuals";
+import { FeatureGrid, PrivacyVisual, StepsVisual } from "@/components/marketing/visuals";
+import { ArchAgentStage } from "@/components/marketing/arch-agent-stage";
 import { Devices } from "@/components/marketing/devices";
 import { APPS_PUBLISHED, appDownloads } from "@/lib/apps";
 import { HeroDemo } from "@/components/marketing/hero-demo";
@@ -59,7 +60,7 @@ export default async function LandingPage() {
 
       {/* Arch, the AI practice agent */}
       <section id="arch" aria-labelledby="arch-title" className="scroll-mt-20 py-16">
-        <ArchAgentVisual />
+        <ArchAgentStage />
       </section>
 
       {/* Reflection */}

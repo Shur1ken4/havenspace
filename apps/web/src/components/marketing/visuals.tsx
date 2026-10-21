@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import {
-  CalendarClock, ClipboardCheck, EyeOff, Globe2, GlobeLock, Languages, Link2, MessageCircleQuestion, NotebookPen,
-  Search, ShieldCheck, Smartphone, Sprout, UsersRound, Video,
+  CalendarClock, EyeOff, Globe2, GlobeLock, Languages, Link2, MessageCircleQuestion, NotebookPen,
+  ShieldCheck, Smartphone, Sprout, UsersRound, Video,
 } from "lucide-react";
 import { Arch } from "@/components/arch";
 
@@ -55,48 +55,6 @@ export async function StepsVisual() {
         <p className="text-muted">{t("v_step3Body")}</p>
       </li>
     </ol>
-  );
-}
-
-/** Arch as an AI practice agent: a small picture of a real exchange. */
-export async function ArchAgentVisual() {
-  const t = await getTranslations("landing");
-  const caps = [
-    { icon: Search, label: t("agentCap1") },
-    { icon: CalendarClock, label: t("agentCap2") },
-    { icon: ClipboardCheck, label: t("agentCap3") },
-    { icon: ShieldCheck, label: t("agentCap4") },
-  ];
-  return (
-    <div className="grid items-center gap-8 md:grid-cols-[1fr_1.1fr]">
-      <div className="space-y-5">
-        <h2 id="arch-title" className="text-3xl text-ink sm:text-4xl">{t("agentTitle")}</h2>
-        <p className="text-lg text-muted">{t("agentBody")}</p>
-        <ul className="grid gap-3 sm:grid-cols-2">
-          {caps.map((c) => (
-            <li key={c.label} className="flex items-center gap-3 text-ink">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary-strong"><c.icon size={19} aria-hidden /></span>
-              {c.label}
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className="space-y-3 rounded-panel border border-line bg-surface-2 p-4 sm:p-5" role="img" aria-label={t("agentDemoLabel")}>
-        <p className="ml-auto w-fit max-w-[85%] rounded-card rounded-br-sm bg-primary-soft px-4 py-2.5 text-ink">{t("agentAsk")}</p>
-        <div className="flex items-start gap-2">
-          <Arch mood="thinking" className="h-11 w-11 shrink-0" />
-          <div className="space-y-2 rounded-card rounded-tl-sm border border-line bg-surface p-3.5 text-sm text-ink shadow-[var(--shadow)]">
-            <p>{t("agentAnswer1")} <span className="whitespace-nowrap text-primary-strong underline underline-offset-4">9 Oct · 1:36</span></p>
-            <p>{t("agentAnswer2")} <span className="whitespace-nowrap text-primary-strong underline underline-offset-4">9 Oct · 2:37</span></p>
-          </div>
-        </div>
-        <div className="ml-12 space-y-2 rounded-card border border-primary bg-surface p-3.5 text-sm">
-          <p className="flex items-center gap-2 text-muted"><ClipboardCheck size={15} className="text-primary-strong" /> {t("agentCard")}</p>
-          <p className="font-medium text-ink">{t("agentCardTitle")}</p>
-          <span className="inline-flex rounded-control bg-primary-strong px-3 py-1 text-xs font-medium text-on-primary">{t("agentApprove")}</span>
-        </div>
-      </div>
-    </div>
   );
 }
 
