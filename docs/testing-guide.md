@@ -57,6 +57,13 @@ You need two browsers or devices: one for the **therapist** and one for the **cl
 
 **Tell us:** Was the picture and sound clear? Was it obvious how to join? Was the shared screen readable?
 
+## F3. The apps for Mac, Windows and Android
+1. On the homepage, go to **HavenSpace on all your devices** and tap **Download** for your device. **First time opening it?** shows the one-time steps (these are test versions without a paid signature yet).
+2. Sign in. Start a video session and try **Share screen**: on a computer you can pick the whole screen or any app window.
+3. On Android, check that there's no browser address bar at the top, and that the app looks right when you turn the phone sideways.
+
+**Tell us:** Did it install without confusion? Does anything look cut off or too small on your screen?
+
 ## G. Things to try to break
 - Use an old or used invite link. You should get a clear "can't be used" message.
 - As the client, open `/today` or `/clients`. You should land back in your own space.

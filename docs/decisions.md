@@ -462,7 +462,7 @@ Shurik wants Arch to be a real AI agent, not only a mascot: competitors (Upheal,
 - Next: after-session autopilot (proposals bundled on the review screen), supervision-pack agent, nudges, voice.
 
 # ADR-20: Downloadable apps for Mac, Windows and Android
-Status: Proposed (waiting for Shurik: publishing the files, Android signing key)   Date: 2026-10-21   Deciders: Shurik
+Status: Accepted (test builds)   Date: 2026-10-21   Deciders: Shurik
 ## Context
 Shurik wants big "Download for Mac / Windows / Android" buttons on the homepage, downloading straight from our site (App Store and Google Play later). The installable web app (PWA) already works, but people expect a real file to download. The apps must keep every feature: video calls, camera, recording for notes and screen sharing.
 ## Decision
@@ -481,4 +481,6 @@ Shurik wants big "Download for Mac / Windows / Android" buttons on the homepage,
 ## Consequences
 - Easier: one codebase. The apps update themselves because they open the live site.
 - Harder: unsigned test builds show a security step on first open. Passkeys (Touch ID) in the Mac app need the paid Apple signature; email + password works.
-- Waiting on Shurik: OK to publish the files publicly as GitHub releases; creating the Android signing key (kept in `.secrets/`, never committed, plus a locked copy in GitHub secrets).
+- Android signing key: created 2026-10-21. The private copy is in `.secrets/android/` on Shurik's Mac (never committed; back it up somewhere safe) and a locked copy is in GitHub secrets. Every Android update must be signed with it; if it's lost, people have to reinstall the app once. The site's `/.well-known/assetlinks.json` lists its fingerprint so the app shows no address bar.
+- Checks before every release: the Mac app's signature is verified; the Mac and Windows apps are started and must open HavenSpace with camera, microphone and screen sharing available; the Android app's signature must match the site, and it's installed and screenshotted on a virtual small phone, phone and tablet (light, dark, landscape). The release is published only if all of them pass.
+- Revisit: Google has announced developer verification for apps installed outside Google Play (some countries from 2026, everywhere from 2027). Register as a Google developer before that, or move Android to Google Play.
