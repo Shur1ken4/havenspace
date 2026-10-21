@@ -61,6 +61,7 @@ You need two browsers or devices: one for the **therapist** and one for the **cl
 1. On the homepage, go to **HavenSpace on all your devices** and tap **Download** for your device. **First time opening it?** shows the one-time steps (these are test versions without a paid signature yet).
 2. Sign in. Start a video session and try **Share screen**: on a computer you can pick the whole screen or any app window.
 3. On Android, check that there's no browser address bar at the top, and that the app looks right when you turn the phone sideways.
+4. In the apps you should never see the homepage: the app opens on sign-in, and **HavenSpace website ↗** opens the website in your browser.
 
 **Tell us:** Did it install without confusion? Does anything look cut off or too small on your screen?
 

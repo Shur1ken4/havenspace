@@ -74,6 +74,18 @@ turn_back() {
   sleep 3
 }
 
+# The page must show one of the words in $2 and none in $3 (from the screen's text).
+expect_text() {
+  local xml
+  xml=$(ui)
+  if ! echo "$xml" | grep -qE "(text|content-desc)=\"[^\"]*($2)"; then
+    echo "PROBLEM $1: expected to see $2" >> "$SUMMARY"; problems=$((problems + 1))
+  fi
+  if [ -n "${3:-}" ] && echo "$xml" | grep -qE "(text|content-desc)=\"[^\"]*($3)"; then
+    echo "PROBLEM $1: shouldn't show $3 in the app" >> "$SUMMARY"; problems=$((problems + 1))
+  fi
+}
+
 open_page() {
   adb shell am start -a android.intent.action.VIEW -d "$SITE$1" "$PKG" > /dev/null
   shot "$2" "${3:-8}"
@@ -98,32 +110,39 @@ START=$(dims "$OUT/01-open.png")
 W=${START%x*}; H=${START#*x}
 echo "upright: ${W}x${H}" >> "$SUMMARY"
 
-open_page "/" 02-home
-# Scroll with a swipe in the middle of the screen (not from the edge, which opens the system bar).
-adb shell input swipe $((W / 2)) $((H * 7 / 10)) $((W / 2)) $((H * 3 / 10)) 400
-shot 03-home-scrolled 3
-open_page "/#devices" 04-home-devices
-open_page "/login" 05-login
-open_page "/signup" 06-signup
-open_page "/join" 07-join-code
-open_page "/v/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" 08-video-link
-open_page "/privacy" 09-privacy
+# HavenSpace shows only the platform in the app: even the homepage address leads to sign-in.
+open_page "/" 02-homepage-address
+expect_text 02-homepage-address "Sign in|Войти" "Be with your client|Будьте с клиентом"
+open_page "/signup" 03-signup
+open_page "/join" 04-join-code
+open_page "/v/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" 05-video-link
+open_page "/privacy" 06-privacy
+expect_text 06-privacy "Back to HavenSpace|Вернуться в HavenSpace" "Get started|Начать"
 
 # Dark mode
 adb shell cmd uimode night yes
-open_page "/login" 10-login-dark
-open_page "/" 11-home-dark
+sleep 3
+open_page "/login" 07-login-dark
+open_page "/signup" 08-signup-dark
 adb shell cmd uimode night no
 
 # Turned a quarter: landscape on phones, portrait on tablets.
 turn
-open_page "/login" 12-login-turned
-open_page "/" 13-home-turned
-open_page "/signup" 14-signup-turned
-TURNED=$(dims "$OUT/13-home-turned.png")
-echo "turned: $TURNED" >> "$SUMMARY"
-if [ "$TURNED" != "${H}x${W}" ]; then
-  echo "PROBLEM: the screen didn't turn (still $TURNED)" >> "$SUMMARY"
+# Did the device itself turn? (Android's Settings app always follows.)
+adb shell am start -a android.settings.SETTINGS > /dev/null
+sleep 4
+adb exec-out screencap -p > "$OUT/09-settings-turned.png"
+DEVICE=$(dims "$OUT/09-settings-turned.png")
+echo "device turned (Settings app): $DEVICE" >> "$SUMMARY"
+open_page "/login" 10-login-turned
+open_page "/signup" 11-signup-turned
+open_page "/join" 12-join-turned
+TURNED=$(dims "$OUT/10-login-turned.png")
+echo "app turned: $TURNED" >> "$SUMMARY"
+if [ "$DEVICE" = "${W}x${H}" ]; then
+  echo "NOTE: this virtual device couldn't be turned, so the turned layout wasn't checked here" >> "$SUMMARY"
+elif [ "$TURNED" != "$DEVICE" ]; then
+  echo "PROBLEM: the device turned but HavenSpace stayed upright ($TURNED)" >> "$SUMMARY"
   problems=$((problems + 1))
 fi
 turn_back

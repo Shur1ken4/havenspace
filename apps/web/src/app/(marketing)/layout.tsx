@@ -18,7 +18,7 @@ export default async function MarketingLayout({ children }: LayoutProps<"/">) {
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-surface focus:px-4 focus:py-2">
         {t("common.skipToContent")}
       </a>
-      <aside aria-label={t("landing.announceLabel")} className="border-b border-line bg-primary-soft/60 px-4 py-2 text-center text-sm text-ink">
+      <aside aria-label={t("landing.announceLabel")} className="site-only border-b border-line bg-primary-soft/60 px-4 py-2 text-center text-sm text-ink">
         <span className="breathing-dot mr-2 !h-2 !w-2 align-middle" aria-hidden />
         <span className="sm:hidden">{t("landing.announceShort")}</span>
         <span className="hidden sm:inline">{t("landing.announce")}</span>{" "}
@@ -28,14 +28,18 @@ export default async function MarketingLayout({ children }: LayoutProps<"/">) {
         <Link href="/" className="shrink-0">
           <Logo name={t("common.appName")} tagline={t("common.tagline")} taglineFrom="sm" />
         </Link>
-        <nav aria-label="Main" className="hidden items-center gap-6 text-ui text-muted md:flex">
+        <nav aria-label="Main" className="site-only hidden items-center gap-6 text-ui text-muted md:flex">
           <Link href="/#how" className="hover:text-ink">{t("nav.how")}</Link>
           <Link href="/#arch" className="hover:text-ink">{t("nav.arch")}</Link>
           <Link href="/privacy" className="hover:text-ink">{t("nav.privacy")}</Link>
           <Link href="/#pricing" className="hover:text-ink">{t("nav.pricing")}</Link>
           <Link href="/#devices" className="hover:text-ink">{t("nav.devices")}</Link>
         </nav>
-        <div className="flex items-center gap-1 sm:gap-2">
+        {/* Inside the HavenSpace apps, website pages only lead back to the platform. */}
+        <span className="app-only">
+          <Link href="/today" className={buttonClass("ghost", "sm", "whitespace-nowrap")}>← {t("common.backToApp")}</Link>
+        </span>
+        <div className="site-only flex items-center gap-1 sm:gap-2">
           {signedIn ? (
             <Link href="/today" className={buttonClass("primary", "sm", "whitespace-nowrap px-3.5")}>{t("nav.openApp")}</Link>
           ) : (

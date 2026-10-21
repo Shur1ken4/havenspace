@@ -10,6 +10,10 @@ export default async function AuthLayout({ children }: LayoutProps<"/">) {
         <Logo name={t("appName")} tagline={t("tagline")} size="lg" />
       </Link>
       {children}
+      {/* Only in the HavenSpace apps: the website opens in the browser. */}
+      <p className="app-only mt-8 text-center text-sm">
+        <a href="/" target="_blank" rel="noopener" className="text-muted underline underline-offset-4 hover:text-ink">{t("website")} ↗</a>
+      </p>
     </main>
   );
 }

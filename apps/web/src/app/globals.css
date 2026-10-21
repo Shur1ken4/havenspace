@@ -285,3 +285,8 @@ a, button, input, select, textarea, [role="tab"] {
   .no-print { display: none !important; }
   body { background: white; }
 }
+
+/* Shown only inside the HavenSpace apps (lib/app-window.ts sets <html data-app="1">). */
+.app-only { display: none !important; }
+:root[data-app="1"] .app-only { display: revert !important; }
+:root[data-app="1"] .site-only { display: none !important; }

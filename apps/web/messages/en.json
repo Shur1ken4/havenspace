@@ -24,7 +24,9 @@
     "skipToContent": "Skip to content",
     "language": "Language",
     "tagline": "AI assistant for therapists",
-    "demoLabel": "Demo mode"
+    "demoLabel": "Demo mode",
+    "website": "HavenSpace website",
+    "backToApp": "Back to HavenSpace"
   },
   "badges": {
     "audioDeleted": "Audio deleted after transcription",

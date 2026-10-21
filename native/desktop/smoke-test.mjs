@@ -33,6 +33,15 @@ try {
   await win.evaluate(() => { location.href = "https://example.com/"; });
   await win.waitForTimeout(2000);
   check(win.url() === before, "other sites don't open inside the app");
+  // Only the platform: the homepage address leads to sign-in; website pages open in the browser.
+  await win.evaluate(() => { location.href = "/"; });
+  await win.waitForTimeout(4000);
+  check(/^\/(login|today)$/.test(new URL(win.url()).pathname), `the homepage isn't shown in the app (${new URL(win.url()).pathname})`);
+  const here = win.url();
+  await win.evaluate(() => { location.href = "/privacy"; });
+  await win.waitForTimeout(2000);
+  check(win.url() === here, "website pages open in the browser, not the app");
+  check(await win.getByRole("link", { name: /HavenSpace website|Сайт HavenSpace/ }).isVisible(), "'HavenSpace website' link on sign-in");
   await win.screenshot({ path: shotPath });
 } finally {
   await app.close().catch(() => {});

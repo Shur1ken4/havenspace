@@ -10,6 +10,9 @@ const ORIGIN = new URL(APP_URL).origin;
 const BG = "#FAF8F5";
 
 const isOurs = (url) => { try { return new URL(url).origin === ORIGIN; } catch { return false; } };
+// The app shows only the platform; the website's pages open in the person's browser.
+const WEBSITE_PAGES = /^\/(?:$|privacy(?:\/|$)|resources\/|legal\/)/;
+const isWebsitePage = (url) => { try { return WEBSITE_PAGES.test(new URL(url).pathname); } catch { return false; } };
 const russian = () => /^(ru|uk)/.test(app.getLocale());
 
 // Links to anywhere else open in the person's own browser (web and email only).
@@ -41,13 +44,18 @@ function createWindow() {
   void main.loadURL(`${ORIGIN}/today`);
 }
 
-// Every page in the app: stay on HavenSpace, send other links to the browser.
+// Every page in the app: stay on the platform, send the website and other sites to the browser.
 app.on("web-contents-created", (_e, contents) => {
-  contents.on("will-navigate", (e, url) => {
-    if (!isOurs(url)) { e.preventDefault(); openOutside(url); }
-  });
+  const leave = (e, url) => {
+    if (isOurs(url) && !isWebsitePage(url)) return;
+    e.preventDefault();
+    if (isOurs(url) && new URL(url).pathname === "/") void contents.loadURL(`${ORIGIN}/today`);
+    else openOutside(url);
+  };
+  contents.on("will-navigate", leave);
+  contents.on("will-redirect", leave);
   contents.setWindowOpenHandler(({ url }) => {
-    if (isOurs(url)) return { action: "allow", overrideBrowserWindowOptions: { autoHideMenuBar: true, backgroundColor: BG } };
+    if (isOurs(url) && !isWebsitePage(url)) return { action: "allow", overrideBrowserWindowOptions: { autoHideMenuBar: true, backgroundColor: BG } };
     openOutside(url);
     return { action: "deny" };
   });
@@ -133,6 +141,7 @@ function setUpMenu() {
       { role: "togglefullscreen" },
     ] },
     { role: "windowMenu" },
+    { role: "help", submenu: [{ label: russian() ? "Сайт HavenSpace" : "HavenSpace website", click: () => openOutside(ORIGIN) }] },
   ]));
 }
 

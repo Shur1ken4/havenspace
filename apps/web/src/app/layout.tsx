@@ -3,6 +3,8 @@ import { Fraunces, Inter, Source_Serif_4 } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { currentTheme } from "@/lib/theme";
+import { APP_WINDOW_SCRIPT } from "@/lib/app-window";
+import { AppWindow } from "@/components/app-window";
 import "./globals.css";
 
 const inter = Inter({ variable: "--font-inter-base", subsets: ["latin", "cyrillic"], display: "swap" });
@@ -32,6 +34,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const theme = await currentTheme();
   return (
     <html
+      // The app-window script may add data-app before React loads (lib/app-window.ts).
+      suppressHydrationWarning
       lang={locale}
       data-theme={theme === "system" ? undefined : theme}
       className={`${inter.variable} ${fraunces.variable} ${sourceSerif.variable}`}
@@ -41,7 +45,12 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         ["--font-fraunces" as string]: "var(--font-fraunces-base), var(--font-serif-cyr)",
       }}
     >
+      <head>
+        {/* In the HavenSpace apps, before anything paints: platform only, no homepage. */}
+        <script dangerouslySetInnerHTML={{ __html: APP_WINDOW_SCRIPT }} />
+      </head>
       <body className="min-h-dvh">
+        <AppWindow />
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>
