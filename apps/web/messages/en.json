@@ -1248,6 +1248,21 @@
     "iphoneStep3": "Tap Add to Home Screen, then Add.",
     "androidStep1": "Open havenspace in Chrome.",
     "androidStep2": "Tap the menu (three dots), then Install app.",
-    "androidStep3": "HavenSpace appears on your home screen."
+    "androidStep3": "HavenSpace appears on your home screen.",
+    "bodyDownloads": "Download the app for your Mac, Windows computer or Android phone. On iPhone, add it to your Home Screen.",
+    "firstOpen": "First time opening it?",
+    "testBuild": "This is a test version, so your device asks once before opening it.",
+    "macDownloadLine": "For macOS 12 or later, on Apple silicon and Intel Macs.",
+    "windowsDownloadLine": "For Windows 10 and 11.",
+    "androidDownloadLine": "For Android phones and tablets.",
+    "macOpen1": "Open HavenSpace-Mac.dmg and drag HavenSpace into Applications.",
+    "macOpen2": "Open HavenSpace. If macOS says it can't check the app, click Done.",
+    "macOpen3": "Open System Settings → Privacy & Security, scroll down and click Open Anyway. You only do this once.",
+    "windowsOpen1": "Open HavenSpace-Windows-Setup.exe from your Downloads.",
+    "windowsOpen2": "If “Windows protected your PC” appears, click More info, then Run anyway.",
+    "windowsOpen3": "HavenSpace opens and appears in your Start menu.",
+    "androidOpen1": "Tap Download. If Chrome asks, tap Download anyway.",
+    "androidOpen2": "Open the file. If asked, allow Chrome to install apps.",
+    "androidOpen3": "If Play Protect warns you, tap More details, then Install anyway."
   }
 }

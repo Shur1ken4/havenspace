@@ -95,12 +95,12 @@ export function MoodList({ items }: { items: { id: string; mood: number; note: s
             <div className="min-w-0 flex-1 space-y-1">
               <p className="text-sm text-muted">{m.when} · {t(`mood${m.mood}`)}</p>
               {m.note && <p className="whitespace-pre-wrap text-ink">{m.note}</p>}
-              <label className="flex items-center gap-2 text-sm text-muted">
-                <input type="checkbox" checked={m.shared} className="h-4 w-4 accent-[var(--primary-strong)]" onChange={(e) => start(() => setMoodShared(m.id, e.target.checked))} />
+              <label className="flex min-h-11 w-fit cursor-pointer items-center gap-2.5 text-sm text-muted">
+                <input type="checkbox" checked={m.shared} className="h-5 w-5 accent-[var(--primary-strong)]" onChange={(e) => start(() => setMoodShared(m.id, e.target.checked))} />
                 {t("sharedToggle")}
               </label>
             </div>
-            <button type="button" aria-label={t("deleteEntry")} className="self-start rounded-full p-1.5 text-muted hover:bg-surface-2 hover:text-ink"
+            <button type="button" aria-label={t("deleteEntry")} className="self-start rounded-full p-2.5 text-muted hover:bg-surface-2 hover:text-ink"
               onClick={() => start(() => deleteMood(m.id))}><Trash2 size={16} aria-hidden /></button>
           </li>
         ))}

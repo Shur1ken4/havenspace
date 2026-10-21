@@ -64,7 +64,7 @@ export default async function MarketingLayout({ children }: LayoutProps<"/">) {
                   <button
                     type="submit" name="lang" value={lang} lang={lang}
                     aria-current={current === lang ? "true" : undefined}
-                    className={current === lang ? "font-medium text-ink" : "hover:text-ink"}
+                    className={`inline-flex min-h-11 items-center rounded-inner px-1.5 ${current === lang ? "font-medium text-ink" : "hover:text-ink"}`}
                   >
                     {lang === "en" ? "English" : "Русский"}
                   </button>

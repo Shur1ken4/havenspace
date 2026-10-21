@@ -4,6 +4,7 @@ import { ArrowRight, Check, EyeOff, GlobeLock, Link2, ShieldCheck } from "lucide
 import { PlantIllustration } from "@/components/illustrations";
 import { ArchAgentVisual, FeatureGrid, PrivacyVisual, StepsVisual } from "@/components/marketing/visuals";
 import { Devices } from "@/components/marketing/devices";
+import { APPS_PUBLISHED, appDownloads } from "@/lib/apps";
 import { HeroDemo } from "@/components/marketing/hero-demo";
 import { SignupForm } from "@/components/marketing/signup-form";
 import { Pricing } from "@/components/marketing/pricing";
@@ -17,12 +18,6 @@ export default async function LandingPage() {
 
   const worksWith = ["works1", "works2", "works3", "works4", "works5", "works6"] as const;
   const tdev = await getTranslations("devices");
-  // Download files for the desktop and Android apps, once published (see docs/desktop-apps.md).
-  const downloads = {
-    mac: process.env.NEXT_PUBLIC_DOWNLOAD_MAC || undefined,
-    windows: process.env.NEXT_PUBLIC_DOWNLOAD_WINDOWS || undefined,
-    android: process.env.NEXT_PUBLIC_DOWNLOAD_ANDROID || undefined,
-  };
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -107,8 +102,8 @@ export default async function LandingPage() {
       {/* On every device */}
       <section id="devices" aria-labelledby="devices-title" className="scroll-mt-20 py-16">
         <h2 id="devices-title" className="text-3xl text-ink sm:text-4xl">{tdev("title")}</h2>
-        <p className="mb-8 mt-3 text-lg text-muted">{tdev("body")}</p>
-        <Devices downloads={downloads} />
+        <p className="mb-8 mt-3 text-lg text-muted">{APPS_PUBLISHED ? tdev("bodyDownloads") : tdev("body")}</p>
+        <Devices downloads={appDownloads} />
       </section>
 
       {/* Pricing */}

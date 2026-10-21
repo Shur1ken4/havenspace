@@ -18,10 +18,10 @@ function detect(): Platform | null {
 const noop = () => () => {};
 
 /**
- * "HavenSpace on all your devices": installs the web app (it opens in its own
- * window, from the Dock, Start menu or home screen). Where the browser offers
- * one-click install we use it; otherwise we show the two or three steps.
- * Desktop and Android download files appear here once they're published.
+ * "HavenSpace on all your devices". Mac, Windows and Android: download the app
+ * (ADR-20) with the first-open steps for test builds. iPhone, or before the apps
+ * are published: install the web app (one click where the browser offers it,
+ * otherwise the two or three steps).
  */
 export function Devices({ downloads }: { downloads: Partial<Record<Platform, string>> }) {
   const t = useTranslations("devices");
@@ -59,29 +59,37 @@ export function Devices({ downloads }: { downloads: Partial<Record<Platform, str
   return (
     <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {tiles.map(({ p, icon: Icon, name }) => (
-        <li key={p} className={`flex flex-col gap-3 rounded-card border bg-surface p-5 ${p === mine ? "border-primary" : "border-line"}`}>
+        <li key={p} className={`flex flex-col gap-3 rounded-card border bg-surface p-5 ${p === mine ? "order-first border-primary" : "border-line"}`}>
           <div className="flex items-center justify-between gap-2">
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft text-primary-strong"><Icon size={24} aria-hidden /></span>
             {p === mine && <span className="rounded-full bg-primary-soft px-2.5 py-0.5 text-xs text-primary-strong">{t("thisDevice")}</span>}
           </div>
           <p className="font-serif text-2xl">{name}</p>
-          <p className="text-sm text-muted">{t(`${p}Line`)}</p>
+          <p className="text-sm text-muted">{downloads[p] ? t(`${p}DownloadLine`) : t(`${p}Line`)}</p>
           <div className="mt-auto flex flex-wrap gap-2">
-            {downloads[p] && (
-              <a href={downloads[p]} className={buttonClass("primary", "sm")} download><Download size={15} aria-hidden /> {t("download")}</a>
-            )}
-            {p === mine && installed ? (
+            {downloads[p] ? (
+              <>
+                <a href={downloads[p]} className={buttonClass(p === mine ? "primary" : "secondary", "sm")}><Download size={15} aria-hidden /> {t("download")}</a>
+                <Button size="sm" variant="ghost" onClick={() => setOpen(open === p ? null : p)} aria-expanded={open === p}>{t("firstOpen")}</Button>
+              </>
+            ) : p === mine && installed ? (
               <span className="flex items-center gap-1.5 text-sm text-primary-strong"><Check size={16} aria-hidden /> {t("installed")}</span>
             ) : (
-              <Button size="sm" variant={downloads[p] ? "ghost" : p === mine ? "primary" : "secondary"} onClick={() => install(p)} aria-expanded={open === p}>
+              <Button size="sm" variant={p === mine ? "primary" : "secondary"} onClick={() => install(p)} aria-expanded={open === p}>
                 {p === "iphone" ? t("howTo") : t("install")}
               </Button>
             )}
           </div>
           {open === p && (
-            <ol className="fade-up list-decimal space-y-1 pl-5 text-sm text-ink">
-              {[1, 2, 3].map((n) => t.has(`${p}Step${n}`) && <li key={n}>{t(`${p}Step${n}`)}</li>)}
-            </ol>
+            <div className="fade-up space-y-2 text-sm">
+              {downloads[p] && <p className="text-muted">{t("testBuild")}</p>}
+              <ol className="list-decimal space-y-1 pl-5 text-ink">
+                {[1, 2, 3].map((n) => {
+                  const key = downloads[p] ? `${p}Open${n}` : `${p}Step${n}`;
+                  return t.has(key) && <li key={n}>{t(key)}</li>;
+                })}
+              </ol>
+            </div>
           )}
         </li>
       ))}

@@ -222,8 +222,8 @@ export function LoginForm({ next, fresh, devMailbox }: { next: string; fresh: bo
         {errorBox}
         <Button type="submit" className="w-full" disabled={pending}>{pending ? t("signingIn") : t("signIn")}</Button>
         <div className="flex flex-wrap justify-between gap-2 text-sm">
-          <button type="button" className="text-primary-strong underline underline-offset-4" onClick={() => go("resetEmail")}>{t("forgot")}</button>
-          <button type="button" className="text-primary-strong underline underline-offset-4" onClick={() => go("codeEmail")}>{t("useCodeInstead")}</button>
+          <button type="button" className="inline-flex min-h-11 items-center text-left text-primary-strong underline underline-offset-4" onClick={() => go("resetEmail")}>{t("forgot")}</button>
+          <button type="button" className="inline-flex min-h-11 items-center text-left text-primary-strong underline underline-offset-4" onClick={() => go("codeEmail")}>{t("useCodeInstead")}</button>
         </div>
       </form>
       <div className="flex items-center gap-3 text-sm text-muted"><span className="h-px flex-1 bg-line" />{t("orPasskey")}<span className="h-px flex-1 bg-line" /></div>
