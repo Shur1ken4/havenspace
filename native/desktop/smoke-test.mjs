@@ -14,6 +14,10 @@ try {
   await win.waitForLoadState("networkidle").catch(() => {});
   check(true, `opens HavenSpace: ${win.url()}`);
   check(await win.locator("input[type=email]").first().isVisible(), "sign-in form is showing");
+  // Passkeys: Windows Hello on Windows; hidden in the Mac app until it has Apple's paid signature.
+  const passkey = win.getByRole("button", { name: /Touch ID|Windows Hello|passkey/ });
+  if (process.platform === "darwin") check(!(await passkey.isVisible()), "no Touch ID button in the Mac app yet");
+  if (process.platform === "win32") check(/Windows Hello/.test(await passkey.innerText()), "passkey button says Windows Hello");
   const info = await win.evaluate(async () => ({
     size: [innerWidth, innerHeight],
     displayMedia: typeof navigator.mediaDevices?.getDisplayMedia === "function",

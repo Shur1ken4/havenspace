@@ -117,6 +117,8 @@ jobs:
           SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
           yes | "$SDKM" --licenses > /dev/null
           "$SDKM" "build-tools;36.1.0" > /dev/null
+          # Bubblewrap looks for the SDK's tools in a bin/ folder at the top of the SDK.
+          [ -e "$ANDROID_HOME/bin" ] || ln -s "$ANDROID_HOME/cmdline-tools/latest/bin" "$ANDROID_HOME/bin"
           mkdir -p ~/.bubblewrap
           printf '{"jdkPath":"%s","androidSdkPath":"%s"}' "$JAVA_HOME" "$ANDROID_HOME" > ~/.bubblewrap/config.json
       - name: Set the version (each build counts up, so phones accept it as an update)
@@ -170,7 +172,7 @@ jobs:
           - name: small-phone
             profile: Nexus 5
           - name: tablet
-            profile: pixel_tablet
+            profile: Nexus 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -207,9 +209,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
+          name: mac
           path: files
-          pattern: "{mac,windows,android}"
-          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows
+          path: files
+      - uses: actions/download-artifact@v4
+        if: needs.android.result == 'success'
+        with:
+          name: android
+          path: files
       - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}

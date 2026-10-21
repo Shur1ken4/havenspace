@@ -246,7 +246,10 @@
     "resetSave": "Save and sign in",
     "resetDone": "Your password is saved. Please sign in.",
     "verifyFirst": "Please confirm your email first: we've sent a 6-digit code to {email}.",
-    "noAccountHint": "No code arriving? There may be no account with this email yet."
+    "noAccountHint": "No code arriving? There may be no account with this email yet.",
+    "passkeyWindows": "Sign in with Windows Hello or a passkey",
+    "passkeyAndroid": "Sign in with your fingerprint, face or a passkey",
+    "passkeyOther": "Sign in with a passkey"
   },
   "app": {
     "greetingMorning": "Good morning, {name}",

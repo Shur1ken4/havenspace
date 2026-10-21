@@ -35,7 +35,7 @@
         "NSMicrophoneUsageDescription": "HavenSpace uses your microphone for video sessions and, if you choose, to record sessions for notes."
       }
     },
-    "dmg": { "title": "HavenSpace" },
+    "dmg": { "title": "HavenSpace", "format": "ULFO" },
     "win": {
       "target": [{ "target": "nsis", "arch": ["x64"] }],
       "icon": "build/icon.png",

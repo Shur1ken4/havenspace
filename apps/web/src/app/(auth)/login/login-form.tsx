@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -21,6 +21,22 @@ type Mode = "password" | "codeEmail" | "code" | "resetEmail" | "reset" | "verify
  * in with just an email code stays available. New people create an account on
  * /signup; codes never create accounts.
  */
+type PasskeyKind = "apple" | "windows" | "android" | "other" | "none";
+
+/** Names the passkey button the way this device calls it (Touch ID, Windows Hello…). */
+function passkeyKind(): PasskeyKind {
+  const ua = navigator.userAgent;
+  const mac = /Macintosh|Mac OS X/i.test(ua) && navigator.maxTouchPoints <= 1;
+  // The Mac app can't use Touch ID until it carries Apple's paid signature (ADR-20).
+  if (mac && /Electron\//.test(ua)) return "none";
+  if (/Windows/i.test(ua)) return "windows";
+  if (/Android/i.test(ua)) return "android";
+  if (mac || /iPhone|iPad|iPod|Macintosh/i.test(ua)) return "apple";
+  return "other";
+}
+const noSubscribe = () => () => {};
+const PASSKEY_LABEL = { apple: "passkey", windows: "passkeyWindows", android: "passkeyAndroid", other: "passkeyOther", none: "passkey" } as const;
+
 export function LoginForm({ next, fresh, devMailbox }: { next: string; fresh: boolean; devMailbox: boolean }) {
   const t = useTranslations("auth");
   const tr = useTranslations("register");
@@ -35,6 +51,7 @@ export function LoginForm({ next, fresh, devMailbox }: { next: string; fresh: bo
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [wait, setWait] = useState(0);
+  const passkeyOn = useSyncExternalStore(noSubscribe, passkeyKind, () => "apple" as PasskeyKind);
 
   useEffect(() => {
     if (wait <= 0) return;
@@ -226,8 +243,12 @@ export function LoginForm({ next, fresh, devMailbox }: { next: string; fresh: bo
           <button type="button" className="inline-flex min-h-11 items-center text-left text-primary-strong underline underline-offset-4" onClick={() => go("codeEmail")}>{t("useCodeInstead")}</button>
         </div>
       </form>
-      <div className="flex items-center gap-3 text-sm text-muted"><span className="h-px flex-1 bg-line" />{t("orPasskey")}<span className="h-px flex-1 bg-line" /></div>
-      <Button variant="secondary" className="w-full" onClick={passkey} title={t("passkeyHint")}><Fingerprint size={18} aria-hidden /> {t("passkey")}</Button>
+      {passkeyOn !== "none" && (
+        <>
+          <div className="flex items-center gap-3 text-sm text-muted"><span className="h-px flex-1 bg-line" />{t("orPasskey")}<span className="h-px flex-1 bg-line" /></div>
+          <Button variant="secondary" className="w-full" onClick={passkey} title={t("passkeyHint")}><Fingerprint size={18} aria-hidden /> {t(PASSKEY_LABEL[passkeyOn])}</Button>
+        </>
+      )}
       {footer}
       {devMailbox && (
         <a href="/dev/login" className="block text-center text-sm text-primary-strong underline underline-offset-4">{t("devQuick")}</a>
