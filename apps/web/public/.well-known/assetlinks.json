@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.havenspace",
+      "sha256_cert_fingerprints": ["88:33:6E:E7:27:29:12:D7:55:59:2F:5A:BD:56:C7:D0:32:2D:7D:8F:0A:A6:2F:31:2C:C0:85:12:3B:07:F9:AF"]
+    }
+  }
+]
