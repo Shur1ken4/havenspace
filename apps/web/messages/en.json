@@ -466,7 +466,7 @@
     "short_recap": "Written recap",
     "elapsed": "Time recorded",
     "mode_video": "Video call in HavenSpace",
-    "mode_video_body": "Meet your client right here, no Zoom needed. They join from their app or a one-time link. Record for notes if you like.",
+    "mode_video_body": "Meet your client right here, no Zoom needed. They join from their app or a one-time link. Either of you can share a screen, and you can record for notes.",
     "newBadge": "New",
     "otherWays": "Or capture a session held somewhere else:"
   },
@@ -1142,7 +1142,15 @@
     "live": "Live suggestions",
     "liveBadge": "Research",
     "liveHint": "Role-play sessions only. Short reads of the conversation appear beside the video.",
-    "beingRecorded": "{name} is recording this session for notes"
+    "beingRecorded": "{name} is recording this session for notes",
+    "shareScreen": "Share screen",
+    "stopSharing": "Stop sharing",
+    "youAreSharing": "You're sharing your screen",
+    "otherSharing": "{name} is sharing their screen",
+    "fullScreen": "Full screen",
+    "exitFullScreen": "Exit full screen",
+    "shareFailed": "Your screen couldn't be shared. Please try again.",
+    "shareBlocked": "Your computer is blocking screen sharing for this browser. On a Mac: System Settings → Privacy & Security → Screen & System Audio Recording, switch your browser on, then reopen it."
   },
   "register": {
     "title": "Create your account",

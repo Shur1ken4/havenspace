@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Mic, MicOff, Video, VideoOff, PhoneOff, Circle } from "lucide-react";
+import { Mic, MicOff, Video, VideoOff, PhoneOff, Circle, ScreenShare, ScreenShareOff, Maximize2, Minimize2 } from "lucide-react";
 import { RoomEvent, Track } from "livekit-client";
 import {
   LiveKitRoom, RoomAudioRenderer, VideoTrack, useLocalParticipant, useRemoteParticipants, useTracks,
@@ -153,7 +153,7 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, autoRecord
 }) {
   const t = useTranslations("video");
   const tc = useTranslations("common");
-  const { localParticipant, isMicrophoneEnabled, isCameraEnabled } = useLocalParticipant();
+  const { localParticipant, isMicrophoneEnabled, isCameraEnabled, isScreenShareEnabled } = useLocalParticipant();
   const remotes = useRemoteParticipants({ updateOnlyOn: [
     RoomEvent.ParticipantConnected, RoomEvent.ParticipantDisconnected, RoomEvent.ParticipantAttributesChanged, RoomEvent.ConnectionStateChanged,
   ] });
@@ -165,6 +165,7 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, autoRecord
   const localCam = cams.find((c) => c.participant.isLocal);
   const remoteMic = mics.find((m) => !m.participant.isLocal);
   const otherHere = remotes.length > 0;
+  const remoteShare = useTracks([Track.Source.ScreenShare]).find((s) => !s.participant.isLocal);
 
   // ── Recording for notes (therapist only) ────────────────────────────────
   const [rec, setRec] = useState<{ sessionId: string } | null>(null);
@@ -279,6 +280,45 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, autoRecord
 
   useEffect(() => () => { void stopRecorders(); }, [stopRecorders]);
 
+  // ── Screen sharing (either person; computers only, phones can watch) ─────
+  // Only the shared picture and a shared tab's sound go to the other person;
+  // recording for notes stays the two microphones.
+  const canShare = !!navigator.mediaDevices?.getDisplayMedia;
+  const [shareError, setShareError] = useState<"failed" | "system" | null>(null);
+  async function toggleShare() {
+    setShareError(null);
+    if (isScreenShareEnabled) { await localParticipant.setScreenShareEnabled(false).catch(() => {}); return; }
+    // Like Zoom or Teams: the browser's picker offers the entire screen (shown first),
+    // any app window, or a single tab, and the choice can be switched while sharing.
+    const opts = {
+      video: { displaySurface: "monitor" }, audio: true, systemAudio: "exclude", selfBrowserSurface: "exclude", surfaceSwitching: "include", contentHint: "detail",
+    } as const;
+    try {
+      await localParticipant.setScreenShareEnabled(true, opts).catch((err: Error) => {
+        // Browsers that can't share sound with the picture (Safari): picture only.
+        if (err?.name === "TypeError" || err?.name === "NotSupportedError") return localParticipant.setScreenShareEnabled(true, { ...opts, audio: false });
+        throw err;
+      });
+    } catch (err) {
+      const e = err as Error;
+      const system = /system/i.test(e?.message ?? "");
+      if (e?.name === "NotAllowedError" && !system) return; // they closed the picker
+      setShareError(system ? "system" : "failed");
+    }
+  }
+
+  const stage = useRef<HTMLDivElement>(null);
+  const [fullScreen, setFullScreen] = useState(false);
+  useEffect(() => {
+    const onChange = () => setFullScreen(!!stage.current && document.fullscreenElement === stage.current);
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
+  function toggleFullScreen() {
+    if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
+    else void stage.current?.requestFullscreen().catch(() => {});
+  }
+
   async function endSession() {
     setEnding(true);
     let to = back;
@@ -319,8 +359,11 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, autoRecord
       </div>
 
       <div className={liveActive ? "grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_360px]" : ""}>
-      <div className="relative aspect-[3/4] overflow-hidden rounded-panel border border-line bg-[#1E2421] sm:aspect-video">
-        {remoteCam ? (
+      <div ref={stage} className={`relative overflow-hidden rounded-panel border border-line bg-[#1E2421] [&:fullscreen]:rounded-none [&:fullscreen]:border-0 ${remoteShare ? "aspect-video" : "aspect-[3/4] sm:aspect-video"}`}>
+        {remoteShare ? (
+          // The other person's shared screen takes the stage, shown whole.
+          <VideoTrack trackRef={remoteShare as TrackReference} className="h-full w-full object-contain" />
+        ) : remoteCam ? (
           <VideoTrack trackRef={remoteCam as TrackReference} className="h-full w-full object-cover" />
         ) : (
           <div className="flex h-full flex-col items-center justify-center gap-4 p-6 text-center">
@@ -328,15 +371,37 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, autoRecord
             <p className="max-w-xs text-[#E4E7E2]">{otherHere ? t("cameraOffOther", { name: otherName }) : t("waiting", { name: otherName })}</p>
           </div>
         )}
-        {localCam && isCameraEnabled && (
-          <div className="absolute bottom-3 right-3 w-28 overflow-hidden rounded-xl border border-white/20 shadow-lg sm:w-48">
-            <VideoTrack trackRef={localCam as TrackReference} className="aspect-video w-full -scale-x-100 object-cover" />
-          </div>
-        )}
+        <div className="absolute bottom-3 right-3 flex flex-col items-end gap-2">
+          {remoteShare && remoteCam && (
+            <div className="w-24 overflow-hidden rounded-xl border border-white/20 shadow-lg sm:w-40">
+              <VideoTrack trackRef={remoteCam as TrackReference} className="aspect-video w-full object-cover" />
+            </div>
+          )}
+          {localCam && isCameraEnabled && (
+            <div className={`overflow-hidden rounded-xl border border-white/20 shadow-lg ${remoteShare ? "w-24 sm:w-40" : "w-28 sm:w-48"}`}>
+              <VideoTrack trackRef={localCam as TrackReference} className="aspect-video w-full -scale-x-100 object-cover" />
+            </div>
+          )}
+        </div>
         {(recState === "on" || (role === "client" && otherRecording)) && (
           <div className="absolute left-3 top-3 flex items-center gap-2 rounded-full bg-black/45 px-3 py-1.5 text-xs text-white">
             <Arch mood="listening" className="h-6 w-6" /> {t("recordingBadge")}
           </div>
+        )}
+        {(remoteShare || isScreenShareEnabled) && (
+          <div className="absolute right-3 top-3 flex max-w-[70%] items-center gap-2 rounded-full bg-black/55 py-1 pl-3 pr-1 text-xs text-white" aria-live="polite">
+            <ScreenShare size={14} className="shrink-0" aria-hidden />
+            <span className="truncate py-1">{isScreenShareEnabled ? t("youAreSharing") : t("otherSharing", { name: otherName })}</span>
+            {isScreenShareEnabled && (
+              <button type="button" onClick={toggleShare} className="shrink-0 rounded-full bg-white/90 px-2.5 py-1 font-medium text-[#1E2421] hover:bg-white">{t("stopSharing")}</button>
+            )}
+          </div>
+        )}
+        {remoteShare && typeof document !== "undefined" && document.fullscreenEnabled && (
+          <button type="button" onClick={toggleFullScreen} className="absolute bottom-3 left-3 flex items-center gap-1.5 rounded-full bg-black/55 px-3 py-1.5 text-xs text-white hover:bg-black/70">
+            {fullScreen ? <Minimize2 size={14} aria-hidden /> : <Maximize2 size={14} aria-hidden />}
+            {fullScreen ? t("exitFullScreen") : t("fullScreen")}
+          </button>
         )}
       </div>
       {liveActive && rec && <LivePanel sessionId={rec.sessionId} active={recState === "on"} />}
@@ -350,16 +415,23 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, autoRecord
         </Notice>
       )}
       {recError === "failed" && <Notice tone="attention">{tc("somethingWrong")}</Notice>}
+      {shareError && <Notice tone="attention">{shareError === "system" ? t("shareBlocked") : t("shareFailed")}</Notice>}
 
       <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
         <Button variant="secondary" onClick={() => localParticipant.setMicrophoneEnabled(!isMicrophoneEnabled)} aria-pressed={!isMicrophoneEnabled}>
           {isMicrophoneEnabled ? <Mic size={18} aria-hidden /> : <MicOff size={18} aria-hidden />}
-          <span className="hidden sm:inline">{isMicrophoneEnabled ? t("mute") : t("unmute")}</span>
+          <span className="sr-only sm:not-sr-only">{isMicrophoneEnabled ? t("mute") : t("unmute")}</span>
         </Button>
         <Button variant="secondary" onClick={() => localParticipant.setCameraEnabled(!isCameraEnabled)} aria-pressed={!isCameraEnabled}>
           {isCameraEnabled ? <Video size={18} aria-hidden /> : <VideoOff size={18} aria-hidden />}
-          <span className="hidden sm:inline">{isCameraEnabled ? t("cameraOff") : t("cameraOn")}</span>
+          <span className="sr-only sm:not-sr-only">{isCameraEnabled ? t("cameraOff") : t("cameraOn")}</span>
         </Button>
+        {canShare && (
+          <Button variant="secondary" onClick={toggleShare} aria-pressed={isScreenShareEnabled} disabled={!!remoteShare && !isScreenShareEnabled}>
+            {isScreenShareEnabled ? <ScreenShareOff size={18} aria-hidden /> : <ScreenShare size={18} aria-hidden />}
+            <span className="sr-only sm:not-sr-only">{isScreenShareEnabled ? t("stopSharing") : t("shareScreen")}</span>
+          </Button>
+        )}
         {role === "therapist" && recState === "off" && (
           <Button variant="secondary" onClick={startRecording} disabled={!consent} title={!otherHere ? t("recordNeedsClient") : undefined}>
             <Circle size={16} className="text-destructive" aria-hidden /> {t("record")}

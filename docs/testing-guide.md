@@ -52,9 +52,10 @@ You need two browsers or devices: one for the **therapist** and one for the **cl
 1. **Start session**, choose the client, then **Video call in HavenSpace**. Click **Join** and allow the camera and microphone.
 2. The client either opens their app (a **Join now** button appears within about 15 seconds) or opens a **one-time link** you create under "How … joins" and send them.
 3. Optional: **Record for notes** (needs consent), talk for a few minutes, then **End session**. The note is prepared as usual.
-4. After ending, open the one-time link again: it should say the link no longer works.
+4. On a computer, either of you clicks **Share screen** and picks a window, a tab or the whole screen. The other person sees it big, with **Full screen**. To share a video's sound, pick a Chrome tab and leave "Share tab audio" on. Phones can watch a shared screen but can't share their own.
+5. After ending, open the one-time link again: it should say the link no longer works.
 
-**Tell us:** Was the picture and sound clear? Was it obvious how to join?
+**Tell us:** Was the picture and sound clear? Was it obvious how to join? Was the shared screen readable?
 
 ## G. Things to try to break
 - Use an old or used invite link. You should get a clear "can't be used" message.

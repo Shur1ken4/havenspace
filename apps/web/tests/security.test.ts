@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type pg from "pg";
 import { admin, appRole, asUser, makeTherapist, makeUser } from "./db";
@@ -319,17 +320,18 @@ describe("video rooms", () => {
 
   it("a one-time link works only while the room is open and only with the right code", async () => {
     const client = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'Video C') returning id", [alice])).rows[0].id;
+    const right = `right-${randomUUID()}`; // unique per run: the test database keeps old rows
     const room = (await asUser(app, alice, () => app.query(
-      "insert into video_rooms (therapist_id, client_id, guest_token_hash, guest_expires_at) values ($1, $2, 'right', now() + interval '4 hours') returning id",
-      [alice, client]))).rows[0].id;
+      "insert into video_rooms (therapist_id, client_id, guest_token_hash, guest_expires_at) values ($1, $2, $3, now() + interval '4 hours') returning id",
+      [alice, client, right]))).rows[0].id;
     const lookup = async (h: string) => (await app.query("select * from video_guest_room($1)", [h])).rows;
-    expect(await lookup("right")).toHaveLength(1);
-    expect(Object.keys((await lookup("right"))[0]).sort()).toEqual(["room_id", "room_name", "therapist_name"]);
+    expect(await lookup(right)).toHaveLength(1);
+    expect(Object.keys((await lookup(right))[0]).sort()).toEqual(["room_id", "room_name", "therapist_name"]);
     expect(await lookup("wrong")).toHaveLength(0);
     // Signed-out visitors can't read rooms directly, only through the function.
     expect((await app.query("select id from video_rooms")).rows).toHaveLength(0);
     await asUser(app, alice, () => app.query("update video_rooms set ended_at = now() where id = $1", [room]));
-    expect(await lookup("right")).toHaveLength(0);
+    expect(await lookup(right)).toHaveLength(0);
   });
 
   it("a paused account cannot open video rooms", async () => {

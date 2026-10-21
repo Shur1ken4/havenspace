@@ -427,6 +427,8 @@ Build our own video room on **LiveKit Cloud** (project region: EU, Frankfurt; ag
 
 **Update 2026-10-21: automatic recording and transparency.** Before joining, the therapist can choose "Record for notes automatically when [client] joins" (on by default only when consent is on file). Recording waits for the client's audio, so it starts when they join; if they never join, the empty draft is removed. The client's screen always shows "[therapist] is recording this session for notes" while it records (signalled through the therapist's LiveKit participant attributes; only the therapist's entry pass may set them). For accounts in live research mode (ADR-10, role-play only), live suggestions also work in video, from short clips sent next to the recording.
 
+**Update 2026-10-21: screen sharing.** Either person can share the whole screen, any app window or a browser tab from a computer, as in Zoom or Teams: the browser's picker opens on the entire screen and the choice can be switched while sharing (phones can watch but browsers there can't share). One share at a time: while one person shares, the other's button waits. The shared screen takes the stage, shown whole, with both cameras small beside it and a Full screen button. Sound is shared only from a single browser tab ("Share tab audio"), never the whole computer's sound, so the call can't echo back. The HavenSpace tab itself is excluded from the picker. Recording for notes is unchanged: only the two microphones are recorded, never the shared screen or its sound.
+
 
 # ADR-18: Accounts with email and password, chosen role at sign-up
 Status: Accepted   Date: 2026-10-21   Deciders: Shurik
