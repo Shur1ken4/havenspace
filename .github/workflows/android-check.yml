@@ -1,0 +1,72 @@
+# Android check on virtual devices (ADR-20): installs the Android app on a small
+# phone, a phone and a tablet, opens HavenSpace's main pages and saves screenshots
+# (light, dark, turned). Publishes nothing.
+#   - Part of every apps build (checks the app just built, before it's released).
+#   - Runs by itself when this check changes, or from the Actions tab, against the
+#     newest released app.
+name: Android check
+
+on:
+  workflow_call:
+    inputs:
+      apk-artifact:
+        description: "Name of the build's Android artifact (empty = the newest release)"
+        type: string
+        default: ""
+  push:
+    branches: [main]
+    paths:
+      - native/android/emulator-check.sh
+      - .github/workflows/android-check.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  device:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: phone
+            profile: pixel_7
+          - name: small-phone
+            profile: Nexus 5
+          - name: tablet
+            profile: Nexus 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: The app just built
+        if: inputs.apk-artifact != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.apk-artifact }}
+          path: apk
+      - name: The newest released app
+        if: inputs.apk-artifact == ''
+        run: |
+          mkdir -p apk
+          curl -fsSL -o apk/HavenSpace-Android.apk https://github.com/Shur1ken4/havenspace/releases/latest/download/HavenSpace-Android.apk
+      - name: Allow the virtual device to use hardware acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Install, open and screenshot on a virtual ${{ matrix.name }}
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis_playstore
+          arch: x86_64
+          profile: ${{ matrix.profile }}
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
+          script: bash native/android/emulator-check.sh apk/HavenSpace-Android.apk shots
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: check-android-${{ matrix.name }}
+          path: shots
+          if-no-files-found: ignore

@@ -37,11 +37,11 @@ export default async function MarketingLayout({ children }: LayoutProps<"/">) {
         </nav>
         <div className="flex items-center gap-1 sm:gap-2">
           {signedIn ? (
-            <Link href="/today" className={buttonClass("primary", "sm", "px-3.5")}>{t("nav.openApp")}</Link>
+            <Link href="/today" className={buttonClass("primary", "sm", "whitespace-nowrap px-3.5")}>{t("nav.openApp")}</Link>
           ) : (
             <>
-              <Link href="/login" className={buttonClass("ghost", "sm", "px-2.5 sm:px-3")}>{t("nav.signIn")}</Link>
-              <Link href="/signup" className={buttonClass("primary", "sm", "px-3.5")}>{t("nav.getStarted")}</Link>
+              <Link href="/login" className={buttonClass("ghost", "sm", "whitespace-nowrap px-2 sm:px-3")}>{t("nav.signIn")}</Link>
+              <Link href="/signup" className={buttonClass("primary", "sm", "whitespace-nowrap px-3 sm:px-3.5")}>{t("nav.getStarted")}</Link>
             </>
           )}
         </div>

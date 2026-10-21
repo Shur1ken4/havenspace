@@ -122,8 +122,9 @@ export function Logo({ name, tagline, size = "md", taglineFrom, compactBelow360 
   /** Show only the mark on the narrowest phones (the name stays for screen readers). */
   compactBelow360?: boolean;
 }) {
-  const mark = { sm: "h-7 w-7", md: "h-8 w-8 min-[360px]:h-9 min-[360px]:w-9", lg: "h-11 w-11" }[size];
-  const word = { sm: "text-lg", md: "text-lg min-[360px]:text-xl sm:text-2xl", lg: "text-3xl" }[size];
+  // Phones under 400px get the smaller logo so a header with two buttons stays on one line.
+  const mark = { sm: "h-7 w-7", md: "h-8 w-8 min-[400px]:h-9 min-[400px]:w-9", lg: "h-11 w-11" }[size];
+  const word = { sm: "text-lg", md: "text-lg min-[400px]:text-xl sm:text-2xl", lg: "text-3xl" }[size];
   return (
     <span className="flex items-center gap-2 text-brand-ink min-[360px]:gap-2.5">
       <LogoMark className={`${mark} shrink-0`} />

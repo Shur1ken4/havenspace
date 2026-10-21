@@ -162,44 +162,9 @@ jobs:
 
   android-phone-test:
     needs: android
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: phone
-            profile: pixel_7
-          - name: small-phone
-            profile: Nexus 5
-          - name: tablet
-            profile: Nexus 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: android
-          path: apk
-      - name: Allow the virtual phone to use hardware acceleration
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-      - name: Install, open and screenshot on a virtual ${{ matrix.name }}
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 34
-          target: google_apis_playstore
-          arch: x86_64
-          profile: ${{ matrix.profile }}
-          disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
-          script: bash native/android/emulator-check.sh apk/HavenSpace-Android.apk shots
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: check-android-${{ matrix.name }}
-          path: shots
-          if-no-files-found: ignore
+    uses: ./.github/workflows/android-check.yml
+    with:
+      apk-artifact: android
 
   release:
     needs: [mac, windows, android, android-phone-test]
