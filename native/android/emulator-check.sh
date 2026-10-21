@@ -41,16 +41,37 @@ shot() {
   local top
   top=$(adb shell dumpsys activity activities | grep -m1 -E "topResumedActivity|mResumedActivity" | tr -s ' ')
   echo "$1: $top" >> "$SUMMARY"
+  if ! echo "$top" | grep -q "com.android.chrome/.*CustomTabActivity"; then
+    echo "PROBLEM $1: HavenSpace wasn't the app in front" >> "$SUMMARY"
+    problems=$((problems + 1))
+  fi
 }
 
 dims() { file "$1" | grep -oE '[0-9]+ x [0-9]+' | tr -d ' '; }
 
-# Turns the phone: 0 = its natural way up, 1 = a quarter turn.
-rotate() {
+# A quarter turn. Tablets follow the rotation setting; phones may ignore it, so
+# then the virtual phone itself is turned, as a person would, with auto-rotate on.
+EMU_TURNED=0
+turn() {
   adb shell settings put system accelerometer_rotation 0
-  adb shell settings put system user_rotation "$1"
-  adb shell wm user-rotation lock "$1" > /dev/null 2>&1 || true
+  adb shell settings put system user_rotation 1
+  adb shell wm user-rotation lock 1 > /dev/null 2>&1 || true
   sleep 4
+  adb exec-out screencap -p > "$OUT/.probe.png"
+  if [ "$(dims "$OUT/.probe.png")" = "${W}x${H}" ]; then
+    adb shell wm user-rotation free > /dev/null 2>&1 || true
+    adb shell settings put system accelerometer_rotation 1
+    adb emu rotate
+    EMU_TURNED=1
+    sleep 6
+  fi
+  rm -f "$OUT/.probe.png"
+}
+turn_back() {
+  if [ "$EMU_TURNED" = 1 ]; then adb emu rotate; adb emu rotate; adb emu rotate; fi
+  adb shell wm user-rotation lock 0 > /dev/null 2>&1 || true
+  adb shell settings put system user_rotation 0
+  sleep 3
 }
 
 open_page() {
@@ -95,7 +116,7 @@ open_page "/" 11-home-dark
 adb shell cmd uimode night no
 
 # Turned a quarter: landscape on phones, portrait on tablets.
-rotate 1
+turn
 open_page "/login" 12-login-turned
 open_page "/" 13-home-turned
 open_page "/signup" 14-signup-turned
@@ -105,7 +126,14 @@ if [ "$TURNED" != "${H}x${W}" ]; then
   echo "PROBLEM: the screen didn't turn (still $TURNED)" >> "$SUMMARY"
   problems=$((problems + 1))
 fi
-rotate 0
+turn_back
+
+# Any crash while testing?
+adb logcat -d -b crash > "$OUT/crashes.txt" 2>/dev/null || true
+if grep -qE "app.havenspace|com.android.chrome" "$OUT/crashes.txt"; then
+  echo "PROBLEM: a crash was logged (crashes.txt)" >> "$SUMMARY"
+  problems=$((problems + 1))
+fi
 
 echo "problems: $problems" >> "$SUMMARY"
 cat "$SUMMARY"
