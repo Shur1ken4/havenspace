@@ -161,6 +161,9 @@ a, button, input, select, textarea, [role="tab"] {
 
 @keyframes fade-up { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .fade-up { animation: fade-up 300ms var(--ease-calm) both; }
+/* A drawn card turning over (therapy tools, ADR-21). */
+@keyframes flip-in { from { opacity: 0; transform: perspective(800px) rotateY(80deg); } to { opacity: 1; transform: none; } }
+.flip-in { animation: flip-in 450ms var(--ease-calm) both; }
 
 /* ── Arch, the companion ─────────────────────────────────────────────────
    Calm, slow motion only. Every animation stops for reduced-motion users. */

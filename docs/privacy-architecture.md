@@ -20,6 +20,7 @@ language first, technical detail second.
 | **Session audio** | mic + meeting-tab tracks, room recording, upload, dictation | **Yes (health)** | Object storage (EU) | **Deleted right after transcription** by default; optional 7 days; abandoned recordings 48 h |
 | **Transcripts** | speaker-labelled text | **Yes** | Postgres | Until the therapist deletes the session/client/account |
 | **Notes, reflections, timeline, supervision packs** | AI drafts edited by the therapist | **Yes** | Postgres | Same as transcripts |
+| **Therapy tool results** (ADR-21) | a 0–10 answer, a wheel of balance, chosen feeling words, drawn art cards and notes, a drawing (PNG) — saved only when the therapist clicks Save | **Yes** | Postgres | Until the therapist deletes the result/client/account |
 | Audit log | "note.export_pdf by user X at time T" | No content | Postgres | Survives account deletion (no content) |
 | Waiting-list / demo requests | email, name, profession | No | Postgres (write-only for the app) | Until removal requested |
 

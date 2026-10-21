@@ -57,6 +57,13 @@ You need two browsers or devices: one for the **therapist** and one for the **cl
 
 **Tell us:** Was the picture and sound clear? Was it obvious how to join? Was the shared screen readable?
 
+## F4. Tools in a video session
+1. In a video session with your client (or a second device using the one-time link), click **Tools** and open each one: **Scale 0–10**, **Wheel of balance**, **Emotion wheel**, **Art cards**, **Drawing board**.
+2. On the client's side, answer: choose a number, rate the areas, tap feeling words, pick a face-down card and write a word for it, draw a line.
+3. Click **Save to card** after each one, then open the client's page: everything is under **From sessions**.
+
+**Tell us:** Was it easy for the client on a phone? Which questions, life areas, feeling words or cards would you change?
+
 ## F3. The apps for Mac, Windows and Android
 1. On the homepage, go to **HavenSpace on all your devices** and tap **Download** for your device. **First time opening it?** shows the one-time steps (these are test versions without a paid signature yet).
 2. Sign in. Start a video session and try **Share screen**: on a computer you can pick the whole screen or any app window.

@@ -17,7 +17,8 @@ export function videoServerUrl(): string {
 export async function videoToken(room: string, identity: string, name: string): Promise<string> {
   const at = new AccessToken(process.env.LIVEKIT_API_KEY, process.env.LIVEKIT_API_SECRET, { identity, name, ttl: "3h" });
   // Only the therapist may set their own attributes (used to show "recording" on the client's screen).
-  at.addGrant({ room, roomJoin: true, canPublish: true, canSubscribe: true, canPublishData: false, canUpdateOwnMetadata: identity === "therapist" });
+  // Data messages carry the shared therapy tools (ADR-21) between the two people in the room.
+  at.addGrant({ room, roomJoin: true, canPublish: true, canSubscribe: true, canPublishData: true, canUpdateOwnMetadata: identity === "therapist" });
   return at.toJwt();
 }
 

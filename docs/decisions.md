@@ -485,3 +485,26 @@ Shurik wants big "Download for Mac / Windows / Android" buttons on the homepage,
 - Checks before every release: the Mac app's signature is verified; the Mac and Windows apps are started and must open HavenSpace with camera, microphone and screen sharing available; the Android app's signature must match the site, and it's installed and screenshotted on a virtual small phone, phone and tablet (light, dark, landscape). The release is published only if all of them pass.
 - **Platform only inside the apps (Shurik, 2026-10-21).** Someone who downloaded the app came from the website, so the apps never show the homepage: they open on sign-in or the workspace, signing out returns to sign-in, and links to website pages (home, pricing, privacy, legal) open in the person's browser. A small "HavenSpace website ↗" link (sign-in page, and the Help menu on Mac and Windows) is there for anyone who wants it. The same applies when HavenSpace is installed from the browser. Detected per window (Electron, or a standalone window), never by cookie, so the same person's ordinary browser tabs still show the website (`lib/app-window.ts`).
 - Revisit: Google has announced developer verification for apps installed outside Google Play (some countries from 2026, everywhere from 2027). Register as a Google developer before that, or move Android to Google Play.
+
+# ADR-21: Therapy tools on the video call
+Status: Accepted (pilot)   Date: 2026-10-21   Deciders: Shurik (Clinical Lead to review content, item 19)
+## Context
+Therapists, especially Russian- and Ukrainian-speaking ones, use hands-on tools in sessions: associative (MAK) cards, 0–10 scales, the wheel of balance, emotion wheels, drawing. In Zoom they hold cards up to the camera or share a screen. Shurik asked for these inside the HavenSpace call, with results saved to the client's card.
+## Decision
+- In a video session the therapist opens **Tools**: a 0–10 scale, the wheel of balance, the emotion wheel, art cards (face down or face up, up to 5, with a word each) and a drawing board. The tool replaces the video for both people (cameras stay small above it); both can act on it, on a computer or a phone.
+- The therapist's screen holds the state and sends it to the client over the call's own data channel (LiveKit, EU); the client sends its actions back, checked against the same rules on both sides. Nothing is stored while a tool is open.
+- **Save to card** (therapist only) stores the result in `tool_results` (row-secured like notes; deleted with the client or account; included in data export, drawings as PNG). The client sees "saved to your session notes". The client card shows results under **From sessions**, with earlier answers to the same scale question.
+- **No AI reads or interprets the tools** (positioning guardrail, ADR-4): no meaning given to cards or drawings, no scoring of answers. Scale presets are ordinary scaling questions; there is deliberately no risk or suicide scale.
+- **Art cards**: 56 public-domain paintings (CC0, Cleveland Museum of Art Open Access), chosen to be open to many readings, with no religious scenes, nudity, violence or death. Commercial MAK decks are copyrighted and not used.
+- Genogram: next step (a family-tree editor), with roles or initials instead of relatives' names.
+## Options considered
+| Option | Complexity | Cost | Privacy/EU | Notes |
+|---|---|---|---|---|
+| Tools in our call (chosen) | Medium | €0 | Same as the call: EU | Works on phones; results saved where the notes are |
+| A third-party whiteboard (e.g. Miro) | Low | Per seat | Outside the EU, another processor | No cards or scales; client needs an account |
+| Licensed commercial MAK deck | Low tech, slow legally | Licence fees | — | Recognisable decks; possible later |
+## Consequences
+- Easier: one place for the session, its tools and its notes; RU/UA therapists get the tools they already use.
+- Harder: the tools' wording is clinical content (review item 19).
+- Revisit: genogram; tools in in-person sessions (on a tablet); a client copy in the client app.
+

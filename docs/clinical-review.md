@@ -35,3 +35,12 @@ File: `apps/web/src/lib/arch/prompt.ts`. Please review:
 - the limits: no diagnosis or speculation, no risk rating, no treatment decisions, general textbook information allowed;
 - **the rule that Arch never volunteers safety-related content the therapist didn't ask about** (to stay clear of risk alerts), and the wording when asked;
 - whether proposing homework is acceptable, given the therapist approves every item.
+
+## 19. Therapy tools in video sessions (ADR-21)
+Wording: `apps/web/messages/ru.json` and `en.json`, section `tools`; lists in `apps/web/src/lib/tools/model.ts`. Please review:
+- **scale questions** (0–10): distress, anxiety, mood, importance, confidence, readiness, goal — the questions and what 0 and 10 mean. No risk or suicide scale on purpose;
+- **wheel of balance**: the eight default life areas (the therapist can rename them in a session);
+- **emotion wheel**: the seven families and their 41 words (our own list, not a copy of a published wheel) — are these the right words in Russian and English, and the right family for each?
+- **art cards**: the 56 paintings in `apps/web/public/cards/art` (public domain, Cleveland Museum of Art) — remove any you'd not use with clients — and the seven questions shown to the therapist;
+- whether the client should get a copy of saved results in their app (today: only the therapist's card, with a notice to the client that it was saved).
+

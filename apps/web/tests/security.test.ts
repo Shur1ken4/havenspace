@@ -342,6 +342,34 @@ describe("video rooms", () => {
   });
 });
 
+describe("therapy tool results (ADR-21)", () => {
+  it("are the therapist's own, only for their own clients, and invisible to client accounts", async () => {
+    const mine = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'Tools A') returning id", [alice])).rows[0].id;
+    const theirs = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'Tools B') returning id", [bob])).rows[0].id;
+    const save = (therapist: string, client: string) => asUser(app, therapist, () => app.query(
+      "insert into tool_results (therapist_id, client_id, kind, content) values ($1, $2, 'scale', '{\"value\":7}') returning id", [therapist, client]));
+    const row = (await save(alice, mine)).rows[0].id;
+    // Not for someone else's client, and not as someone else.
+    await expect(save(alice, theirs)).rejects.toThrow();
+    await expect(asUser(app, bob, () => app.query(
+      "insert into tool_results (therapist_id, client_id, kind, content) values ($1, $2, 'scale', '{}')", [alice, mine]))).rejects.toThrow();
+    const sees = async (u: string) => (await asUser(app, u, () => app.query("select id from tool_results where id = $1", [row]))).rows.length;
+    expect(await sees(alice)).toBe(1);
+    expect(await sees(bob)).toBe(0);
+    // A client who uses the client app doesn't see the therapist's tool results.
+    const h = `t-${Math.random().toString(36).slice(2)}`;
+    await asUser(app, alice, () => app.query(
+      "insert into client_invites (therapist_id, client_id, code_hash, expires_at) values ($1, $2, $3, now() + interval '1 day')", [alice, mine, h]));
+    const clientUser = await makeUser(su);
+    await asUser(app, clientUser, () => app.query("select redeem_client_invite($1)", [h]));
+    expect(await sees(clientUser)).toBe(0);
+    // Bob can't delete Alice's result; deleting the client removes it.
+    expect((await asUser(app, bob, () => app.query("delete from tool_results where id = $1", [row]))).rowCount).toBe(0);
+    await su.query("delete from clients where id = $1", [mine]);
+    expect((await su.query("select 1 from tool_results where id = $1", [row])).rows).toHaveLength(0);
+  });
+});
+
 describe("database file storage", () => {
   it("each therapist can only store and read files under their own folder", async () => {
     const key = `audio/${alice}/s1/mic/000-000000.bin`;

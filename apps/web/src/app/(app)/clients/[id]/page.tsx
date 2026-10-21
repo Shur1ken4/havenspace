@@ -12,6 +12,7 @@ import { TimelineList } from "./timeline-list";
 import { ClientDanger } from "./client-danger";
 import { ClientAppPanel, type ClientAppData } from "./client-app-panel";
 import { videoEnabled } from "@/lib/video";
+import { ToolResults, type ToolResultRow } from "./tool-results";
 
 export async function generateMetadata() {
   return { title: (await getTranslations("meta"))("client") };
@@ -51,8 +52,12 @@ export default async function ClientPage({ params }: PageProps<"/clients/[id]">)
       moods: (await db.query("select id, mood, note, created_at from mood_entries where client_id = $1 order by created_at desc limit 20", [id]))
         .rows.map((m) => ({ ...m, created_at: m.created_at.toISOString() })),
     };
+    const tools: ToolResultRow[] = (await db.query(
+      `select id, kind, content, created_at, image is not null as has_image from tool_results
+        where client_id = $1 order by created_at desc limit 60`, [id],
+    )).rows.map((r) => ({ ...r, created_at: r.created_at.toISOString() }));
     await audit(db, therapist.id, "client.view", "client", id);
-    return { client, consent, sessions, items, app };
+    return { client, consent, sessions, items, app, tools };
   }).catch(() => null);
   if (!data) notFound();
 
@@ -114,6 +119,8 @@ export default async function ClientPage({ params }: PageProps<"/clients/[id]">)
           ))}
         </section>
       </div>
+
+      <ToolResults rows={data.tools} />
 
       <ClientAppPanel clientId={id} active={data.client.status === "active"} data={data.app} />
 

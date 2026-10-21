@@ -49,17 +49,21 @@ export async function GET(req: Request) {
       live_research_lines: await q(`select session_id, speaker, offset_ms, text from live_lines ${sScope} order by session_id, offset_ms, id`),
       reflections: await q(`select session_id, modality, content_json, model_id, prompt_version, created_at from reflections ${sScope}`),
       client_timeline_items: await q(`select * from client_timeline_items ${scope}`),
+      // Therapy tools saved from video sessions (ADR-21); drawing-board pictures go in tools/ as PNG files.
+      tool_results: await q(`select id, client_id, session_id, kind, content, created_at from tool_results ${scope} order by created_at`),
       supervision_packs: clientId ? undefined : await q("select month, content_json, status, created_at from supervision_packs"),
       supervision_hours: clientId ? undefined : await q("select * from supervision_hours"),
       audit_log: clientId ? undefined : await q("select action, entity_type, entity_id, at from audit_log order by at desc limit 5000"),
     };
+    const pictures = await q(`select id, image from tool_results ${clientId ? "where client_id = $1 and" : "where"} image is not null`);
     await audit(db, uid, clientId ? "client.export" : "account.export", clientId ? "client" : "therapist", clientId ?? uid);
-    return out;
+    return { out, pictures };
   });
 
   const zip = new JSZip();
-  zip.file("README.txt", "HavenSpace data export.\nEach file is JSON. Audio is not included because it is deleted after transcription.\n");
-  for (const [key, value] of Object.entries(data)) if (value !== undefined) zip.file(`${key}.json`, JSON.stringify(value, null, 2));
+  zip.file("README.txt", "HavenSpace data export.\nEach file is JSON. Audio is not included because it is deleted after transcription.\nDrawings from the drawing board are in tools/, named by their tool_results id.\n");
+  for (const [key, value] of Object.entries(data.out)) if (value !== undefined) zip.file(`${key}.json`, JSON.stringify(value, null, 2));
+  for (const p of data.pictures) zip.file(`tools/${p.id}.png`, new Uint8Array(p.image));
   const body = await zip.generateAsync({ type: "uint8array" });
   return fileResponse(body, `havenspace-${clientId ? "client" : "account"}-export-${new Date().toISOString().slice(0, 10)}.zip`, "application/zip");
 }

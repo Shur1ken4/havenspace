@@ -21,6 +21,8 @@ import { Chip } from "@/components/ui/chip";
 import { LivePanel } from "@/app/(app)/sessions/[id]/capture/live-panel";
 import { endVideo, startVideoRecording } from "@/app/(app)/video/actions";
 import { JoinOptions } from "./join-options";
+import { useTools } from "./tools/use-tools";
+import { ToolMenu, ToolStage, useNewTool } from "./tools/tool-stage";
 
 type Role = "therapist" | "client";
 type Stage = "lobby" | "joining" | "in" | "ended" | "error";
@@ -166,6 +168,9 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, autoRecord
   const remoteMic = mics.find((m) => !m.participant.isLocal);
   const otherHere = remotes.length > 0;
   const remoteShare = useTracks([Track.Source.ScreenShare]).find((s) => !s.participant.isLocal);
+  // Therapy tools shared on the call (ADR-21): opened by the therapist, used by both.
+  const tools = useTools(role);
+  const freshTool = useNewTool();
 
   // ── Recording for notes (therapist only) ────────────────────────────────
   const [rec, setRec] = useState<{ sessionId: string } | null>(null);
@@ -359,6 +364,26 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, autoRecord
       </div>
 
       <div className={liveActive ? "grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_360px]" : ""}>
+      {tools.tool ? (
+        // A tool takes the stage; both cameras stay in view, small, above it.
+        <div className="space-y-3">
+          <div className="flex justify-end gap-2">
+            <div className="flex aspect-video h-20 items-center justify-center overflow-hidden rounded-xl border border-line bg-[#1E2421] sm:h-24">
+              {remoteCam ? <VideoTrack trackRef={remoteCam as TrackReference} className="h-full w-full object-cover" />
+                : <Arch mood={otherHere ? "listening" : "idle"} className="h-12 w-12" />}
+            </div>
+            {localCam && isCameraEnabled && (
+              <div className="aspect-video h-20 overflow-hidden rounded-xl border border-line sm:h-24">
+                <VideoTrack trackRef={localCam as TrackReference} className="h-full w-full -scale-x-100 object-cover" />
+              </div>
+            )}
+          </div>
+          <div className="h-[min(76dvh,760px)] min-h-[440px] overflow-hidden rounded-panel border border-line bg-surface">
+            <ToolStage tool={tools.tool} role={role} roomId={roomId} otherName={otherName} act={tools.act} set={tools.set}
+              savedAt={tools.savedAt} notifySaved={tools.notifySaved} />
+          </div>
+        </div>
+      ) : (
       <div ref={stage} className={`relative overflow-hidden rounded-panel border border-line bg-[#1E2421] [&:fullscreen]:rounded-none [&:fullscreen]:border-0 ${remoteShare ? "aspect-video" : "aspect-[3/4] sm:aspect-video"}`}>
         {remoteShare ? (
           // The other person's shared screen takes the stage, shown whole.
@@ -404,6 +429,7 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, autoRecord
           </button>
         )}
       </div>
+      )}
       {liveActive && rec && <LivePanel sessionId={rec.sessionId} active={recState === "on"} />}
       </div>
 
@@ -431,6 +457,9 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, autoRecord
             {isScreenShareEnabled ? <ScreenShareOff size={18} aria-hidden /> : <ScreenShare size={18} aria-hidden />}
             <span className="sr-only sm:not-sr-only">{isScreenShareEnabled ? t("stopSharing") : t("shareScreen")}</span>
           </Button>
+        )}
+        {role === "therapist" && (
+          <ToolMenu open={tools.tool?.kind ?? null} onOpen={(kind) => tools.set(freshTool(kind))} onClose={() => tools.set(null)} />
         )}
         {role === "therapist" && recState === "off" && (
           <Button variant="secondary" onClick={startRecording} disabled={!consent} title={!otherHere ? t("recordNeedsClient") : undefined}>
