@@ -6,10 +6,13 @@ import { AccountMenu } from "@/components/account/account-menu";
 import { Arch } from "@/components/arch";
 import { FeedbackWidget } from "@/components/app/feedback-widget";
 import { realDataAllowed, requireTherapist } from "@/lib/session";
+import { withUser } from "@/lib/db";
 
 export default async function AppLayout({ children }: LayoutProps<"/">) {
   const { therapist, session } = await requireTherapist();
   const t = await getTranslations();
+  const unread = await withUser(therapist.id, async (db) => (await db.query(
+    "select count(*)::int as n from messages where therapist_id = $1 and from_client and read_at is null", [therapist.id])).rows[0].n as number);
   return (
     <div className="min-h-dvh">
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-surface focus:px-4 focus:py-2">
@@ -25,7 +28,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
           <Link href="/today">
             <Logo name={t("common.appName")} size="sm" />
           </Link>
-          <div className="order-last -mx-1 w-full sm:order-none sm:mx-0 sm:w-auto"><AppNav isAdmin={therapist.is_admin} /></div>
+          <div className="order-last -mx-1 w-full sm:order-none sm:mx-0 sm:w-auto"><AppNav isAdmin={therapist.is_admin} unread={unread} /></div>
           <div className="flex items-center gap-2">
             <Link href="/arch" data-paused="true"
               className="flex items-center gap-1.5 rounded-full border border-line bg-surface p-1 text-sm font-medium min-[400px]:pr-3 text-ink hover:border-primary hover:bg-primary-soft/50">

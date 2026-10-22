@@ -1,8 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { withUser } from "@/lib/db";
 import { isUuid } from "@/lib/ids";
 import { getSession, loadRole } from "@/lib/session";
 import { videoEnabled, videoServerUrl, videoToken } from "@/lib/video";
+import { notifyVideoJoin } from "@/lib/video-notice";
 
 // An entry pass to one video room. Row-level security decides who can see the
 // room at all: its therapist, or the linked client while the room is open.
@@ -22,5 +23,7 @@ export async function GET(_req: Request, ctx: RouteContext<"/api/video/[id]/toke
   if (!isTherapist && (role !== "client" || !room.for_me)) return NextResponse.json({ error: "forbidden" }, { status: 403 });
   // Generic names: each side's screen labels the other person from its own data.
   const token = await videoToken(room.room_name, isTherapist ? "therapist" : "client", isTherapist ? "Therapist" : "Client");
+  // Let the other person know, by email, if they aren't in the room yet.
+  after(() => notifyVideoJoin(room.room_name, isTherapist ? "therapist" : "client").catch(() => {}));
   return NextResponse.json({ url: videoServerUrl(), token }, { headers: { "cache-control": "no-store" } });
 }

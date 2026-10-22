@@ -1,0 +1,626 @@
+[
+ {
+  "id": "01",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Мост",
+   "en": "Bridge"
+  },
+  "question": {
+   "ru": "Куда ведёт этот мост? Что может ждать там, в тумане?",
+   "en": "Where does this bridge lead? What might be waiting there, in the mist?"
+  }
+ },
+ {
+  "id": "02",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Приоткрытая дверь",
+   "en": "Door ajar"
+  },
+  "question": {
+   "ru": "Что за этой дверью? Хочется войти — или закрыть её?",
+   "en": "What is behind this door? Do you want to go in — or close it?"
+  }
+ },
+ {
+  "id": "03",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Открытая клетка",
+   "en": "Open cage"
+  },
+  "question": {
+   "ru": "Кто вы на этой карте — птица или клетка? Что значит для вас свобода?",
+   "en": "Who are you in this card — the bird or the cage? What does freedom mean to you?"
+  }
+ },
+ {
+  "id": "04",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Развилка",
+   "en": "Crossroads"
+  },
+  "question": {
+   "ru": "Какую дорогу вы бы выбрали? Что написали бы на указателях?",
+   "en": "Which road would you choose? What would you write on the signposts?"
+  }
+ },
+ {
+  "id": "05",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Маяк",
+   "en": "Lighthouse"
+  },
+  "question": {
+   "ru": "Что или кто помогает вам находить путь? Где сейчас ваша лодка?",
+   "en": "What or who helps you find your way? Where is your boat right now?"
+  }
+ },
+ {
+  "id": "06",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Росток",
+   "en": "Sprout"
+  },
+  "question": {
+   "ru": "Что в вашей жизни сейчас пробивается к свету? Что ему мешает?",
+   "en": "What in your life is reaching for the light right now? What is in its way?"
+  }
+ },
+ {
+  "id": "07",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Ключ",
+   "en": "Key"
+  },
+  "question": {
+   "ru": "Что может открыть этот ключ? Что вы давно хотите «отпереть»?",
+   "en": "What could this key open? What have you long wanted to “unlock”?"
+  }
+ },
+ {
+  "id": "08",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Окно и дождь",
+   "en": "Window and rain"
+  },
+  "question": {
+   "ru": "Что вы чувствуете, глядя на эту карту? Кого или чего вы ждёте?",
+   "en": "What do you feel looking at this card? Who or what are you waiting for?"
+  }
+ },
+ {
+  "id": "09",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Пустые качели",
+   "en": "Empty swings"
+  },
+  "question": {
+   "ru": "Кто мог здесь качаться? Какое воспоминание приходит?",
+   "en": "Who might have been swinging here? What memory comes up?"
+  }
+ },
+ {
+  "id": "10",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Гнездо",
+   "en": "Nest"
+  },
+  "question": {
+   "ru": "Что для вас «дом»? О ком или о чём вы сейчас заботитесь?",
+   "en": "What does “home” mean to you? Who or what are you caring for right now?"
+  }
+ },
+ {
+  "id": "11",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Лестница в облака",
+   "en": "Stairs to the clouds"
+  },
+  "question": {
+   "ru": "Куда вы поднимаетесь? На какой вы сейчас ступеньке?",
+   "en": "Where are you climbing to? Which step are you on now?"
+  }
+ },
+ {
+  "id": "12",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Зонт",
+   "en": "Umbrella"
+  },
+  "question": {
+   "ru": "От чего вам хочется укрыться? Кто или что вас защищает?",
+   "en": "What would you like shelter from? Who or what protects you?"
+  }
+ },
+ {
+  "id": "13",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Свеча",
+   "en": "Candle"
+  },
+  "question": {
+   "ru": "Что согревает вас в темноте? Что вам важно сохранить?",
+   "en": "What keeps you warm in the dark? What is important for you to keep?"
+  }
+ },
+ {
+  "id": "14",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Песочные часы",
+   "en": "Hourglass"
+  },
+  "question": {
+   "ru": "Сколько, по ощущениям, у вас времени? На что вы его тратите?",
+   "en": "How much time does it feel like you have? What do you spend it on?"
+  }
+ },
+ {
+  "id": "15",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Чемодан у двери",
+   "en": "Suitcase by the door"
+  },
+  "question": {
+   "ru": "Вы уезжаете или вернулись? Что вы берёте с собой?",
+   "en": "Are you leaving or have you come back? What are you taking with you?"
+  }
+ },
+ {
+  "id": "16",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Дом на холме",
+   "en": "House on the hill"
+  },
+  "question": {
+   "ru": "Кто ждёт вас в этом доме? Каким будет путь к нему?",
+   "en": "Who is waiting for you in this house? What will the way there be like?"
+  }
+ },
+ {
+  "id": "17",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Корни",
+   "en": "Roots"
+  },
+  "question": {
+   "ru": "Что даёт вам опору? Откуда вы черпаете силы?",
+   "en": "What keeps you grounded? Where do you draw your strength from?"
+  }
+ },
+ {
+  "id": "18",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Лодка без вёсел",
+   "en": "Boat without oars"
+  },
+  "question": {
+   "ru": "Куда несёт эту лодку? Что можно сделать, когда нет вёсел?",
+   "en": "Where is this boat drifting? What can you do when there are no oars?"
+  }
+ },
+ {
+  "id": "19",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Зеркало",
+   "en": "Mirror"
+  },
+  "question": {
+   "ru": "Кого вы видите в этом зеркале? Что хотелось бы в нём увидеть?",
+   "en": "Who do you see in this mirror? What would you like to see in it?"
+  }
+ },
+ {
+  "id": "20",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Маска",
+   "en": "Mask"
+  },
+  "question": {
+   "ru": "Какую маску вы надеваете для других? Что под ней?",
+   "en": "What mask do you wear for others? What is underneath it?"
+  }
+ },
+ {
+  "id": "21",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Колодец",
+   "en": "Well"
+  },
+  "question": {
+   "ru": "Что скрыто в глубине? Откуда вы черпаете то, что вам нужно?",
+   "en": "What is hidden in the depths? Where do you draw what you need from?"
+  }
+ },
+ {
+  "id": "22",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Трещина в стене",
+   "en": "Crack in the wall"
+  },
+  "question": {
+   "ru": "Что пробивается сквозь трещину? Какая стена есть в вашей жизни?",
+   "en": "What is coming through the crack? What wall is there in your life?"
+  }
+ },
+ {
+  "id": "23",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Воздушный шар",
+   "en": "Hot-air balloon"
+  },
+  "question": {
+   "ru": "Что помогает вам подняться? Что стоит оставить на земле?",
+   "en": "What helps you rise? What is worth leaving on the ground?"
+  }
+ },
+ {
+  "id": "24",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Лабиринт",
+   "en": "Labyrinth"
+  },
+  "question": {
+   "ru": "Где вы сейчас в этом лабиринте? Что ждёт вас в центре?",
+   "en": "Where are you in this labyrinth right now? What awaits you at the centre?"
+  }
+ },
+ {
+  "id": "25",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Вершина",
+   "en": "Summit"
+  },
+  "question": {
+   "ru": "Какую вершину вы хотите покорить? Что уже пройдено?",
+   "en": "Which summit would you like to reach? What have you already climbed?"
+  }
+ },
+ {
+  "id": "26",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Скамейка у пруда",
+   "en": "Bench by the pond"
+  },
+  "question": {
+   "ru": "Кого бы вы хотели видеть рядом? О чём хочется помолчать?",
+   "en": "Who would you like beside you? What would you like to be quiet about?"
+  }
+ },
+ {
+  "id": "27",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Письмо",
+   "en": "Letter"
+  },
+  "question": {
+   "ru": "Кому это письмо? Что вы хотели бы сказать — или услышать?",
+   "en": "Who is this letter for? What would you like to say — or to hear?"
+  }
+ },
+ {
+  "id": "28",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Фонарь в лесу",
+   "en": "Lantern in the forest"
+  },
+  "question": {
+   "ru": "Что освещает ваш путь сейчас? Что пугает в темноте?",
+   "en": "What lights your way right now? What frightens you in the dark?"
+  }
+ },
+ {
+  "id": "29",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Волна",
+   "en": "Wave"
+  },
+  "question": {
+   "ru": "Что накрывает вас сейчас? Как вы удерживаетесь на волне?",
+   "en": "What is washing over you right now? How do you stay on top of the wave?"
+  }
+ },
+ {
+  "id": "30",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Радуга",
+   "en": "Rainbow"
+  },
+  "question": {
+   "ru": "Что приходит к вам после дождя? Чему вы радуетесь?",
+   "en": "What comes to you after the rain? What brings you joy?"
+  }
+ },
+ {
+  "id": "31",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Якорь",
+   "en": "Anchor"
+  },
+  "question": {
+   "ru": "Что удерживает вас на месте? Это опора или груз?",
+   "en": "What keeps you in place? Is it support or a weight?"
+  }
+ },
+ {
+  "id": "32",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Бумажный кораблик",
+   "en": "Paper boat"
+  },
+  "question": {
+   "ru": "Какое воспоминание приходит из детства? Куда плывёт кораблик?",
+   "en": "What childhood memory comes up? Where is the little boat sailing?"
+  }
+ },
+ {
+  "id": "33",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Птичий клин",
+   "en": "Flock of birds"
+  },
+  "question": {
+   "ru": "Куда летят эти птицы? Где ваша «стая»?",
+   "en": "Where are these birds flying? Where is your “flock”?"
+  }
+ },
+ {
+  "id": "34",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Одинокое дерево",
+   "en": "Lone tree"
+  },
+  "question": {
+   "ru": "Это одиночество или уединение? Что чувствует это дерево?",
+   "en": "Is this loneliness or solitude? What does this tree feel?"
+  }
+ },
+ {
+  "id": "35",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Пустой стул",
+   "en": "Empty chair"
+  },
+  "question": {
+   "ru": "Кто мог бы сидеть на этом стуле? Что вы хотели бы ему сказать?",
+   "en": "Who might sit in this chair? What would you like to tell them?"
+  }
+ },
+ {
+  "id": "36",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Воздушный змей",
+   "en": "Kite"
+  },
+  "question": {
+   "ru": "Что даёт вам ощущение полёта? Кто держит вашу нить?",
+   "en": "What gives you a feeling of flight? Who is holding your string?"
+  }
+ },
+ {
+  "id": "37",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Корзина яблок",
+   "en": "Basket of apples"
+  },
+  "question": {
+   "ru": "Что вы уже собрали? Чем хотите поделиться?",
+   "en": "What have you already gathered? What would you like to share?"
+  }
+ },
+ {
+  "id": "38",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Следы на песке",
+   "en": "Footprints in the sand"
+  },
+  "question": {
+   "ru": "Чьи это следы? Какой след хотите оставить вы?",
+   "en": "Whose footprints are these? What mark would you like to leave?"
+  }
+ },
+ {
+  "id": "39",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Лесная тропа",
+   "en": "Forest path"
+  },
+  "question": {
+   "ru": "Что ждёт в конце тропы? Вы идёте один или с кем-то?",
+   "en": "What is waiting at the end of the path? Are you walking alone or with someone?"
+  }
+ },
+ {
+  "id": "40",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Луна над водой",
+   "en": "Moon over water"
+  },
+  "question": {
+   "ru": "О чём вам думается ночью? Что вы видите в отражении?",
+   "en": "What do you think about at night? What do you see in the reflection?"
+  }
+ },
+ {
+  "id": "41",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Падающая звезда",
+   "en": "Shooting star"
+  },
+  "question": {
+   "ru": "Какое желание вы бы загадали? Что мешает ему сбыться?",
+   "en": "What wish would you make? What stands in the way of it coming true?"
+  }
+ },
+ {
+  "id": "42",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Ракушка",
+   "en": "Seashell"
+  },
+  "question": {
+   "ru": "Что вы прячете внутри? Где вам спокойно, как в своей раковине?",
+   "en": "What do you keep hidden inside? Where do you feel safe, as if in your own shell?"
+  }
+ },
+ {
+  "id": "43",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Зимний лес",
+   "en": "Winter forest"
+  },
+  "question": {
+   "ru": "Что сейчас «спит» в вашей жизни? Что проснётся весной?",
+   "en": "What is “asleep” in your life right now? What will wake up in spring?"
+  }
+ },
+ {
+  "id": "44",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Костёр",
+   "en": "Campfire"
+  },
+  "question": {
+   "ru": "Что вас зажигает? С кем хочется посидеть у огня?",
+   "en": "What lights you up? Who would you like to sit by the fire with?"
+  }
+ },
+ {
+  "id": "45",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Цветок на подоконнике",
+   "en": "Flower on the windowsill"
+  },
+  "question": {
+   "ru": "О чём вы заботитесь каждый день? Что нужно вам, чтобы расцвести?",
+   "en": "What do you take care of every day? What do you need in order to bloom?"
+  }
+ },
+ {
+  "id": "46",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Запутанный клубок",
+   "en": "Tangled ball of yarn"
+  },
+  "question": {
+   "ru": "Что сейчас запуталось? За какую нить можно потянуть первой?",
+   "en": "What is tangled right now? Which thread could you pull first?"
+  }
+ },
+ {
+  "id": "47",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Весы",
+   "en": "Scales"
+  },
+  "question": {
+   "ru": "Что вы сейчас взвешиваете? Чего в жизни много, а чего не хватает?",
+   "en": "What are you weighing up right now? What do you have plenty of in life, and what is missing?"
+  }
+ },
+ {
+  "id": "48",
+  "w": 640,
+  "h": 960,
+  "title": {
+   "ru": "Рассвет",
+   "en": "Sunrise"
+  },
+  "question": {
+   "ru": "Что начинается для вас сейчас? Каким будет этот новый день?",
+   "en": "What is beginning for you now? What will this new day be like?"
+  }
+ }
+]

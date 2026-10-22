@@ -2,7 +2,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ConnectionState, RoomEvent } from "livekit-client";
 import { useRoomContext } from "@livekit/components-react";
-import { ART_DECK_SET } from "@/lib/tools/deck";
 import { TOOLS_TOPIC, apply, parseMessage, type ToolAction, type ToolMessage, type ToolState } from "@/lib/tools/model";
 
 export type Role = "therapist" | "client";
@@ -53,7 +52,7 @@ export function useTools(role: Role) {
   const act = useCallback((action: ToolAction) => {
     const state = current.current;
     if (!state) return;
-    const next = apply(state, action, role, ART_DECK_SET);
+    const next = apply(state, action, role);
     if (next === state) return;
     if (role === "therapist") commit(next);
     else {
@@ -75,7 +74,7 @@ export function useTools(role: Role) {
           if (identity === "therapist") return;
           if (m.t === "hello") broadcast();
           else if (m.t === "act" && current.current) {
-            const next = apply(current.current, m.act, "client", ART_DECK_SET);
+            const next = apply(current.current, m.act, "client");
             if (next !== current.current) commit(next);
           }
         } else if (identity === "therapist") {

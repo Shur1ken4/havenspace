@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { pool } from "@/lib/db";
 import { hashGuestToken, isGuestToken, videoEnabled, videoServerUrl, videoToken } from "@/lib/video";
+import { notifyVideoJoin } from "@/lib/video-notice";
 
 // Entry pass for someone holding a one-time join link (no account needed).
 // The link stops working when the therapist ends the session or makes a new one.
@@ -13,5 +14,6 @@ export async function POST(req: Request) {
   if (!room) return NextResponse.json({ error: "gone" }, { status: 410 });
   // Same identity as a client-app join: a forwarded link replaces, never adds, a person.
   const lk = await videoToken(room.room_name, "client", "Client");
+  after(() => notifyVideoJoin(room.room_name, "client").catch(() => {}));
   return NextResponse.json({ url: videoServerUrl(), token: lk }, { headers: { "cache-control": "no-store" } });
 }

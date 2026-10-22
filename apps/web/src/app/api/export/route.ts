@@ -18,6 +18,7 @@ export async function GET(req: Request) {
       homework: (await db.query("select title, details, due_on, done_at, client_reply, created_at from assignments where client_id = current_client_id() order by created_at")).rows,
       next_sessions: (await db.query("select starts_at from appointments where client_id = current_client_id() order by starts_at")).rows,
       mood_diary: (await db.query("select mood, note, shared, created_at from mood_entries where client_id = current_client_id() order by created_at")).rows,
+      messages: (await db.query("select case when from_client then 'me' else 'therapist' end as sender, body, created_at, read_at from messages where client_id = current_client_id() order by created_at")).rows,
     }));
     const zip = new JSZip();
     for (const [key, value] of Object.entries(mine)) zip.file(`${key}.json`, JSON.stringify(value, null, 2));
@@ -51,6 +52,7 @@ export async function GET(req: Request) {
       client_timeline_items: await q(`select * from client_timeline_items ${scope}`),
       // Therapy tools saved from video sessions (ADR-21); drawing-board pictures go in tools/ as PNG files.
       tool_results: await q(`select id, client_id, session_id, kind, content, created_at from tool_results ${scope} order by created_at`),
+      messages: await q(`select id, client_id, from_client, body, created_at, read_at from messages ${scope} order by created_at`),
       supervision_packs: clientId ? undefined : await q("select month, content_json, status, created_at from supervision_packs"),
       supervision_hours: clientId ? undefined : await q("select * from supervision_hours"),
       audit_log: clientId ? undefined : await q("select action, entity_type, entity_id, at from audit_log order by at desc limit 5000"),

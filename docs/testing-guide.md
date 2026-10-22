@@ -51,18 +51,26 @@ You need two browsers or devices: one for the **therapist** and one for the **cl
 ## F2. Therapist and client: a video session
 1. **Start session**, choose the client, then **Video call in HavenSpace**. Click **Join** and allow the camera and microphone.
 2. The client either opens their app (a **Join now** button appears within about 15 seconds) or opens a **one-time link** you create under "How … joins" and send them.
-3. Optional: **Record for notes** (needs consent), talk for a few minutes, then **End session**. The note is prepared as usual.
-4. On a computer, either of you clicks **Share screen** and picks a window, a tab or the whole screen. The other person sees it big, with **Full screen**. To share a video's sound, pick a Chrome tab and leave "Share tab audio" on. Phones can watch a shared screen but can't share their own.
-5. After ending, open the one-time link again: it should say the link no longer works.
+3. Optional: **Record for notes** (needs consent; it never starts by itself). Try **Pause**, **Resume** and **Finish recording**: the call goes on and the note starts being prepared. Then **End session**.
+4. If the client uses the app, they get an email when you join first ("… is waiting"), and you get one when they join first.
+5. On a computer, either of you clicks **Share screen** and picks a window, a tab or the whole screen. The other person sees it big, with **Full screen**. To share a video's sound, pick a Chrome tab and leave "Share tab audio" on. Phones can watch a shared screen but can't share their own.
+6. After ending, open the one-time link again: it should say the link no longer works.
 
 **Tell us:** Was the picture and sound clear? Was it obvious how to join? Was the shared screen readable?
 
 ## F4. Tools in a video session
-1. In a video session with your client (or a second device using the one-time link), click **Tools** and open each one: **Scale 0–10**, **Wheel of balance**, **Emotion wheel**, **Art cards**, **Drawing board**.
-2. On the client's side, answer: choose a number, rate the areas, tap feeling words, pick a face-down card and write a word for it, draw a line.
-3. Click **Save to card** after each one, then open the client's page: everything is under **From sessions**.
+1. In a video session with your client (or a second device using the one-time link), click **Tools** and open each one: **Scale 0–10**, **Wheel of balance**, **Emotion wheel**, **Associative cards**, **Drawing board**. In the cards, try each **Deck**, and draw a picture, then switch to **Words** and draw a word to go with it (set "How many" to 2).
+2. In **Settings → Card decks**, make a deck of your own with a few pictures, then use it in a call.
+3. On the client's side, answer: choose a number, rate the areas, tap feeling words, pick a face-down card and write a word for it, draw a line.
+4. Click **Save to card** after each one, then open the client's page: everything is under **From sessions**.
 
 **Tell us:** Was it easy for the client on a phone? Which questions, life areas, feeling words or cards would you change?
+
+## F5. Messages
+1. Therapist: **Messages** → your client → write something. Client (on a phone): an email arrives without the text; open the app → **Messages** and reply.
+2. The therapist sees a number next to **Messages** until they read it.
+
+**Tell us:** Is the notice for clients clear? Would you want "office hours" for replies?
 
 ## F3. The apps for Mac, Windows and Android
 1. On the homepage, go to **HavenSpace on all your devices** and tap **Download** for your device. **First time opening it?** shows the one-time steps (these are test versions without a paid signature yet).

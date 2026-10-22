@@ -508,3 +508,56 @@ Therapists, especially Russian- and Ukrainian-speaking ones, use hands-on tools 
 - Harder: the tools' wording is clinical content (review item 19).
 - Revisit: genogram; tools in in-person sessions (on a tablet); a client copy in the client app.
 
+**Update 2026-10-22: six decks, and therapists' own decks.** The cards tool now has a deck picker. Every built-in deck is ours to use:
+| Deck | Cards | Where it comes from |
+|---|---|---|
+| Pathways / «Тропинки» | 48 | Illustrations and questions made for HavenSpace by our Clinical Lead (each card has a question shown to the therapist only) |
+| Paintings / «Картины» | 56 | Public domain (CC0), Cleveland Museum of Art |
+| Faces / «Лица» | 48 | Public-domain portraits (CC0), Cleveland Museum of Art; no religious scenes, nudity or violence |
+| Colours & shapes / «Цвета и формы» | 40 | Our own generated artwork (`scripts/decks/abstract.py`) |
+| Words / «Слова» | 60 | Our own word list |
+| Inner resources / «Ресурсы» | 36 | Our own strengths, each with a question |
+Drawn cards stay when the therapist switches deck, so a picture and a word can be drawn together (as with OH-style decks); up to 7 cards. **Own decks** (Settings → Card decks): a therapist uploads pictures (resized in the browser, checked on the server, up to 100 per deck, 20 decks), after confirming they made them or hold a licence for online use, with a note that most printed decks may not be scanned. Own decks are private to the therapist (row-level security); in a call the client sees a card through a signed link that expires after 12 hours. Stored in Postgres for the pilot, like other files (moves to EU object storage with the rest).
+
+# ADR-22: Messages between therapist and client; join emails
+Status: Accepted (pilot)   Date: 2026-10-22   Deciders: Shurik (Clinical Lead to review the client notice, item 20)
+## Context
+Therapists and clients arrange things between sessions (times, homework questions) over WhatsApp or email. Shurik asked for a chat inside HavenSpace, and for an email when the other person enters the video room.
+## Decision
+- One conversation per client who uses the client app. Only the therapist and that client can read it (row-level security; tested); nobody can edit or delete a message through the app; it is deleted with the client or the account and included in both data exports.
+- New messages appear by checking every 5 seconds while the page is open (no extra service). The other person gets an email **without the text**, once per batch of unread messages.
+- The client sees a standing notice that messages aren't for emergencies, with emergency numbers (CLINICAL-REVIEW item 20). No AI reads, scores or flags messages (ADR-4).
+- **Join emails**: when someone enters a video room and the other person isn't there, the other person gets "… is waiting" with a link (at most once per 15 minutes per room). Names and a link only.
+- **Recording in a call is never automatic** (changes ADR-17's "record automatically" option): the therapist presses Record, can Pause/Resume, and Finish recording without ending the call; the client sees "recording" or "paused".
+## Options considered
+| Option | Complexity | Cost | Privacy/EU | Notes |
+|---|---|---|---|---|
+| Our own messages, checked every few seconds (chosen) | Low | €0 | Same EU database | Enough for a pilot |
+| Live push (websockets, a push service) | Medium | Small | Another processor | Later, if 5 s feels slow |
+| Keep using WhatsApp | None | €0 | Outside our control | Not where the clinical record is |
+## Consequences
+- Easier: one place for session logistics, with an audit trail.
+- Harder: therapists may feel expected to reply fast; the notice sets expectations.
+- Revisit: phone push notifications; attachments; therapist "office hours" setting; switching emails off per person.
+
+# ADR-23: Serving therapists in Russia
+Status: Proposed   Date: 2026-10-22   Deciders: Shurik, a lawyer (Russian data law and EU sanctions)
+## Context
+Shurik wants HavenSpace to work for therapists in Russia. Today everything runs in the EU (Frankfurt) with US/EU providers (Vercel, Neon, LiveKit Cloud, Anthropic, Gmail).
+## Constraints
+- **Russian law (152-FZ, art. 18(5))**: personal data of people in Russia must be first collected and stored in databases located in Russia; health data needs written consent; the operator must notify Roskomnadzor; sending data abroad needs its own notice. Breaking this risks large fines and the site being blocked.
+- **EU law**: there is no GDPR adequacy decision for Russia, so EU therapists' data must never go there. EU sanctions (Regulation 833/2014) restrict some software and IT services to Russian companies: a sanctions lawyer must confirm what an Irish company may offer, and to whom, before anything is built.
+- **Providers**: Anthropic (Claude) and AWS don't serve Russia; Vercel, Neon, LiveKit Cloud, Stripe and Google Play payments are unavailable or unreliable there.
+## Recommendation
+**One codebase, two completely separate installations**, not two different apps: HavenSpace EU (today) and a HavenSpace RU installation on Russian servers (e.g. Yandex Cloud or Selectel, which offer setups certified for health data), with its own domain (.ru), database, self-hosted video server (LiveKit is open source), Russian email service, Russian AI model (YandexGPT or GigaChat, re-tested against our evals), and Russian payments (YooKassa/CloudPayments). No data ever moves between the two. Ideally run by a separate Russian legal entity or a licensed local partner, so the Irish company isn't the operator. Russian-speaking therapists living in the EU stay on HavenSpace EU. The apps can point at either installation (Android also via RuStore).
+## Options considered
+| Option | Complexity | Cost | Legal risk | Notes |
+|---|---|---|---|---|
+| Two installations, one codebase (recommended) | Medium | ~€150–400/month + legal | Lowest | Code switches: AI provider, storage, video, email, payments |
+| One installation in the EU for everyone | None | €0 | High (152-FZ) | Russian clients' data abroad |
+| A separate Russian app, separate code | High | High | Low | Double the work forever |
+## Consequences
+- Easier: the EU product stays clean for GDPR, the IACP pilot and investors.
+- Harder: two sets of servers, a weaker AI model in Russia (notes and reflections need the Clinical Lead to re-check), separate legal work. Ukrainian-speaking therapists are also a target group: how a Russian installation is presented matters for them.
+- Revisit: after a lawyer's opinion on sanctions and 152-FZ, and once the EU pilot shows the product works.
+

@@ -402,3 +402,84 @@ describe("database file storage", () => {
     await expect(asUser(app, alice, () => app.query("insert into blob_store (key, body) values ($1, '\\x00')", [`audio/${alice}/../x.bin`]))).rejects.toThrow();
   });
 });
+
+describe("messages between therapist and client", () => {
+  const link = async (therapist: string, client: string) => {
+    const h = `m-${randomUUID()}`;
+    await asUser(app, therapist, () => app.query(
+      "insert into client_invites (therapist_id, client_id, code_hash, expires_at) values ($1, $2, $3, now() + interval '1 day')", [therapist, client, h]));
+    const user = await makeUser(su);
+    await asUser(app, user, () => app.query("select redeem_client_invite($1)", [h]));
+    return user;
+  };
+  const write = (user: string, sql: string, args: unknown[]) => asUser(app, user, () => app.query(sql, args));
+
+  it("only the therapist and that client can read and write a conversation", async () => {
+    const c1 = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'Chat A') returning id", [alice])).rows[0].id;
+    const c2 = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'Chat B') returning id", [alice])).rows[0].id;
+    const fay = await link(alice, c1);
+    const gus = await link(alice, c2);
+    await write(alice, "insert into messages (therapist_id, client_id, from_client, sender_id, body) values ($1, $2, false, $1, 'Hello')", [alice, c1]);
+    await write(fay, "insert into messages (therapist_id, client_id, from_client, sender_id, body) values ($1, $2, true, $3, 'Hi')", [alice, c1, fay]);
+    const sees = async (u: string) => (await asUser(app, u, () => app.query("select body from messages where client_id = $1 order by created_at", [c1]))).rows.map((r) => r.body);
+    expect(await sees(alice)).toEqual(["Hello", "Hi"]);
+    expect(await sees(fay)).toEqual(["Hello", "Hi"]);
+    expect(await sees(gus)).toEqual([]);
+    expect(await sees(bob)).toEqual([]);
+    // Nobody can write as someone else, or into another conversation.
+    await expect(write(gus, "insert into messages (therapist_id, client_id, from_client, sender_id, body) values ($1, $2, true, $3, 'x')", [alice, c1, gus])).rejects.toThrow(/row-level security/);
+    await expect(write(fay, "insert into messages (therapist_id, client_id, from_client, sender_id, body) values ($1, $2, false, $1, 'x')", [alice, c1])).rejects.toThrow();
+    await expect(write(bob, "insert into messages (therapist_id, client_id, from_client, sender_id, body) values ($1, $2, false, $1, 'x')", [bob, c1])).rejects.toThrow();
+    // Messages can't be edited or deleted through the app.
+    expect((await write(alice, "update messages set body = 'changed' where client_id = $1", [c1])).rowCount).toBe(0);
+    expect((await write(fay, "delete from messages where client_id = $1", [c1])).rowCount).toBe(0);
+    // Each side marks only the other side's messages read.
+    expect((await write(fay, "select messages_mark_read($1) as n", [c1])).rows[0].n).toBe(1);
+    expect((await write(gus, "select messages_mark_read($1) as n", [c1])).rows[0].n).toBe(0);
+    expect((await write(alice, "select messages_mark_read($1) as n", [c1])).rows[0].n).toBe(1);
+  });
+
+  it("emails only the first unread message in a row, and only to the sender's counterpart", async () => {
+    const c = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'Chat C') returning id", [alice])).rows[0].id;
+    const hal = await link(alice, c);
+    const send = async (body: string) => (await write(alice,
+      "insert into messages (therapist_id, client_id, from_client, sender_id, body) values ($1, $2, false, $1, $3) returning id", [alice, c, body])).rows[0].id;
+    const first = await send("one");
+    const second = await send("two");
+    const halEmail = (await su.query('select email from "user" where id = $1', [hal])).rows[0].email;
+    expect((await write(alice, "select * from message_notice($1)", [first])).rows[0]).toMatchObject({ email: halEmail, to_client: true });
+    expect((await write(alice, "select * from message_notice($1)", [second])).rows).toHaveLength(0);
+    // Someone else can't learn who to email.
+    expect((await write(bob, "select * from message_notice($1)", [first])).rows).toHaveLength(0);
+  });
+});
+
+describe("video join emails", () => {
+  it("tell the other person once per 15 minutes, never an admin testing alone", async () => {
+    const c = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'Join A') returning id", [alice])).rows[0].id;
+    const room = (await asUser(app, alice, () => app.query("insert into video_rooms (therapist_id, client_id) values ($1, $2) returning room_name", [alice, c]))).rows[0].room_name;
+    const aliceEmail = (await su.query('select email from "user" where id = $1', [alice])).rows[0].email;
+    expect((await app.query("select * from video_join_notice($1, 'client')", [room])).rows[0]).toMatchObject({ email: aliceEmail, pseudonym: "Join A" });
+    expect((await app.query("select * from video_join_notice($1, 'client')", [room])).rows).toHaveLength(0);
+    // The client has no app account, so there is nobody to email about the therapist.
+    expect((await app.query("select * from video_join_notice($1, 'therapist')", [room])).rows).toHaveLength(0);
+  });
+});
+
+describe("own card decks", () => {
+  it("are private to the therapist who made them", async () => {
+    const deck = (await asUser(app, alice, () => app.query(
+      "insert into card_decks (therapist_id, name, rights_confirmed_at) values ($1, 'Mine', now()) returning id", [alice]))).rows[0].id;
+    const jpeg = Buffer.from("ffd8ffe000104a464946", "hex");
+    const card = (await asUser(app, alice, () => app.query(
+      "insert into deck_cards (deck_id, therapist_id, image, mime, width, height) values ($1, $2, $3, 'image/jpeg', 100, 150) returning id", [deck, alice, jpeg]))).rows[0].id;
+    expect((await asUser(app, bob, () => app.query("select id from card_decks"))).rows.map((r) => r.id)).not.toContain(deck);
+    expect((await asUser(app, bob, () => app.query("select id from deck_cards where id = $1", [card]))).rows).toHaveLength(0);
+    // Bob can't add cards to Alice's deck, even under his own name.
+    await expect(asUser(app, bob, () => app.query(
+      "insert into deck_cards (deck_id, therapist_id, image, mime, width, height) values ($1, $2, $3, 'image/jpeg', 100, 150)", [deck, bob, jpeg]))).rejects.toThrow(/row-level security/);
+    // The signed-link function returns a card only from its own deck.
+    expect((await app.query("select * from deck_card_image($1, $2)", [deck, card])).rows).toHaveLength(1);
+    expect((await app.query("select * from deck_card_image($1, $2)", [randomUUID(), card])).rows).toHaveLength(0);
+  });
+});

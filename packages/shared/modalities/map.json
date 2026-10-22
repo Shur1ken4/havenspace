@@ -7,5 +7,14 @@
   "solution_focused": "solution_focused",
   "integrative": "general",
   "psychodynamic": "general",
-  "systemic": "general"
+  "systemic": "general",
+  "gestalt": "general",
+  "psychoanalysis": "general",
+  "transactional_analysis": "general",
+  "psychodrama": "general",
+  "ericksonian": "general",
+  "schema": "general",
+  "act": "general",
+  "emdr": "general",
+  "art_therapy": "general"
 }

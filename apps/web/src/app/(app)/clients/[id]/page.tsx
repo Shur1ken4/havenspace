@@ -77,6 +77,7 @@ export default async function ClientPage({ params }: PageProps<"/clients/[id]">)
         </div>
         <div className="flex flex-wrap gap-3">
           <Link href={`/arch?client=${id}&brief=1`} className={buttonClass("secondary", "lg")}>{t("askArch.briefMe")}</Link>
+          {data.app.link && <Link href={`/messages/${id}`} className={buttonClass("secondary", "lg")}>{t("messages.write")}</Link>}
           <Link href={data.consent || videoEnabled() ? `/sessions/new?client=${id}` : `/clients/${id}/consent`} className={buttonClass("primary", "lg")}>
             {t("clients.startSession")}
           </Link>

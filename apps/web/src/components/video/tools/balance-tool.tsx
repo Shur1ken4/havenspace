@@ -9,7 +9,8 @@ const AREA_COLORS = ["#8FB09D", "#8FA9B8", "#E3C16F", "#C9A38A", "#D08E6A", "#7F
 /** The wheel of balance drawn as a circle of eight areas, filled out to each score. */
 export function BalanceWheel({ areas, size = 320, onPick }: { areas: Balance["areas"]; size?: number; onPick?: (index: number, value: number) => void }) {
   const c = 200, R = 150, n = areas.length;
-  const point = (r: number, a: number) => [c + r * Math.sin(a), c - r * Math.cos(a)];
+  // Rounded, so the server and the browser draw exactly the same numbers.
+  const point = (r: number, a: number) => [Math.round((c + r * Math.sin(a)) * 100) / 100, Math.round((c - r * Math.cos(a)) * 100) / 100];
   const sector = (r: number, i: number) => {
     const a0 = (i / n) * 2 * Math.PI, a1 = ((i + 1) / n) * 2 * Math.PI;
     const [x0, y0] = point(r, a0), [x1, y1] = point(r, a1);

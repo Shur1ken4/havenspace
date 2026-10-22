@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, Input, Select } from "@/components/ui/field";
 import { saveProfile, type ProfileState } from "./actions";
+import { MODALITIES } from "@/lib/modality-list";
 
 const professions = ["counsellor", "psychotherapist", "psychologist", "other"] as const;
 const stages = ["student", "pre_accredited", "accredited", "supervisor"] as const;
-const modalities = ["cbt", "mi", "dbt", "person_centred", "solution_focused", "integrative", "psychodynamic", "systemic"] as const;
+const modalities = MODALITIES;
 const formats = ["SOAP", "DAP", "BIRP", "FREE"] as const;
 
 export function ProfileForm({ therapist }: { therapist: Therapist }) {

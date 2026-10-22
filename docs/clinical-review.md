@@ -43,4 +43,10 @@ Wording: `apps/web/messages/ru.json` and `en.json`, section `tools`; lists in `a
 - **emotion wheel**: the seven families and their 41 words (our own list, not a copy of a published wheel) — are these the right words in Russian and English, and the right family for each?
 - **art cards**: the 56 paintings in `apps/web/public/cards/art` (public domain, Cleveland Museum of Art) — remove any you'd not use with clients — and the seven questions shown to the therapist;
 - whether the client should get a copy of saved results in their app (today: only the therapist's card, with a notice to the client that it was saved).
+- **decks (2026-10-22)**: Pathways («Тропинки», your deck: the English translations of the 48 questions in `apps/web/src/lib/tools/pathways-deck.json`), Faces (48 portraits in `apps/web/public/cards/faces`: remove any you'd not use), Colours & shapes, Words (60 words) and Inner resources (36 strengths with a question each) in `apps/web/src/lib/tools/text-decks.ts`.
+
+## 20. Messages between therapist and client (ADR-22)
+Wording: `apps/web/messages/ru.json` and `en.json`, section `messages`. Please review:
+- the notice clients see above the conversation (`notUrgent`): messages are for everyday things, the therapist may not reply straight away, and emergency numbers (112, 999, Samaritans 116 123). Are these the right numbers for our clients, and should Russian-speaking clients see others?
+- whether therapists should be able to set "office hours" for replies, or switch messaging off for a client.
 

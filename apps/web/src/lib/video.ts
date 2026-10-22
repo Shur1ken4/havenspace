@@ -22,11 +22,20 @@ export async function videoToken(room: string, identity: string, name: string): 
   return at.toJwt();
 }
 
+function roomService() {
+  const host = process.env.LIVEKIT_URL!.replace(/^wss:/, "https:").replace(/^ws:/, "http:");
+  return new RoomServiceClient(host, process.env.LIVEKIT_API_KEY, process.env.LIVEKIT_API_SECRET);
+}
+
 /** Ends the call for everyone still in it. A room that no longer exists is fine. */
 export async function closeVideoRoom(room: string): Promise<void> {
-  const host = process.env.LIVEKIT_URL!.replace(/^wss:/, "https:").replace(/^ws:/, "http:");
-  const svc = new RoomServiceClient(host, process.env.LIVEKIT_API_KEY, process.env.LIVEKIT_API_SECRET);
-  await svc.deleteRoom(room).catch(() => {});
+  await roomService().deleteRoom(room).catch(() => {});
+}
+
+/** Is this person ("therapist" or "client") in the room right now? Unknown counts as no. */
+export async function inVideoRoom(room: string, identity: string): Promise<boolean> {
+  const people = await roomService().listParticipants(room).catch(() => []);
+  return people.some((p) => p.identity === identity);
 }
 
 /** One-time join links: 32 random bytes in the link, only a hash in the database. */

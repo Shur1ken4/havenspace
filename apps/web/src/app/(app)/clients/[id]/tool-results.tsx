@@ -2,7 +2,7 @@ import { getFormatter, getTranslations } from "next-intl/server";
 import { Card } from "@/components/ui/card";
 import { BalanceWheel } from "@/components/video/tools/balance-tool";
 import { TOOL_ICONS } from "@/components/video/tools/icons";
-import { artCard, artCardSrc } from "@/lib/tools/deck";
+import { CardFace } from "@/components/cards/card-face";
 import { EMOTION_FAMILIES, type ToolKind } from "@/lib/tools/model";
 import { DeleteToolResult } from "./delete-tool-result";
 
@@ -70,16 +70,12 @@ export async function ToolResults({ rows }: { rows: ToolResultRow[] }) {
 
                   {r.kind === "cards" && (
                     <ul className="flex flex-wrap gap-3">
-                      {(r.content as Cards).drawn.map((d) => {
-                        const card = artCard(d.id);
-                        return (
-                          <li key={d.id} className="w-24 space-y-1">
-                            {/* eslint-disable-next-line @next/next/no-img-element -- static art from /public */}
-                            <img src={artCardSrc(d.id)} alt={card ? t("card", { title: card.title }) : ""} loading="lazy" className="aspect-[3/4] w-full rounded-inner object-cover" />
-                            {d.note && <p className="text-xs text-ink">«{d.note}»</p>}
-                          </li>
-                        );
-                      })}
+                      {(r.content as Cards).drawn.map((d) => (
+                        <li key={d.id} className="w-24 space-y-1">
+                          <CardFace refId={d.id} fit="cover" className="w-24" />
+                          {d.note && <p className="text-xs text-ink">«{d.note}»</p>}
+                        </li>
+                      ))}
                     </ul>
                   )}
 

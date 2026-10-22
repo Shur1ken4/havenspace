@@ -91,3 +91,9 @@ Therapist reviews, edits, approves ◀── Web app ◀── Postgres
   - When a therapist deletes a client, the link, homework and diary go with it (cascade).
 - **Therapist verification documents:** stored in the same EU object storage, readable by the owner and admins only, and deleted 30 days after the access decision (worker retention job).
 - **Before real clients use this:** update the DPIA and the privacy notice for clients as data subjects.
+
+## Messages, join emails and own card decks (ADR-22, ADR-21 update)
+- **Messages** (`messages`): written by the therapist or the client; readable only by those two (row-level security, tested); not editable or deletable through the app; deleted with the client or account; in both data exports. Never read by AI, never put in emails: the email only says there is a new message.
+- **Join emails**: the therapist's display name or the client's pseudonym, and a link. Sent through the same email provider as sign-in codes.
+- **Own card decks** (`card_decks`, `deck_cards`): pictures a therapist uploads for their own use, private to them. They are not client data. In a call the client's browser loads a card through a link signed for 12 hours.
+

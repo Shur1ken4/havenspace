@@ -4,6 +4,7 @@ import { withUser } from "@/lib/db";
 import { isUuid } from "@/lib/ids";
 import { liveResearchAllowed, requireTherapist } from "@/lib/session";
 import { VideoRoom } from "@/components/video/video-room";
+import { loadMyDecks } from "@/lib/decks-server";
 
 export async function generateMetadata() {
   return { title: (await getTranslations("video"))("title") };
@@ -19,5 +20,6 @@ export default async function TherapistVideoPage({ params }: PageProps<"/video/[
             exists (select 1 from client_accounts a where a.client_id = r.client_id and a.revoked_at is null) as linked
        from video_rooms r join clients c on c.id = r.client_id where r.id = $1`, [id])).rows[0]);
   if (!room) notFound();
-  return <VideoRoom key={room.id} roomId={room.id} role="therapist" otherName={room.pseudonym} clientId={room.client_id} consent={room.consent} linked={room.linked} liveAllowed={liveResearchAllowed(session.user.email)} />;
+  const decks = await withUser(therapist.id, loadMyDecks);
+  return <VideoRoom decks={decks.map(({ id, name, refs, key }) => ({ id, name, refs, key }))} key={room.id} roomId={room.id} role="therapist" otherName={room.pseudonym} clientId={room.client_id} consent={room.consent} linked={room.linked} liveAllowed={liveResearchAllowed(session.user.email)} />;
 }

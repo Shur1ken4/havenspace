@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { Check, Shapes, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { saveToolResult } from "@/app/(app)/video/tool-actions";
-import { ART_DECK_IDS } from "@/lib/tools/deck";
+import { DEFAULT_DECK, deckRefs } from "@/lib/tools/decks";
 import { BALANCE_AREAS, SCALE_PRESETS, TOOL_KINDS, newTool, type ToolAction, type ToolKind, type ToolState } from "@/lib/tools/model";
 import { ScaleTool } from "./scale-tool";
 import { BalanceTool } from "./balance-tool";
@@ -79,7 +79,7 @@ export function ToolMenu({ open, onOpen, onClose }: { open: ToolKind | null; onO
 export function useNewTool() {
   const t = useTranslations("tools");
   return (kind: ToolKind) => newTool(kind, {
-    deckIds: ART_DECK_IDS,
+    deck: DEFAULT_DECK, deckIds: deckRefs(DEFAULT_DECK),
     question: t(`scale_${SCALE_PRESETS[0]}`), low: t(`scale_${SCALE_PRESETS[0]}_low`), high: t(`scale_${SCALE_PRESETS[0]}_high`),
     areas: BALANCE_AREAS.map((a) => t(`area_${a}`)),
   });
@@ -125,7 +125,8 @@ export function ToolStage({ tool, role, roomId, otherName, act, set, savedAt, no
     <div className="flex h-full flex-col">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-line px-4 py-3">
         <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-soft text-primary-strong"><Icon size={18} aria-hidden /></span>
-        <div className="min-w-0 flex-1">
+        {/* At least 12rem for the title, so on a phone the buttons wrap below instead of squeezing it. */}
+        <div className="min-w-0 flex-1 basis-48">
           <p className="font-medium text-ink">{t(`kind_${tool.kind}`)}</p>
           <p className="text-sm text-muted" aria-live="polite">
             {role === "client" && clientNotice ? <span className="text-primary-strong">{t("savedClient")}</span>

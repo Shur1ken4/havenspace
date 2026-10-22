@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 480" width="320" height="480">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="0.54" y2="1"><stop offset="0" stop-color="#F3D2B8"/><stop offset="1" stop-color="#D08E6A"/></linearGradient>
+<filter id="soft" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="1112"/><feDisplacementMap in="SourceGraphic" scale="6"/></filter></defs>
+<rect width="320" height="480" fill="url(#bg)"/>
+<g filter="url(#soft)"><polygon points="44,353 -20,453 17,412" fill="#7A3B2A" opacity="0.71"/><polygon points="190,331 276,499 183,392" fill="#7A3B2A" opacity="0.68"/><polygon points="246,257 227,228 229,224" fill="#F6E6D6" opacity="0.53"/><polygon points="283,310 208,213 231,174" fill="#7A3B2A" opacity="0.58"/><polygon points="286,97 271,12 311,-1" fill="#E3C16F" opacity="0.58"/><polygon points="172,231 199,173 188,323" fill="#A3573F" opacity="0.57"/><polygon points="160,201 117,243 138,172" fill="#F6E6D6" opacity="0.60"/></g>
+</svg>

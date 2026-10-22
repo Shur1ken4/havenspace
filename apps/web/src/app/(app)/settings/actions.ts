@@ -3,6 +3,7 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { MODALITIES } from "@/lib/modality-list";
 import { withUser } from "@/lib/db";
 import { isFresh, requireUser } from "@/lib/session";
 import { audit } from "@/lib/audit";
@@ -14,7 +15,7 @@ const profileSchema = z.object({
   displayName: z.string().trim().max(80),
   profession: z.enum(["counsellor", "psychotherapist", "psychologist", "other"]),
   accreditationStage: z.enum(["student", "pre_accredited", "accredited", "supervisor"]),
-  modalities: z.array(z.enum(["cbt", "mi", "dbt", "person_centred", "solution_focused", "integrative", "psychodynamic", "systemic"])).min(1),
+  modalities: z.array(z.enum(MODALITIES)).min(1),
   noteFormat: z.enum(["SOAP", "DAP", "BIRP", "FREE"]),
   language: z.enum(["en", "ru"]),
   primaryModality: z.string(),

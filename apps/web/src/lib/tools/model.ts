@@ -19,7 +19,16 @@ export type ToolState =
   | { kind: "scale"; question: string; low: string; high: string; value: number | null }
   | { kind: "balance"; areas: { label: string; value: number | null }[] }
   | { kind: "emotions"; picked: string[] }
-  | { kind: "cards"; mode: "blind" | "open"; max: number; order: string[]; drawn: { id: string; note: string }[] }
+  | {
+      kind: "cards"; mode: "blind" | "open"; max: number;
+      /** The deck cards are drawn from now ("pathways", or "u/<uuid>" for the therapist's own). */
+      deck: string;
+      /** That deck's cards, shuffled (refs, see decks.ts). Drawn cards stay when the deck changes. */
+      order: string[];
+      drawn: { id: string; note: string }[];
+      /** Short-lived keys that let the other person see the therapist's own deck images. */
+      keys?: Record<string, string>;
+    }
   | { kind: "board"; strokes: Stroke[] };
 
 export type ToolAction =
@@ -63,6 +72,8 @@ export const EMOTION_WORDS = new Set<string>(EMOTION_FAMILIES.flatMap((f) => f.w
 
 /** Questions the therapist may ask about a card (shown only to the therapist). */
 export const CARD_PROMPTS = ["see", "first", "feel", "where", "before", "name", "link"] as const;
+/** How many cards the client may draw at once. */
+export const CARD_COUNTS = [1, 2, 3, 5, 7] as const;
 
 export const BOARD_COLORS = ["#2F3A35", "#4A6D5B", "#527486", "#7A5C9E", "#A3573F", "#C98A5B"] as const;
 export const BOARD_SIZES = [3, 6, 12] as const;
@@ -73,7 +84,7 @@ const MAX_POINTS = 3000;
 // ── Rules both sides follow ────────────────────────────────────────────────
 
 /** Applies one action. Returns the same object when the action doesn't fit (ignored). */
-export function apply(state: ToolState, act: ToolAction, by: "therapist" | "client", deck: Set<string>): ToolState {
+export function apply(state: ToolState, act: ToolAction, by: "therapist" | "client"): ToolState {
   const int = (v: unknown, lo: number, hi: number) => typeof v === "number" && Number.isInteger(v) && v >= lo && v <= hi;
   switch (act.a) {
     case "scale":
@@ -85,7 +96,7 @@ export function apply(state: ToolState, act: ToolAction, by: "therapist" | "clie
       if (state.kind !== "emotions" || !EMOTION_WORDS.has(act.word)) return state;
       return { ...state, picked: act.on ? [...new Set([...state.picked, act.word])] : state.picked.filter((w) => w !== act.word) };
     case "draw":
-      if (state.kind !== "cards" || !deck.has(act.id) || state.drawn.length >= state.max || state.drawn.some((d) => d.id === act.id)) return state;
+      if (state.kind !== "cards" || !state.order.includes(act.id) || state.drawn.length >= state.max || state.drawn.some((d) => d.id === act.id)) return state;
       return { ...state, drawn: [...state.drawn, { id: act.id, note: "" }] };
     case "note":
       if (state.kind !== "cards" || typeof act.note !== "string" || act.note.length > 200) return state;
@@ -109,7 +120,7 @@ export function apply(state: ToolState, act: ToolAction, by: "therapist" | "clie
 }
 
 /** A fresh tool, as the therapist opens it. Labels come in the therapist's language. */
-export function newTool(kind: ToolKind, opts: { deckIds: string[]; question?: string; low?: string; high?: string; areas?: string[] }): ToolState {
+export function newTool(kind: ToolKind, opts: { deck: string; deckIds: string[]; question?: string; low?: string; high?: string; areas?: string[] }): ToolState {
   switch (kind) {
     case "scale":
       return { kind, question: opts.question ?? "", low: opts.low ?? "", high: opts.high ?? "", value: null };
@@ -118,7 +129,7 @@ export function newTool(kind: ToolKind, opts: { deckIds: string[]; question?: st
     case "emotions":
       return { kind, picked: [] };
     case "cards":
-      return { kind, mode: "blind", max: 1, order: shuffle(opts.deckIds), drawn: [] };
+      return { kind, mode: "blind", max: 1, deck: opts.deck, order: shuffle(opts.deckIds), drawn: [] };
     case "board":
       return { kind, strokes: [] };
   }

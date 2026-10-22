@@ -10,10 +10,11 @@ import { VoiceCheck } from "@/components/app/voice-check";
 import { DocumentUpload } from "@/components/app/document-upload";
 import { completeOnboarding, type OnboardingInput } from "./actions";
 import { COUNTRIES, bodyGroupsFor, defaultBodyFor, type Country } from "@/lib/professional";
+import { MODALITIES } from "@/lib/modality-list";
 
 const professions = ["counsellor", "psychotherapist", "psychologist", "other"] as const;
 const stages = ["student", "pre_accredited", "accredited", "supervisor"] as const;
-const modalities = ["cbt", "mi", "dbt", "person_centred", "solution_focused", "integrative", "psychodynamic", "systemic"] as const;
+const modalities = MODALITIES;
 const formats = ["SOAP", "DAP", "BIRP", "FREE"] as const;
 
 function Choice({ selected, onClick, children }: { selected: boolean; onClick: () => void; children: React.ReactNode }) {

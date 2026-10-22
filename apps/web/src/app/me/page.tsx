@@ -1,5 +1,6 @@
 import { getFormatter, getTranslations } from "next-intl/server";
-import { CalendarClock } from "lucide-react";
+import Link from "next/link";
+import { CalendarClock, ChevronRight, MessageCircle } from "lucide-react";
 import { withUser } from "@/lib/db";
 import { requireClient } from "@/lib/session";
 import { Arch } from "@/components/arch";
@@ -39,6 +40,7 @@ export default async function ClientHome({ searchParams }: PageProps<"/me">) {
       `select id, title, details, to_char(due_on, 'YYYY-MM-DD') as due_on, done_at is not null as done, coalesce(client_reply, '') as reply
          from assignments where client_id = current_client_id() order by done_at nulls first, coalesce(due_on, '9999-12-31'), created_at desc limit 30`,
     )).rows,
+    unread: (await db.query("select count(*)::int as n from messages where client_id = current_client_id() and not from_client and read_at is null")).rows[0].n as number,
     moods: (await db.query("select id, mood, note, shared, created_at from mood_entries where client_id = current_client_id() order by created_at desc limit 14")).rows,
   }));
   const open = data.homework.filter((h) => !h.done).length;
@@ -55,6 +57,17 @@ export default async function ClientHome({ searchParams }: PageProps<"/me">) {
       </section>
 
       {videoEnabled() && <VideoJoinBanner therapist={data.therapist} />}
+
+      <Link href="/me/messages" className="block">
+        <Card className="flex items-center gap-4 hover:border-primary">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary-strong"><MessageCircle size={20} aria-hidden /></span>
+          <div className="min-w-0 flex-1">
+            <p className="text-lg text-ink">{t("messagesTitle", { name: data.therapist })}</p>
+            <p className="text-sm text-muted">{data.unread > 0 ? t("messagesUnread", { count: data.unread }) : t("messagesHint")}</p>
+          </div>
+          <ChevronRight size={18} className="shrink-0 text-muted" aria-hidden />
+        </Card>
+      </Link>
 
       <Card className="flex items-center gap-4">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary-strong"><CalendarClock size={20} aria-hidden /></span>

@@ -1,6 +1,7 @@
 "use server";
 import { cookies } from "next/headers";
 import { z } from "zod";
+import { MODALITIES } from "@/lib/modality-list";
 import { withUser } from "@/lib/db";
 import { loadRole, requireUser } from "@/lib/session";
 import { notifyAdminsOfRequest } from "@/lib/access";
@@ -15,7 +16,7 @@ const schema = z.object({
   professionalBodyOther: z.string().trim().max(120),
   registrationNumber: z.string().trim().max(60),
   country: z.enum(COUNTRIES),
-  modalities: z.array(z.enum(["cbt", "mi", "dbt", "person_centred", "solution_focused", "integrative", "psychodynamic", "systemic"])).min(1).max(8),
+  modalities: z.array(z.enum(MODALITIES)).min(1).max(MODALITIES.length),
   noteFormat: z.enum(["SOAP", "DAP", "BIRP", "FREE"]),
   language: z.enum(["en", "ru"]),
 });

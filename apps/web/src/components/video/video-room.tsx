@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Mic, MicOff, Video, VideoOff, PhoneOff, Circle, ScreenShare, ScreenShareOff, Maximize2, Minimize2 } from "lucide-react";
+import { Mic, MicOff, Video, VideoOff, PhoneOff, Circle, ScreenShare, ScreenShareOff, Maximize2, Minimize2, Pause, Play, Square } from "lucide-react";
 import { RoomEvent, Track } from "livekit-client";
 import {
   LiveKitRoom, RoomAudioRenderer, VideoTrack, useLocalParticipant, useRemoteParticipants, useTracks,
@@ -23,6 +23,7 @@ import { endVideo, startVideoRecording } from "@/app/(app)/video/actions";
 import { JoinOptions } from "./join-options";
 import { useTools } from "./tools/use-tools";
 import { ToolMenu, ToolStage, useNewTool } from "./tools/tool-stage";
+import { CallDecks, type CallDeck } from "./tools/decks-context";
 
 type Role = "therapist" | "client";
 type Stage = "lobby" | "joining" | "in" | "ended" | "error";
@@ -32,8 +33,10 @@ type Stage = "lobby" | "joining" | "in" | "ended" | "error";
  * is ours. The therapist can record for notes: their microphone and the client's
  * audio are saved as two separate tracks, exactly like an online-call recording.
  */
-export function VideoRoom({ roomId, role, otherName, clientId, consent = false, linked = false, guestToken, liveAllowed = false }: {
+export function VideoRoom({ roomId, role, otherName, clientId, consent = false, linked = false, guestToken, liveAllowed = false, decks = [] }: {
   roomId: string; role: Role; otherName: string; clientId?: string; consent?: boolean;
+  /** Therapist: their own card decks, for the cards tool. */
+  decks?: CallDeck[];
   /** Therapist: live research mode is switched on for this account (ADR-10, role-play only). */
   liveAllowed?: boolean;
   /** Therapist: the client uses the client app and gets "Join now" there. */
@@ -46,8 +49,8 @@ export function VideoRoom({ roomId, role, otherName, clientId, consent = false, 
   const [stage, setStage] = useState<Stage>("lobby");
   const [conn, setConn] = useState<{ url: string; token: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
-  // Therapist's choices before joining: record automatically, live suggestions (research).
-  const [autoRecord, setAutoRecord] = useState(consent);
+  // Therapist's choice before joining: live suggestions (research). Recording is
+  // never automatic: the therapist starts, pauses and finishes it in the call.
   const [liveOn, setLiveOn] = useState(false);
   const leaving = useRef(false);
 
@@ -95,13 +98,7 @@ export function VideoRoom({ roomId, role, otherName, clientId, consent = false, 
         <p className="text-sm text-muted">{role === "therapist" ? t("privacyTherapist") : t("privacyClient")}</p>
         {role === "therapist" && (
           <div className="space-y-3 rounded-card border border-line p-4">
-            <label className={`flex gap-3 ${consent ? "cursor-pointer" : "opacity-70"}`}>
-              <input type="checkbox" className="mt-1 h-4 w-4 accent-[var(--primary-strong)]" checked={autoRecord && consent} disabled={!consent} onChange={(e) => setAutoRecord(e.target.checked)} />
-              <span className="space-y-0.5">
-                <span className="block font-medium text-ink">{t("autoRecord", { name: otherName })}</span>
-                <span className="block text-sm text-muted">{consent ? t("autoRecordHint", { name: otherName }) : t("autoRecordNoConsent", { name: otherName })}</span>
-              </span>
-            </label>
+            <p className="text-sm text-muted">{consent ? t("recordHowTo", { name: otherName }) : t("autoRecordNoConsent", { name: otherName })}</p>
             {liveAllowed && consent && (
               <label className="flex cursor-pointer gap-3">
                 <input type="checkbox" className="mt-1 h-4 w-4 accent-[var(--primary-strong)]" checked={liveOn} onChange={(e) => setLiveOn(e.target.checked)} />
@@ -134,13 +131,15 @@ export function VideoRoom({ roomId, role, otherName, clientId, consent = false, 
       onMediaDeviceFailure={() => setError("noDevices")}
       className="mx-auto max-w-5xl"
     >
+      <CallDecks value={decks}>
       <InCall
         roomId={roomId} role={role} otherName={otherName} consent={consent} clientId={clientId} linked={linked}
-        autoRecord={autoRecord && consent} liveOn={liveOn && liveAllowed}
+        liveOn={liveOn && liveAllowed}
         deviceError={error === "noDevices"}
         onLeave={(to) => { leaving.current = true; if (to) router.push(to); else setStage("ended"); }}
         back={back}
       />
+      </CallDecks>
       <RoomAudioRenderer />
     </LiveKitRoom>
   );
@@ -148,9 +147,9 @@ export function VideoRoom({ roomId, role, otherName, clientId, consent = false, 
 
 const TIMESLICE_MS = 10_000;
 
-function InCall({ roomId, role, otherName, consent, clientId, linked, autoRecord, liveOn, deviceError, onLeave, back }: {
+function InCall({ roomId, role, otherName, consent, clientId, linked, liveOn, deviceError, onLeave, back }: {
   roomId: string; role: Role; otherName: string; consent: boolean; clientId?: string; linked: boolean;
-  autoRecord: boolean; liveOn: boolean;
+  liveOn: boolean;
   deviceError: boolean; onLeave: (to: string | null) => void; back: string | null;
 }) {
   const t = useTranslations("video");
@@ -161,6 +160,7 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, autoRecord
   ] });
   // Client side: the therapist's screen tells everyone in the room when it records.
   const otherRecording = remotes.some((p) => p.attributes?.recording === "on");
+  const otherPaused = remotes.some((p) => p.attributes?.recording === "paused");
   const cams = useTracks([Track.Source.Camera]);
   const mics = useTracks([Track.Source.Microphone]);
   const remoteCam = cams.find((c) => !c.participant.isLocal);
@@ -174,7 +174,10 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, autoRecord
 
   // ── Recording for notes (therapist only) ────────────────────────────────
   const [rec, setRec] = useState<{ sessionId: string } | null>(null);
-  const [recState, setRecState] = useState<"off" | "on" | "waiting">("off");
+  const [recState, setRecState] = useState<"off" | "on" | "paused" | "waiting">("off");
+  // The last recording finished during this call (its note is being prepared).
+  const [finished, setFinished] = useState<string | null>(null);
+  const [finishing, setFinishing] = useState(false);
   const [recError, setRecError] = useState<"consent" | "failed" | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const [confirmEnd, setConfirmEnd] = useState(false);
@@ -225,6 +228,7 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, autoRecord
 
   const startRecording = useCallback(async () => {
     setRecError(null);
+    setFinished(null);
     const res = await startVideoRecording(roomId).catch(() => ({ error: "failed" as const }));
     if ("error" in res) { setRecError(res.error === "consent" ? "consent" : "failed"); return; }
     const status = await fetch(`/api/sessions/${res.sessionId}/status`, { cache: "no-store" }).then((r) => r.json()).catch(() => ({}));
@@ -244,20 +248,53 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, autoRecord
     setRecState(startRecorders() ? "on" : "waiting");
   }, [roomId, liveOn, startRecorders, stopRecorders]);
 
-  // "Record automatically": start as soon as the therapist is in the room; the
-  // recorders themselves wait for the client's audio, so recording begins when
-  // the client joins.
-  const autoStarted = useRef(false);
-  useEffect(() => {
-    if (role !== "therapist" || !autoRecord || autoStarted.current) return;
-    autoStarted.current = true;
-    void Promise.resolve().then(startRecording);
-  }, [role, autoRecord, startRecording]);
+  /** Pause: nothing is recorded (or sent) until Resume. */
+  function pauseRecording() {
+    for (const { recorder } of recorders.current) if (recorder.state === "recording") recorder.pause();
+    clippers.current.forEach((c) => c.stop());
+    setRecState("paused");
+  }
+
+  function resumeRecording() {
+    // The client's audio changed while paused (they dropped out and came back): start a new segment.
+    if (!recorders.current.length || remoteId !== remoteTrackId.current) {
+      void stopRecorders().then(() => {
+        segment.current += 1;
+        setRecState(startRecorders() ? "on" : "waiting");
+      });
+      return;
+    }
+    for (const { recorder } of recorders.current) if (recorder.state === "paused") recorder.resume();
+    clippers.current.forEach((c) => c.start());
+    setRecState("on");
+  }
+
+  /** Finish recording but stay in the call: the note starts being prepared now. */
+  async function finishRecording(): Promise<string | null> {
+    if (!rec) return null;
+    setFinishing(true);
+    await stopRecorders();
+    await queue.current?.drain();
+    await liveQueue.current?.drain();
+    const res = await fetch(`/api/sessions/${rec.sessionId}/end`, {
+      method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ durationSeconds: elapsed }),
+    }).catch(() => null);
+    const done = res?.ok ? rec.sessionId : null;
+    queue.current = null;
+    liveQueue.current = null;
+    setLiveActive(false);
+    setRec(null);
+    setRecState("off");
+    setElapsed(0);
+    setFinishing(false);
+    setFinished(done);
+    return done;
+  }
 
   // Tell the other person's screen whether this session is being recorded.
   useEffect(() => {
     if (role !== "therapist") return;
-    localParticipant.setAttributes({ recording: recState === "on" ? "on" : "off" }).catch(() => {});
+    localParticipant.setAttributes({ recording: recState === "on" ? "on" : recState === "paused" ? "paused" : "off" }).catch(() => {});
   }, [role, recState, localParticipant]);
 
   // If the client drops out and comes back, both tracks restart together in a
@@ -327,14 +364,8 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, autoRecord
   async function endSession() {
     setEnding(true);
     let to = back;
-    if (rec) {
-      await stopRecorders();
-      await queue.current?.drain();
-      const res = await fetch(`/api/sessions/${rec.sessionId}/end`, {
-        method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ durationSeconds: elapsed }),
-      }).catch(() => null);
-      if (res?.ok) to = `/sessions/${rec.sessionId}`;
-    }
+    const done = rec ? await finishRecording() : finished;
+    if (done) to = `/sessions/${done}`;
     await endVideo(roomId).catch(() => {});
     onLeave(to);
   }
@@ -350,15 +381,15 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, autoRecord
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-2xl sm:text-3xl">{t("with", { name: otherName })}</h1>
-        {role === "client" && otherRecording && (
+        {role === "client" && (otherRecording || otherPaused) && (
           <p className="flex items-center gap-2 text-sm text-muted" aria-live="polite">
-            <span className="breathing-dot" /> {t("beingRecorded", { name: otherName })}
+            <span className="breathing-dot" data-paused={otherPaused} /> {otherPaused ? t("recordingPausedOther", { name: otherName }) : t("beingRecorded", { name: otherName })}
           </p>
         )}
         {recState !== "off" && (
           <p className="flex items-center gap-2 text-sm text-muted" aria-live="polite">
             <span className="breathing-dot" data-paused={recState !== "on"} />
-            {recState === "on" ? `${t("recording")} · ${minutes}` : t("recordingWaiting", { name: otherName })}
+            {recState === "on" ? `${t("recording")} · ${minutes}` : recState === "paused" ? `${t("recordingPaused")} · ${minutes}` : t("recordingWaiting", { name: otherName })}
           </p>
         )}
       </div>
@@ -408,9 +439,9 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, autoRecord
             </div>
           )}
         </div>
-        {(recState === "on" || (role === "client" && otherRecording)) && (
+        {(recState === "on" || recState === "paused" || (role === "client" && (otherRecording || otherPaused))) && (
           <div className="absolute left-3 top-3 flex items-center gap-2 rounded-full bg-black/45 px-3 py-1.5 text-xs text-white">
-            <Arch mood="listening" className="h-6 w-6" /> {t("recordingBadge")}
+            <Arch mood={recState === "paused" || otherPaused ? "resting" : "listening"} className="h-6 w-6" /> {recState === "paused" || otherPaused ? t("recordingPaused") : t("recordingBadge")}
           </div>
         )}
         {(remoteShare || isScreenShareEnabled) && (
@@ -441,6 +472,12 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, autoRecord
         </Notice>
       )}
       {recError === "failed" && <Notice tone="attention">{tc("somethingWrong")}</Notice>}
+      {role === "therapist" && finished && recState === "off" && (
+        <Notice tone="success">
+          {t("recordingFinished")}{" "}
+          <Link href={`/sessions/${finished}`} target="_blank" className="underline">{t("recordingFinishedLink")}</Link>
+        </Notice>
+      )}
       {shareError && <Notice tone="attention">{shareError === "system" ? t("shareBlocked") : t("shareFailed")}</Notice>}
 
       <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
@@ -462,8 +499,19 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, autoRecord
           <ToolMenu open={tools.tool?.kind ?? null} onOpen={(kind) => tools.set(freshTool(kind))} onClose={() => tools.set(null)} />
         )}
         {role === "therapist" && recState === "off" && (
-          <Button variant="secondary" onClick={startRecording} disabled={!consent} title={!otherHere ? t("recordNeedsClient") : undefined}>
-            <Circle size={16} className="text-destructive" aria-hidden /> {t("record")}
+          <Button variant="secondary" onClick={startRecording} disabled={!consent || finishing} title={!otherHere ? t("recordNeedsClient") : undefined}>
+            <Circle size={16} className="fill-current text-destructive" aria-hidden /> {t("record")}
+          </Button>
+        )}
+        {role === "therapist" && recState === "on" && (
+          <Button variant="secondary" onClick={pauseRecording}><Pause size={16} aria-hidden /> {t("pauseRecording")}</Button>
+        )}
+        {role === "therapist" && recState === "paused" && (
+          <Button variant="secondary" onClick={resumeRecording}><Play size={16} aria-hidden /> {t("resumeRecording")}</Button>
+        )}
+        {role === "therapist" && recState !== "off" && (
+          <Button variant="secondary" onClick={() => void finishRecording()} disabled={finishing}>
+            <Square size={14} className="fill-current" aria-hidden /> {finishing ? t("finishingRecording") : t("finishRecording")}
           </Button>
         )}
         {role === "therapist" ? (

@@ -4,7 +4,7 @@ import { z } from "zod";
 import { withUser } from "@/lib/db";
 import { requireTherapist } from "@/lib/session";
 import { audit } from "@/lib/audit";
-import { ART_DECK_SET } from "@/lib/tools/deck";
+import { isBuiltInRef, parseCustomRef } from "@/lib/tools/decks";
 import { BOARD_COLORS, BOARD_SIZES, EMOTION_WORDS } from "@/lib/tools/model";
 
 // Saving a therapy tool's result to the client's card (ADR-21). Only what the
@@ -15,7 +15,7 @@ const content = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("scale"), question: text(200).min(1), low: text(60), high: text(60), value: z.number().int().min(0).max(10) }),
   z.object({ kind: z.literal("balance"), areas: z.array(z.object({ label: text(40).min(1), value: z.number().int().min(1).max(10).nullable() })).min(3).max(12) }),
   z.object({ kind: z.literal("emotions"), picked: z.array(z.string().refine((w) => EMOTION_WORDS.has(w))).min(1).max(41), labels: z.array(text(40)).max(41) }),
-  z.object({ kind: z.literal("cards"), mode: z.enum(["blind", "open"]), drawn: z.array(z.object({ id: z.string().refine((id) => ART_DECK_SET.has(id)), note: text(200) })).min(1).max(5) }),
+  z.object({ kind: z.literal("cards"), mode: z.enum(["blind", "open"]), drawn: z.array(z.object({ id: z.string().max(80).refine((id) => isBuiltInRef(id) || parseCustomRef(id) !== null), note: text(200) })).min(1).max(7) }),
   z.object({ kind: z.literal("board"), strokes: z.number().int().min(1).max(1500), colors: z.array(z.enum(BOARD_COLORS)).max(6), sizes: z.array(z.union(BOARD_SIZES.map((n) => z.literal(n)) as [z.ZodLiteral<3>, z.ZodLiteral<6>, z.ZodLiteral<12>])).max(3) }),
 ]);
 
@@ -37,6 +37,12 @@ export async function saveToolResult(input: { roomId: string; content: unknown; 
   const saved = await withUser(therapist.id, async (db) => {
     const { rows: [room] } = await db.query("select client_id, session_id from video_rooms where id = $1", [roomId]);
     if (!room) return null;
+    // Cards from the therapist's own decks must really be theirs.
+    const own = parsed.data.kind === "cards" ? parsed.data.drawn.map((d) => parseCustomRef(d.id)).filter((c) => c !== null) : [];
+    if (own.length) {
+      const { rows: [n] } = await db.query("select count(*)::int as n from deck_cards where id = any($1::uuid[])", [own.map((c) => c.cardId)]);
+      if (n.n !== own.length) return null;
+    }
     const { rows: [row] } = await db.query(
       `insert into tool_results (therapist_id, client_id, video_room_id, session_id, kind, content, image)
        values ($1, $2, $3, $4, $5, $6, $7) returning id`,
