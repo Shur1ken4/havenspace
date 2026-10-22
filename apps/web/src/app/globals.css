@@ -135,6 +135,16 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
+/* Phones: everything a step smaller (Shurik, 2026-10-22: the mobile design felt too big).
+   1rem becomes 15px, so spacing, buttons and cards shrink together; headings shrink more. */
+@media (max-width: 639px) {
+  html { font-size: 93.75%; }
+  body { font-size: 15.5px; }
+  :root {
+    --text-ui: 14.5px;
+    --text-2xl: 1.4rem; --text-3xl: 1.7rem; --text-4xl: 1.95rem; --text-5xl: 2.3rem; --text-6xl: 2.7rem;
+  }
+}
 h1, h2, h3, .font-serif { font-family: var(--font-serif); font-weight: 400; letter-spacing: -0.01em; line-height: 1.25; }
 
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 6px; }
