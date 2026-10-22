@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 
 /**
  * The opening screen of the HavenSpace apps (ADR-20): the mark draws itself,
- * then the name and a short line appear, and it all fades into the app.
+ * then the name and tagline appear, and it all fades into the app.
  * Shown once each time the app opens, and only in an app window; the script in
  * lib/app-window.ts switches it on before the page paints, so nothing flashes.
  */
@@ -17,7 +17,6 @@ export async function AppSplash() {
         </svg>
         <p className="app-splash-name font-serif text-brand-ink">{t("appName")}</p>
         <p className="app-splash-tagline text-muted">{t("tagline")}</p>
-        <p className="app-splash-line text-ink">{t("splashLine")}</p>
       </div>
     </div>
   );
