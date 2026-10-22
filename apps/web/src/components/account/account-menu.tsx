@@ -3,12 +3,18 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { LogOut, UserRound } from "lucide-react";
+import { ArrowLeftRight, LogOut, UserRound } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { isAppWindow } from "@/lib/app-window";
+import { switchView } from "@/app/view/actions";
 import { Avatar } from "./avatar";
 
 /** Top-right account button: photo or initials, with a small menu. */
-export function AccountMenu({ name, email, image, accountHref }: { name: string; email: string; image: string | null; accountHref: string }) {
+export function AccountMenu({ name, email, image, accountHref, switchTo }: {
+  name: string; email: string; image: string | null; accountHref: string;
+  /** Admins: switch this account to the other view (lib/view.ts). */
+  switchTo?: "client" | "therapist";
+}) {
   const t = useTranslations("account");
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -43,7 +49,13 @@ export function AccountMenu({ name, email, image, accountHref }: { name: string;
           <Link role="menuitem" href={accountHref} onClick={() => setOpen(false)} className="flex items-center gap-2 rounded-inner px-2 py-2 text-ink hover:bg-surface-2">
             <UserRound size={16} aria-hidden /> {t("account")}
           </Link>
-          <button role="menuitem" type="button" onClick={async () => { await authClient.signOut(); router.push("/"); router.refresh(); }}
+          {switchTo && (
+            <button role="menuitem" type="button" onClick={() => { setOpen(false); void switchView(switchTo); }}
+              className="flex w-full items-center gap-2 rounded-inner px-2 py-2 text-left text-ink hover:bg-surface-2">
+              <ArrowLeftRight size={16} aria-hidden /> {switchTo === "client" ? t("switchToClient") : t("switchToTherapist")}
+            </button>
+          )}
+          <button role="menuitem" type="button" onClick={async () => { await authClient.signOut(); router.push(isAppWindow() ? "/login" : "/"); router.refresh(); }}
             className="flex w-full items-center gap-2 rounded-inner px-2 py-2 text-left text-ink hover:bg-surface-2">
             <LogOut size={16} aria-hidden /> {t("signOut")}
           </button>

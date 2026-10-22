@@ -31,14 +31,15 @@ export default async function ClientHome({ searchParams }: PageProps<"/me">) {
     );
   }
 
+  // Always this client's own rows: an admin in client view is also the therapist (lib/view.ts).
   const data = await withUser(session.user.id, async (db) => ({
     therapist: (await db.query("select my_therapist_name() as n")).rows[0].n as string,
-    next: (await db.query("select min(starts_at) as s from appointments where starts_at > now() - interval '1 hour'")).rows[0].s as Date | null,
+    next: (await db.query("select min(starts_at) as s from appointments where client_id = current_client_id() and starts_at > now() - interval '1 hour'")).rows[0].s as Date | null,
     homework: (await db.query(
       `select id, title, details, to_char(due_on, 'YYYY-MM-DD') as due_on, done_at is not null as done, coalesce(client_reply, '') as reply
-         from assignments order by done_at nulls first, coalesce(due_on, '9999-12-31'), created_at desc limit 30`,
+         from assignments where client_id = current_client_id() order by done_at nulls first, coalesce(due_on, '9999-12-31'), created_at desc limit 30`,
     )).rows,
-    moods: (await db.query("select id, mood, note, shared, created_at from mood_entries order by created_at desc limit 14")).rows,
+    moods: (await db.query("select id, mood, note, shared, created_at from mood_entries where client_id = current_client_id() order by created_at desc limit 14")).rows,
   }));
   const open = data.homework.filter((h) => !h.done).length;
 

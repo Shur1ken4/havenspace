@@ -15,9 +15,9 @@ export async function GET(req: Request) {
     const mine = await withUser(session.user.id, async (db) => ({
       exported_at: new Date().toISOString(),
       scope: "client_app",
-      homework: (await db.query("select title, details, due_on, done_at, client_reply, created_at from assignments order by created_at")).rows,
-      next_sessions: (await db.query("select starts_at from appointments order by starts_at")).rows,
-      mood_diary: (await db.query("select mood, note, shared, created_at from mood_entries order by created_at")).rows,
+      homework: (await db.query("select title, details, due_on, done_at, client_reply, created_at from assignments where client_id = current_client_id() order by created_at")).rows,
+      next_sessions: (await db.query("select starts_at from appointments where client_id = current_client_id() order by starts_at")).rows,
+      mood_diary: (await db.query("select mood, note, shared, created_at from mood_entries where client_id = current_client_id() order by created_at")).rows,
     }));
     const zip = new JSZip();
     for (const [key, value] of Object.entries(mine)) zip.file(`${key}.json`, JSON.stringify(value, null, 2));

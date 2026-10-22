@@ -1,10 +1,11 @@
 import "server-only";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 import { auth } from "./auth";
 import { withUser } from "./db";
 import { isMfaPending } from "./mfa";
+import { VIEW_COOKIE } from "./view";
 
 export type Therapist = {
   id: string;
@@ -49,9 +50,13 @@ export async function requireUser() {
 export type Role = "therapist" | "client" | "former_client";
 
 export const loadRole = cache(async (userId: string): Promise<Role> => {
+  const view = (await cookies()).get(VIEW_COOKIE)?.value;
   return withUser(userId, async (db) => {
-    const { rows } = await db.query("select revoked_at from client_accounts where user_id = $1", [userId]);
+    const { rows } = await db.query(
+      "select revoked_at, therapist_id = user_id as test_link, is_admin() as admin from client_accounts where user_id = $1", [userId]);
     if (!rows[0]) return "therapist";
+    // An admin linked to their own test client: whichever view they switched to (lib/view.ts).
+    if (rows[0].test_link) return rows[0].admin && !rows[0].revoked_at && view === "client" ? "client" : "therapist";
     return rows[0].revoked_at ? "former_client" : "client";
   });
 });

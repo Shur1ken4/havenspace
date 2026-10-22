@@ -32,7 +32,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
               <Arch className="h-7 w-7" />
               <span className="sr-only min-[400px]:not-sr-only">{t("askArch.button")}</span>
             </Link>
-            <AccountMenu name={session.user.name || therapist.display_name} email={session.user.email} image={session.user.image ?? null} accountHref="/settings/account" />
+            <AccountMenu name={session.user.name || therapist.display_name} email={session.user.email} image={session.user.image ?? null} accountHref="/settings/account" switchTo={therapist.is_admin ? "client" : undefined} />
           </div>
         </div>
       </header>

@@ -39,14 +39,14 @@ export async function addMood(_prev: FormResult, form: FormData): Promise<FormRe
 export async function setMoodShared(id: string, shared: boolean) {
   const { session } = await requireClient();
   z.uuid().parse(id);
-  await withUser(session.user.id, (db) => db.query("update mood_entries set shared = $2 where id = $1", [id, Boolean(shared)]));
+  await withUser(session.user.id, (db) => db.query("update mood_entries set shared = $2 where id = $1 and client_id = current_client_id()", [id, Boolean(shared)]));
   revalidatePath("/me");
 }
 
 export async function deleteMood(id: string) {
   const { session } = await requireClient();
   z.uuid().parse(id);
-  await withUser(session.user.id, (db) => db.query("delete from mood_entries where id = $1", [id]));
+  await withUser(session.user.id, (db) => db.query("delete from mood_entries where id = $1 and client_id = current_client_id()", [id]));
   revalidatePath("/me");
 }
 

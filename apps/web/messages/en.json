@@ -1055,7 +1055,11 @@
     "pwError_wrong_current": "Your current password isn't right.",
     "pwError_fresh": "For your security, please sign out and sign in again with an email code, then set your password within 15 minutes.",
     "pwError_generic": "Something went wrong. Please try again.",
-    "photoUnreadable": "We couldn't read that picture. Please choose a JPG or PNG photo."
+    "photoUnreadable": "We couldn't read that picture. Please choose a JPG or PNG photo.",
+    "switchToClient": "Switch to client view",
+    "switchToTherapist": "Back to therapist view",
+    "testClientName": "Test client (you)",
+    "clientViewBanner": "You're seeing HavenSpace as your test client."
   },
   "heroDemo": {
     "label": "Example: a role-play session becomes a draft note and a reflection.",

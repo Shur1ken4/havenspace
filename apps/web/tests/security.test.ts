@@ -370,6 +370,26 @@ describe("therapy tool results (ADR-21)", () => {
   });
 });
 
+describe("admin test client (switch between views)", () => {
+  it("only admins get one, and only for themselves", async () => {
+    const admin = await makeTherapist(su);
+    const plain = await makeTherapist(su);
+    const email = (await su.query('select email from "user" where id = $1', [admin])).rows[0].email;
+    await su.query("insert into admins (email) values (lower($1)) on conflict do nothing", [email]);
+    const clientId = (await asUser(app, admin, () => app.query("select admin_test_client('Test client (you)') as id"))).rows[0].id;
+    // Same client the second time, linked to the admin's own login and owned by them.
+    expect((await asUser(app, admin, () => app.query("select admin_test_client('x') as id"))).rows[0].id).toBe(clientId);
+    const link = (await su.query("select therapist_id, client_id from client_accounts where user_id = $1", [admin])).rows[0];
+    expect(link).toEqual({ therapist_id: admin, client_id: clientId });
+    // Not for a non-admin, and an admin can't link themselves to someone else's client.
+    await expect(asUser(app, plain, () => app.query("select admin_test_client('x')"))).rejects.toThrow(/not_admin/);
+    const other = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'Other') returning id", [plain])).rows[0].id;
+    await expect(asUser(app, admin, () => app.query(
+      "insert into client_accounts (user_id, therapist_id, client_id) values ($1, $2, $3) on conflict (user_id) do update set therapist_id = excluded.therapist_id, client_id = excluded.client_id",
+      [admin, plain, other]))).rejects.toThrow();
+  });
+});
+
 describe("database file storage", () => {
   it("each therapist can only store and read files under their own folder", async () => {
     const key = `audio/${alice}/s1/mic/000-000000.bin`;
