@@ -6,6 +6,7 @@ import { REGISTER_LINKS, type PROFESSIONAL_BODIES } from "@/lib/professional";
 import { Card } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
 import { Button } from "@/components/ui/button";
+import { Notice } from "@/components/ui/notice";
 import { decideAccess, inviteFromList } from "./actions";
 
 export async function generateMetadata() {
@@ -24,7 +25,8 @@ type Signup = {
 };
 
 // Pilot access (ADR-11): approve therapists and invite people from the waiting list.
-export default async function AdminPage() {
+export default async function AdminPage({ searchParams }: { searchParams: Promise<{ mail?: string }> }) {
+  const mailFailed = (await searchParams).mail === "failed";
   const { therapist } = await requireAdmin();
   const t = await getTranslations();
   const format = await getFormatter();
@@ -112,6 +114,7 @@ export default async function AdminPage() {
     <div className="space-y-10">
       <div className="space-y-2">
         <h1 className="text-4xl">{t("admin.title")}</h1>
+        {mailFailed && <Notice tone="attention">{t("admin.mailFailed")}</Notice>}
         <p className="text-muted">{t("admin.intro")}</p>
       </div>
 

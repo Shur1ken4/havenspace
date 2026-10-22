@@ -1,10 +1,23 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { withUser } from "@/lib/db";
 import { requireAdmin } from "@/lib/session";
 import { audit } from "@/lib/audit";
 import { sendWelcome } from "@/lib/access";
+
+/** Sends the "you're in" email; a failure is logged (no content) and shown on the Admin page. */
+async function welcome(to: string, locale: "en" | "ru", kind: "approved" | "invited"): Promise<boolean> {
+  try {
+    await sendWelcome(to, locale, kind);
+    return true;
+  } catch (err) {
+    const e = err as { code?: string; responseCode?: number };
+    console.error(JSON.stringify({ event: "access.email_failed", kind, code: e?.code ?? null, smtp: e?.responseCode ?? null }));
+    return false;
+  }
+}
 
 // Admin actions (ADR-11). The database checks is_admin() again on every row.
 
@@ -21,8 +34,9 @@ export async function decideAccess(form: FormData) {
     if (rows[0]) await audit(db, admin.id, `access.${d.decision}`, "therapist", d.therapistId);
     return rows[0];
   });
-  if (target && d.decision === "approved") await sendWelcome(target.email, target.language === "ru" ? "ru" : "en", "approved").catch(() => {});
+  const sent = target && d.decision === "approved" ? await welcome(target.email, target.language === "ru" ? "ru" : "en", "approved") : true;
   revalidatePath("/admin");
+  if (!sent) redirect("/admin?mail=failed");
 }
 
 const inviteSchema = z.object({ email: z.email().max(200), language: z.enum(["en", "ru"]).catch("en") });
@@ -40,6 +54,6 @@ export async function inviteFromList(form: FormData) {
     if (rowCount) await audit(db, admin.id, "access.invite", "invite", null);
     return Boolean(rowCount);
   });
-  if (fresh) await sendWelcome(d.email, d.language, "invited").catch(() => {});
+  if (fresh && !(await welcome(d.email, d.language, "invited"))) redirect("/admin?mail=failed");
   revalidatePath("/admin");
 }

@@ -811,7 +811,8 @@
     "status_declined": "Declined",
     "interest_demo": "Demo request",
     "interest_waitlist": "Waiting list",
-    "noDocuments": "No document uploaded. Check the register link instead."
+    "noDocuments": "No document uploaded. Check the register link instead.",
+    "mailFailed": "Access was changed, but the email couldn't be sent. Please let them know yourself, or try again later."
   },
   "accessEmail": {
     "approvedSubject": "Your HavenSpace account is ready",
