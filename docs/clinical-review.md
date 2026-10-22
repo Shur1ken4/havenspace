@@ -50,3 +50,9 @@ Wording: `apps/web/messages/ru.json` and `en.json`, section `messages`. Please r
 - whether clients should see a note above the chat about urgent help (removed at Shurik's request, 2026-10-22; emergency numbers stay in the client app's settings);
 - whether therapists should be able to set "office hours" for replies, or switch messaging off for a client.
 
+## 21. Saving a video call to the therapist's computer (ADR-24)
+Wording: `apps/web/messages/ru.json` and `en.json`, section `video`, keys starting `saveCall` and `savingByOther`. Please review:
+- the question the client sees before anything is recorded (`saveCallAskBody`) — is it clear enough for informed agreement?
+- the reminder to the therapist to keep the file as safely as their notes (`saveCallNotice_saved`);
+- whether agreement in the call is enough, or the written consent form should also mention video.
+

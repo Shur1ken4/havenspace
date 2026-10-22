@@ -12,6 +12,8 @@ const csp = [
   "img-src 'self' data: blob:",
   "font-src 'self'",
   "media-src 'self' blob:",
+  // "Save to my computer" (ADR-24) keeps its drawing clock in a tiny worker made in the page.
+  "worker-src 'self' blob:",
   // In-app video (ADR-17): the call's signalling goes to our LiveKit project in the EU.
   `connect-src 'self' wss://*.livekit.cloud https://*.livekit.cloud${isDev ? " ws:" : ""}`,
   "frame-ancestors 'none'",

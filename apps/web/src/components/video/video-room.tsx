@@ -24,6 +24,7 @@ import { JoinOptions } from "./join-options";
 import { useTools } from "./tools/use-tools";
 import { ToolMenu, ToolStage, useNewTool } from "./tools/tool-stage";
 import { CallDecks, type CallDeck } from "./tools/decks-context";
+import { ClientSaveCall, TherapistSaveCall } from "./save-call";
 
 type Role = "therapist" | "client";
 type Stage = "lobby" | "joining" | "in" | "ended" | "error";
@@ -161,6 +162,8 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, liveOn, de
   // Client side: the therapist's screen tells everyone in the room when it records.
   const otherRecording = remotes.some((p) => p.attributes?.recording === "on");
   const otherPaused = remotes.some((p) => p.attributes?.recording === "paused");
+  // Client side: the therapist is saving the call to their computer (ADR-24).
+  const otherSaving = remotes.some((p) => p.attributes?.savecall === "on");
   const cams = useTracks([Track.Source.Camera]);
   const mics = useTracks([Track.Source.Microphone]);
   const remoteCam = cams.find((c) => !c.participant.isLocal);
@@ -464,6 +467,7 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, liveOn, de
       {liveActive && rec && <LivePanel sessionId={rec.sessionId} active={recState === "on"} />}
       </div>
 
+      {role === "client" && <ClientSaveCall otherName={otherName} saving={otherSaving} />}
       {deviceError && <Notice tone="attention">{t("noDevices")}</Notice>}
       {recError === "consent" && (
         <Notice tone="attention">
@@ -514,6 +518,7 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, liveOn, de
             <Square size={14} className="fill-current" aria-hidden /> {finishing ? t("finishingRecording") : t("finishRecording")}
           </Button>
         )}
+        {role === "therapist" && <TherapistSaveCall roomId={roomId} otherName={otherName} />}
         {role === "therapist" ? (
           <Button onClick={() => setConfirmEnd(true)} disabled={ending}><PhoneOff size={18} aria-hidden /> {t("end")}</Button>
         ) : (

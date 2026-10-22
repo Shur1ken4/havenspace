@@ -561,3 +561,23 @@ Shurik wants HavenSpace to work for therapists in Russia. Today everything runs 
 - Harder: two sets of servers, a weaker AI model in Russia (notes and reflections need the Clinical Lead to re-check), separate legal work. Ukrainian-speaking therapists are also a target group: how a Russian installation is presented matters for them.
 - Revisit: after a lawyer's opinion on sanctions and 152-FZ, and once the EU pilot shows the product works.
 
+# ADR-24: "Save to my computer" for video calls
+Status: Accepted (pilot)   Date: 2026-10-22   Deciders: Shurik (Clinical Lead to review the wording, item 21)
+## Context
+Therapists asked to keep session videos, as Zoom allows. HavenSpace records only sound for notes and deletes it after transcription; it never records video.
+## Decision
+- The therapist presses **Save to my computer**. The client's screen asks them to agree; nothing is recorded unless they press "I agree". While it runs, the client sees "… is saving this call to their computer" with a **Stop** button.
+- The therapist's own browser records: the other person's camera (or a shared screen) large, the therapist's camera small, both voices. The file (WebM, or MP4 in Safari) goes to the therapist's Downloads folder when they stop, when the client stops it, or when the call ends. **It is never uploaded; HavenSpace holds no copy.** Shared tools (cards, scales) aren't in the picture.
+- The audit log records who asked and when the client agreed, declined, started and stopped (no content).
+- This is separate from "Record for notes" (sound for the AI note), which still needs the client's recorded consent.
+## Options considered
+| Option | Complexity | Cost | Privacy/EU | Notes |
+|---|---|---|---|---|
+| Record in the therapist's browser, file on their computer (chosen) | Medium | €0 | We hold nothing | The therapist is responsible for keeping the file safe |
+| Record on the server (LiveKit Egress) and store videos | Medium | Per minute + storage | We'd hold the most sensitive data there is | Breach risk; storage in the EU needed |
+| No video recording | None | €0 | Best | Therapists ask for it |
+## Consequences
+- Easier: therapists get the Zoom-like feature without us storing videos.
+- Harder: a long call is kept in the browser's memory until it's saved; if the browser crashes, that video is lost. The therapist must store the file safely (we say so on screen).
+- Revisit: saving straight to a chosen folder while recording (Chrome), and including the shared tools in the picture.
+

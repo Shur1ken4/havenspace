@@ -86,3 +86,11 @@ export async function createGuestLink(roomId: string): Promise<{ url: string } |
   });
   return ok ? { url: guestLinkUrl(token) } : { error: "gone" };
 }
+
+/** "Save to my computer" (ADR-24): who asked, agreed, started and stopped, and when. No content. */
+export async function logCallSaving(roomId: string, event: "asked" | "agreed" | "declined" | "started" | "stopped" | "withdrawn"): Promise<void> {
+  const { therapist } = await requireTherapist();
+  z.uuid().parse(roomId);
+  z.enum(["asked", "agreed", "declined", "started", "stopped", "withdrawn"]).parse(event);
+  await withUser(therapist.id, (db) => audit(db, therapist.id, `video.save_${event}`, "video_room", roomId));
+}

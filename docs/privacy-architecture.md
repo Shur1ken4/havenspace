@@ -97,3 +97,7 @@ Therapist reviews, edits, approves ◀── Web app ◀── Postgres
 - **Join emails**: the therapist's display name or the client's pseudonym, and a link. Sent through the same email provider as sign-in codes.
 - **Own card decks** (`card_decks`, `deck_cards`): pictures a therapist uploads for their own use, private to them. They are not client data. In a call the client's browser loads a card through a link signed for 12 hours.
 
+## Saving a video call to the therapist's computer (ADR-24)
+- Recorded in the therapist's browser only after the client agrees in the call; the file goes straight to the therapist's computer and is never sent to HavenSpace. The therapist is the controller of that file.
+- We keep only audit entries (asked, agreed or declined, started, stopped), with no content.
+

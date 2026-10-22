@@ -58,6 +58,13 @@ You need two browsers or devices: one for the **therapist** and one for the **cl
 
 **Tell us:** Was the picture and sound clear? Was it obvious how to join? Was the shared screen readable?
 
+## F2b. Saving a video call to your computer
+1. In a video call with your client, click **Save to my computer**. The client gets a question; try **No, thank you** once, then ask again and **I agree**.
+2. Talk for a minute, share your screen for a bit, then click **Stop and save**. A video file appears in your Downloads folder: play it.
+3. Try again and let the client press **Stop** on their side.
+
+**Tell us:** Was the client's question clear? Is the video and sound good enough to review later?
+
 ## F4. Tools in a video session
 1. In a video session with your client (or a second device using the one-time link), click **Tools** and open each one: **Scale 0–10**, **Wheel of balance**, **Emotion wheel**, **Associative cards**, **Drawing board**. In the cards, try each **Deck**, and draw a picture, then switch to **Words** and draw a word to go with it (set "How many" to 2).
 2. In **Settings → Card decks**, make a deck of your own with a few pictures, then use it in a call.
