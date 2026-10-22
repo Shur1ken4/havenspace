@@ -1,6 +1,7 @@
 import "server-only";
 import { headers } from "next/headers";
 import type { Country } from "./professional";
+import { pickLanguage } from "./language";
 
 const EU = ["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE"];
 
@@ -11,10 +12,13 @@ async function firstTag(): Promise<[string, string | undefined]> {
   return [lang.toLowerCase(), region?.toUpperCase()];
 }
 
-/** Russian for browsers set to Russian, English otherwise (until someone chooses). */
+/**
+ * The device's language, until the person chooses one (Settings or the language switch).
+ * Goes through the device's languages in order of preference and takes the first one we
+ * have, so "Ukrainian, Russian, English" gives Russian and "German, English" gives English.
+ */
 export async function browserLanguage(): Promise<"en" | "ru"> {
-  const [lang] = await firstTag();
-  return lang === "ru" ? "ru" : "en";
+  return pickLanguage((await headers()).get("accept-language"));
 }
 
 /** A first guess for the sign-up country; the person can change it. */
