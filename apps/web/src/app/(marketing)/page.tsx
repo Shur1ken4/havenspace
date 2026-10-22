@@ -28,7 +28,8 @@ export default async function LandingPage() {
           <h1 className="text-[2.6rem] leading-[1.08] text-ink sm:text-5xl md:text-[3.6rem]">
             {t.rich("heroTitle", { em: (chunks) => <span className="hero-accent">{chunks}</span> })}
           </h1>
-          <p className="max-w-xl text-lg text-muted">{t("heroBody")}</p>
+          {/* Website only: the apps skip the homepage, and never show this paragraph. */}
+          <p className="site-only max-w-xl text-lg text-muted">{t("heroBody")}</p>
           <div className="flex flex-wrap gap-3">
             <Link href="/signup" className={buttonClass("primary", "lg")}>{t("heroCta")} <ArrowRight size={18} aria-hidden /></Link>
             <a href="#join" className={buttonClass("secondary", "lg")}>{t("heroSecondary")}</a>
