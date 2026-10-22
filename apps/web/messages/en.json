@@ -26,7 +26,8 @@
     "tagline": "AI assistant for therapists",
     "demoLabel": "Demo mode",
     "website": "HavenSpace website",
-    "backToApp": "Back to HavenSpace"
+    "backToApp": "Back to HavenSpace",
+    "splashLine": "Be with your client. We'll take care of the rest."
   },
   "badges": {
     "audioDeleted": "Audio deleted after transcription",

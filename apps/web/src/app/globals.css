@@ -293,3 +293,28 @@ a, button, input, select, textarea, [role="tab"] {
 .app-only { display: none !important; }
 :root[data-app="1"] .app-only { display: revert !important; }
 :root[data-app="1"] .site-only { display: none !important; }
+
+/* ── Opening screen of the apps (components/app-splash.tsx) ──────────────
+   Hidden unless lib/app-window.ts sets data-splash on <html>. About 2.4 s in all;
+   with reduced motion it simply shows, then fades. */
+.app-splash { display: none; }
+:root[data-splash] .app-splash {
+  position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 50% 42%, var(--primary-soft), var(--bg) 62%);
+  transition: opacity 600ms var(--ease-calm), visibility 600ms;
+}
+:root[data-splash="out"] .app-splash { opacity: 0; visibility: hidden; }
+:root[data-splash="on"] body { overflow: hidden; }
+.app-splash-inner { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 24px; }
+.app-splash-mark { width: 96px; height: 96px; }
+.app-splash-door { stroke-dasharray: 1; stroke-dashoffset: 1; animation: splash-draw 900ms var(--ease-calm) 100ms forwards; }
+.app-splash-dot { transform-box: fill-box; transform-origin: center; opacity: 0; animation: splash-pop 500ms var(--ease-calm) 850ms forwards; }
+.app-splash-name { margin-top: 18px; font-size: 2.5rem; line-height: 1.1; letter-spacing: -0.01em; opacity: 0; animation: splash-rise 600ms var(--ease-calm) 1050ms forwards; }
+.app-splash-tagline { margin-top: 8px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; opacity: 0; animation: splash-rise 600ms var(--ease-calm) 1250ms forwards; }
+.app-splash-line { margin-top: 18px; max-width: 22rem; font-size: 1.05rem; opacity: 0; animation: splash-rise 600ms var(--ease-calm) 1400ms forwards; }
+@keyframes splash-draw { to { stroke-dashoffset: 0; } }
+@keyframes splash-pop { 0% { opacity: 0; transform: scale(0.4); } 70% { opacity: 1; transform: scale(1.12); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes splash-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .app-splash-door, .app-splash-dot, .app-splash-name, .app-splash-tagline, .app-splash-line { animation: none; opacity: 1; stroke-dashoffset: 0; }
+}

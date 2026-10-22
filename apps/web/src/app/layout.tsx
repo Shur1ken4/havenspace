@@ -5,6 +5,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { currentTheme } from "@/lib/theme";
 import { APP_WINDOW_SCRIPT } from "@/lib/app-window";
 import { AppWindow } from "@/components/app-window";
+import { AppSplash } from "@/components/app-splash";
 import "./globals.css";
 
 const inter = Inter({ variable: "--font-inter-base", subsets: ["latin", "cyrillic"], display: "swap" });
@@ -51,6 +52,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="min-h-dvh">
         <AppWindow />
+        <AppSplash />
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>

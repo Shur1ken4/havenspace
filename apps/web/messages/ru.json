@@ -26,7 +26,8 @@
     "tagline": "ИИ-ассистент психотерапевта",
     "demoLabel": "Демо-режим",
     "website": "Сайт HavenSpace",
-    "backToApp": "Вернуться в HavenSpace"
+    "backToApp": "Вернуться в HavenSpace",
+    "splashLine": "Будьте с клиентом. Остальное мы возьмём на себя."
   },
   "badges": {
     "audioDeleted": "Аудио удаляется после расшифровки",
