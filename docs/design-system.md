@@ -31,6 +31,7 @@ Rule: small text must reach WCAG AA 4.5:1 in both themes. Check new pairs before
 
 ## Type
 Headings: Fraunces (Source Serif for Cyrillic). Body and UI: Inter, 16.5px, line height 1.6. `text-ui` = 15px for controls and labels; `text-sm` for hints.
+Phones (under 640px): everything one step smaller: 1rem = 15px (so spacing and buttons shrink together), body 15.5px, `text-ui` 14.5px, and headings smaller still (`text-4xl` ≈ 29px). Set in `globals.css`; nothing per page.
 
 ## Components (`apps/web/src/components/ui`)
 | Component | Variants / sizes | Notes |
