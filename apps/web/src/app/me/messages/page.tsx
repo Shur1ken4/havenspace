@@ -5,7 +5,6 @@ import { withUser } from "@/lib/db";
 import { requireClient } from "@/lib/session";
 import { loadMessages, readUpTo } from "@/lib/messages";
 import { Conversation } from "@/components/messages/conversation";
-import { Notice } from "@/components/ui/notice";
 
 export async function generateMetadata() {
   return { title: (await getTranslations("messages"))("title") };
@@ -26,8 +25,6 @@ export default async function ClientMessages() {
         <Link href="/me" className="text-sm text-muted hover:text-ink">← {t("backHome")}</Link>
         <h1 className="text-3xl sm:text-4xl">{t("withTherapist", { name: me.therapist })}</h1>
       </div>
-      {/* CLINICAL-REVIEW (docs/clinical-review.md item 20): what clients are told about urgent help. */}
-      <Notice tone="info">{t("notUrgent", { name: me.therapist })}</Notice>
       <Conversation clientId={me.id} initial={initial} initialReadUpTo={read} otherName={me.therapist} />
       <p className="text-sm text-muted">{t("privacyClient", { name: me.therapist })}</p>
     </div>

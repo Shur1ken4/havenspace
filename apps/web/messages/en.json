@@ -1484,7 +1484,6 @@
     "failed": "The message wasn't sent. Please check your connection and try again.",
     "backHome": "Home",
     "withTherapist": "Messages with {name}",
-    "notUrgent": "Messages are for everyday things between sessions. {name} may not reply straight away. In an emergency call 112 or 999, or Samaritans on 116 123 (free, 24/7).",
     "privacyClient": "Only you and {name} can read these messages. You'll get an email when there's a new one, without the text."
   },
   "messagesEmail": {

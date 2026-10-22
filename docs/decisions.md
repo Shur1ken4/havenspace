@@ -526,7 +526,7 @@ Therapists and clients arrange things between sessions (times, homework question
 ## Decision
 - One conversation per client who uses the client app. Only the therapist and that client can read it (row-level security; tested); nobody can edit or delete a message through the app; it is deleted with the client or the account and included in both data exports.
 - New messages appear by checking every 5 seconds while the page is open (no extra service). The other person gets an email **without the text**, once per batch of unread messages.
-- The client sees a standing notice that messages aren't for emergencies, with emergency numbers (CLINICAL-REVIEW item 20). No AI reads, scores or flags messages (ADR-4).
+- No standing emergency notice above the chat (removed at Shurik's request); emergency numbers remain in the client app. No AI reads, scores or flags messages (ADR-4).
 - **Join emails**: when someone enters a video room and the other person isn't there, the other person gets "… is waiting" with a link (at most once per 15 minutes per room). Names and a link only.
 - **Recording in a call is never automatic** (changes ADR-17's "record automatically" option): the therapist presses Record, can Pause/Resume, and Finish recording without ending the call; the client sees "recording" or "paused".
 ## Options considered
@@ -537,7 +537,7 @@ Therapists and clients arrange things between sessions (times, homework question
 | Keep using WhatsApp | None | €0 | Outside our control | Not where the clinical record is |
 ## Consequences
 - Easier: one place for session logistics, with an audit trail.
-- Harder: therapists may feel expected to reply fast; the notice sets expectations.
+- Harder: therapists may feel expected to reply fast.
 - Revisit: phone push notifications; attachments; therapist "office hours" setting; switching emails off per person.
 
 # ADR-23: Serving therapists in Russia

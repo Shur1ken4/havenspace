@@ -47,6 +47,6 @@ Wording: `apps/web/messages/ru.json` and `en.json`, section `tools`; lists in `a
 
 ## 20. Messages between therapist and client (ADR-22)
 Wording: `apps/web/messages/ru.json` and `en.json`, section `messages`. Please review:
-- the notice clients see above the conversation (`notUrgent`): messages are for everyday things, the therapist may not reply straight away, and emergency numbers (112, 999, Samaritans 116 123). Are these the right numbers for our clients, and should Russian-speaking clients see others?
+- whether clients should see a note above the chat about urgent help (removed at Shurik's request, 2026-10-22; emergency numbers stay in the client app's settings);
 - whether therapists should be able to set "office hours" for replies, or switch messaging off for a client.
 
