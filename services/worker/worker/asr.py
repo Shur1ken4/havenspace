@@ -9,6 +9,7 @@ from functools import lru_cache
 import numpy as np
 
 from . import config
+from .log import log
 
 
 @dataclass
@@ -47,6 +48,19 @@ def transcribe(samples: np.ndarray, model_name: str | None = None, language: str
     matters when several people share one microphone."""
     if samples.size < 1600:  # under 0.1 s
         return [], language
+    if not split_on_pauses:
+        return _transcribe(samples, model_name, language, False)
+    try:
+        return _transcribe(samples, model_name, language, True)
+    except IndexError:
+        # faster-whisper can fail to line up word timings on some audio (an edge case
+        # inside the library); then keep Whisper's own segments rather than lose the session.
+        log("asr.word_timestamps_failed")
+        return _transcribe(samples, model_name, language, False)
+
+
+def _transcribe(samples: np.ndarray, model_name: str | None, language: str | None,
+                split_on_pauses: bool) -> tuple[list[AsrSegment], str | None]:
     model = _model(model_name or config.WHISPER_MODEL)
     segments, info = model.transcribe(
         samples,

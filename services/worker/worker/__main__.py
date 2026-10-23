@@ -4,6 +4,8 @@ from __future__ import annotations
 import signal
 import threading
 import time
+import traceback
+from pathlib import Path
 
 import psycopg
 
@@ -39,6 +41,16 @@ def handle(conn, job: dict, provider) -> None:
         pipeline.transcribe_dictation(conn, job)
     elif kind == "supervision_pack":
         pipeline.build_supervision_pack(conn, job, provider)
+
+
+def _where(err: BaseException) -> str:
+    """Where it broke (file:line function), for our own code and the innermost frame. Code locations only, never content."""
+    frames = traceback.extract_tb(err.__traceback__)
+    ours = [f for f in frames if "/worker/" in f.filename and "site-packages" not in f.filename]
+    pick = [ours[-1]] if ours else []
+    if frames and (not ours or frames[-1] is not ours[-1]):
+        pick.append(frames[-1])
+    return " > ".join(f"{Path(f.filename).name}:{f.lineno} {f.name}" for f in pick)
 
 
 def main() -> None:
@@ -81,7 +93,7 @@ def main() -> None:
             code = type(err).__name__
             permanent = isinstance(err, (pipeline.NoSpeechError, RefusalError, InvalidOutputError))
             retry = not permanent and job["attempts"] < MAX_ATTEMPTS
-            log("job.error", job=job["id"], kind=job["kind"], error=code, attempt=job["attempts"])
+            log("job.error", job=job["id"], kind=job["kind"], error=code, where=_where(err), attempt=job["attempts"])
             db.fail_job(conn, job, code, retry)
             if not retry and job["session_id"] and job["kind"] in ("process_session", "regenerate"):
                 conn.execute(
