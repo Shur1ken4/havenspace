@@ -1217,7 +1217,8 @@
     "bgUnsupported": "This browser can't change the background. Try Chrome or Edge on a computer.",
     "bgFailed": "The background couldn't be changed. Please try again.",
     "callContinues": "Call with {name}",
-    "returnToCall": "Back to the call"
+    "returnToCall": "Back to the call",
+    "therapistLeft": "{name} has left the call. If they don't come back within 2 minutes, the call will close by itself."
   },
   "register": {
     "title": "Create your account",

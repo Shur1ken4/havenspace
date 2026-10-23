@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { Mic, MicOff, Video, VideoOff, PhoneOff, Circle, ScreenShare, ScreenShareOff, Maximize2, Minimize2, Pause, Play, Square, CornerUpLeft } from "lucide-react";
 import { RoomEvent, Track } from "livekit-client";
 import {
-  LiveKitRoom, RoomAudioRenderer, VideoTrack, useLocalParticipant, useRemoteParticipants, useTracks,
+  LiveKitRoom, RoomAudioRenderer, VideoTrack, useLocalParticipant, useRemoteParticipants, useRoomContext, useTracks,
   type TrackReference,
 } from "@livekit/components-react";
 import { Arch } from "@/components/arch";
@@ -167,6 +167,10 @@ export function VideoRoom({ roomId, role, otherName, clientId, consent = false, 
 }
 
 const TIMESLICE_MS = 10_000;
+/** The therapist's "end the call" signal to the client, sent over the call itself. */
+const CALL_TOPIC = "hs-call";
+/** The therapist left without ending (tab closed, connection lost): the client's side closes after this. */
+const THERAPIST_GONE_MS = 2 * 60_000;
 
 function InCall({ roomId, role, otherName, consent, clientId, linked, liveOn, deviceError, onLeave, back, mini, callPath }: {
   roomId: string; role: Role; otherName: string; consent: boolean; clientId?: string; linked: boolean;
@@ -191,6 +195,31 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, liveOn, de
   const localCam = cams.find((c) => c.participant.isLocal);
   const remoteMic = mics.find((m) => !m.participant.isLocal);
   const otherHere = remotes.length > 0;
+  const room = useRoomContext();
+  const leaveRef = useRef(onLeave);
+  useEffect(() => { leaveRef.current = onLeave; });
+
+  // Client: when the therapist ends the session it ends here at once. The room is also
+  // closed on the server; this message makes sure even if that is slow or fails.
+  useEffect(() => {
+    if (role !== "client") return;
+    room.registerTextStreamHandler(CALL_TOPIC, (reader, { identity }) => {
+      reader.readAll().then((text) => { if (identity === "therapist" && text === "end") leaveRef.current(null); }).catch(() => {});
+    });
+    return () => room.unregisterTextStreamHandler(CALL_TOPIC);
+  }, [room, role]);
+
+  // Client: the therapist was here and has gone without ending (closed the tab, lost the
+  // connection). A reload brings them back within seconds; otherwise the call closes here.
+  const therapistHere = remotes.some((p) => p.identity === "therapist");
+  const [seenTherapist, setSeenTherapist] = useState(false);
+  if (therapistHere && !seenTherapist) setSeenTherapist(true);
+  const therapistLeft = role === "client" && seenTherapist && !therapistHere;
+  useEffect(() => {
+    if (!therapistLeft) return;
+    const id = setTimeout(() => leaveRef.current(null), THERAPIST_GONE_MS);
+    return () => clearTimeout(id);
+  }, [therapistLeft]);
   const remoteShare = useTracks([Track.Source.ScreenShare]).find((s) => !s.participant.isLocal);
   // Therapy tools shared on the call (ADR-21): opened by the therapist, used by both.
   const tools = useTools(role, roomId);
@@ -392,6 +421,11 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, liveOn, de
     let to = back;
     const done = rec ? await finishRecording() : finished;
     if (done) to = `/sessions/${done}`;
+    // Tell the client's screen directly, then close the room on the server for both.
+    await Promise.race([
+      room.localParticipant.sendText("end", { topic: CALL_TOPIC }).catch(() => {}),
+      new Promise((resolve) => setTimeout(resolve, 1500)),
+    ]);
     await endVideo(roomId).catch(() => {});
     forgetTools(roomId);
     onLeave(to);
@@ -411,7 +445,8 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, liveOn, de
         recording={recState === "on" || recState === "paused" || (role === "client" && (otherRecording || otherPaused))} paused={recState === "paused" || otherPaused}
         time={recState !== "off" ? minutes : null}
         mic={isMicrophoneEnabled} onMic={() => localParticipant.setMicrophoneEnabled(!isMicrophoneEnabled)}
-        cam={isCameraEnabled} onCam={() => localParticipant.setCameraEnabled(!isCameraEnabled)} />
+        cam={isCameraEnabled} onCam={() => localParticipant.setCameraEnabled(!isCameraEnabled)}
+        end={role === "therapist" ? { label: t("end"), onClick: () => setConfirmEnd(true) } : { label: t("leave"), onClick: leave }} />
     )}
     {/* Elsewhere in the app the full call stays in place, hidden, so recording, tools and sharing carry on. */}
     <div className={mini ? "hidden" : "space-y-4"}>
@@ -504,6 +539,7 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, liveOn, de
       </div>
 
       {role === "client" && <ClientSaveCall otherName={otherName} saving={otherSaving} />}
+      {therapistLeft && <Notice tone="attention">{t("therapistLeft", { name: otherName })}</Notice>}
       {deviceError && <Notice tone="attention">{t("noDevices")}</Notice>}
       {recError === "consent" && (
         <Notice tone="attention">
@@ -577,10 +613,12 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, liveOn, de
 }
 
 /** The call, small in a corner, while the person is on another page of the app. */
-function MiniCall({ otherName, callPath, remoteCam, otherHere, recording, paused, time, mic, onMic, cam, onCam }: {
+function MiniCall({ otherName, callPath, remoteCam, otherHere, recording, paused, time, mic, onMic, cam, onCam, end }: {
   otherName: string; callPath?: string; remoteCam?: TrackReference; otherHere: boolean;
   recording: boolean; paused: boolean; time: string | null;
   mic: boolean; onMic: () => void; cam: boolean; onCam: () => void;
+  /** End the session (therapist, asks first) or leave it (client). */
+  end: { label: string; onClick: () => void };
 }) {
   const t = useTranslations("video");
   return (
@@ -603,10 +641,13 @@ function MiniCall({ otherName, callPath, remoteCam, otherHere, recording, paused
           {cam ? <Video size={16} aria-hidden /> : <VideoOff size={16} aria-hidden />}
         </Button>
         {callPath && (
-          <Link href={callPath} className={buttonClass("primary", "sm", "px-3")}>
+          <Link href={callPath} className={buttonClass("primary", "sm", "min-w-0 flex-1 px-3")}>
             <CornerUpLeft size={15} aria-hidden /> {t("returnToCall")}
           </Link>
         )}
+        <Button size="sm" onClick={end.onClick} aria-label={end.label} title={end.label} className="px-2.5">
+          <PhoneOff size={16} aria-hidden />
+        </Button>
       </div>
     </section>
   );
