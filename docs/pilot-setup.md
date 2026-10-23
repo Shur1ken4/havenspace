@@ -47,6 +47,8 @@ Gmail can send up to ~500 emails a day, which is plenty for a pilot. When you bu
    - Name: `havenspace-worker`, then click **Create & Buy now**.
 5. Copy the server's **IPv4 address** into `.env.production` as `WORKER_SERVER_IP`.
 
+**Until this server exists**, sessions are processed on the Mac: run `node scripts/worker-pilot.mjs` in a terminal and keep the Mac awake. Sessions recorded while it isn't running wait safely in the queue and are processed when it starts.
+
 (This server transcribes a 50-minute session in roughly 10–15 minutes. When there are more testers, we can upgrade to a GPU server and that drops to 1–3 minutes.)
 
 ## 4. Anthropic key (5 min)
