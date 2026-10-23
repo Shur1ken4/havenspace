@@ -42,7 +42,7 @@ const NEEDED = {
   migrate: ["NEON_OWNER_URL"],
   vercel: ["NEON_OWNER_URL", "GMAIL_ADDRESS", "GMAIL_APP_PASSWORD", "S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"],
   admin: ["NEON_OWNER_URL"],
-  worker: ["NEON_OWNER_URL", "S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY", "WORKER_SERVER_IP", "ANTHROPIC_API_KEY"],
+  worker: ["NEON_OWNER_URL", "WORKER_SERVER_IP", "ANTHROPIC_API_KEY"],
 };
 const cmd = process.argv[2] ?? "check";
 if (!NEEDED[cmd]) { console.error("usage: node scripts/pilot.mjs check|migrate|vercel|worker|admin <email>"); process.exit(1); }
@@ -69,7 +69,9 @@ function dbUrl(user, password, pooled) {
 const owner = dbUrl(null, null, false);
 const appDb = dbUrl("app_user", s.APP_DB_PASSWORD, true);
 const workerDb = dbUrl("worker_user", s.WORKER_DB_PASSWORD, false);
-const s3 = {
+// Pilot: audio waits in Postgres (STORAGE_DRIVER=db) until EU object storage is set up;
+// with an S3 bucket in .env.production, both the website and the worker use it instead.
+const s3 = !p.S3_BUCKET ? { STORAGE_DRIVER: "db" } : {
   STORAGE_DRIVER: "s3",
   S3_ENDPOINT: p.S3_ENDPOINT || "https://fsn1.your-objectstorage.com",
   S3_REGION: new URL(p.S3_ENDPOINT || "https://fsn1.your-objectstorage.com").hostname.split(".")[0],
@@ -104,37 +106,15 @@ if (cmd === "vercel") {
   console.log(`Wrote .env.vercel (${Object.keys(env).length} settings). Open it, copy all, paste into Vercel.`);
 }
 
-if (cmd === "worker") {
-  const env = {
-    ...common, ...s3,
-    WORKER_DATABASE_URL: workerDb,
-    LLM_PROVIDER: "anthropic", ANTHROPIC_API_KEY: p.ANTHROPIC_API_KEY,
-    LLM_MODEL: "claude-opus-5-5", LIVE_MODEL: "claude-sonnet-5-5", LIVE_WHISPER_MODEL: "small",
-    WHISPER_MODEL: "large-v3-turbo", WHISPER_DEVICE: "cpu", WHISPER_COMPUTE_TYPE: "int8",
-    MODELS_DIR: "/opt/havenspace/.data/models",
-  };
-  const envFile = path.join(ROOT, ".env.worker");
-  write(envFile, env, "# Settings for the worker on the Hetzner server. Private.");
-  const host = `root@${p.WORKER_SERVER_IP}`;
-  const ssh = ["-i", SSH_KEY, "-o", "StrictHostKeyChecking=accept-new"];
-  const run = (c, a) => execFileSync(c, a, { stdio: "inherit", cwd: ROOT });
-  console.log("Copying the worker to the server…");
-  run("ssh", [...ssh, host, "mkdir -p /opt/havenspace/services /opt/havenspace/packages /opt/havenspace/evals"]);
-  run("rsync", ["-az", "--delete", "-e", `ssh ${ssh.join(" ")}`, "--exclude", ".venv", "--exclude", ".data", "--exclude", "__pycache__",
-    "--exclude", ".pytest_cache", "services/worker", `${host}:/opt/havenspace/services/`]);
-  run("rsync", ["-az", "--delete", "-e", `ssh ${ssh.join(" ")}`, "packages/shared", `${host}:/opt/havenspace/packages/`]);
-  run("rsync", ["-az", "-e", `ssh ${ssh.join(" ")}`, "evals/forbidden_terms.txt", `${host}:/opt/havenspace/evals/`]);
-  run("scp", [...ssh, envFile, `${host}:/opt/havenspace/.env`]);
-  console.log("Installing and (re)starting…");
-  execFileSync("ssh", [...ssh, host, "bash -s"], { stdio: ["pipe", "inherit", "inherit"], input: REMOTE_SETUP });
-  console.log("Worker is running. Logs: ssh -i ~/.ssh/havenspace_hetzner " + host + " journalctl -u havenspace-worker -f");
-}
-
 // Runs on the server (Ubuntu 24.04): installs uv, the Python packages and a
 // systemd service that restarts the worker if it stops.
 const REMOTE_SETUP = String.raw`
 set -euo pipefail
 chmod 600 /opt/havenspace/.env
+# Firewall: only SSH in (the worker only makes outgoing connections).
+if command -v ufw >/dev/null; then ufw allow OpenSSH >/dev/null && ufw --force enable >/dev/null; fi
+# Automatic security updates.
+apt-get install -y -qq unattended-upgrades >/dev/null 2>&1 || true
 id havenspace >/dev/null 2>&1 || useradd --system --home /opt/havenspace --shell /usr/sbin/nologin havenspace
 if [ ! -x /usr/local/bin/uv ]; then curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR=/usr/local/bin sh; fi
 mkdir -p /opt/havenspace/.data/models
@@ -167,3 +147,29 @@ systemctl restart havenspace-worker
 sleep 3
 systemctl --no-pager --lines=5 status havenspace-worker || true
 `;
+
+if (cmd === "worker") {
+  const env = {
+    ...common, ...s3,
+    WORKER_DATABASE_URL: workerDb,
+    LLM_PROVIDER: "anthropic", ANTHROPIC_API_KEY: p.ANTHROPIC_API_KEY,
+    LLM_MODEL: "claude-opus-5-5", LIVE_MODEL: "claude-sonnet-5-5", LIVE_WHISPER_MODEL: "small",
+    WHISPER_MODEL: "large-v3-turbo", WHISPER_DEVICE: "cpu", WHISPER_COMPUTE_TYPE: "int8",
+    MODELS_DIR: "/opt/havenspace/.data/models",
+  };
+  const envFile = path.join(ROOT, ".env.worker");
+  write(envFile, env, "# Settings for the worker on the Hetzner server. Private.");
+  const host = `root@${p.WORKER_SERVER_IP}`;
+  const ssh = ["-i", SSH_KEY, "-o", "StrictHostKeyChecking=accept-new"];
+  const run = (c, a) => execFileSync(c, a, { stdio: "inherit", cwd: ROOT });
+  console.log("Copying the worker to the server…");
+  run("ssh", [...ssh, host, "mkdir -p /opt/havenspace/services /opt/havenspace/packages /opt/havenspace/evals"]);
+  run("rsync", ["-az", "--delete", "-e", `ssh ${ssh.join(" ")}`, "--exclude", ".venv", "--exclude", ".data", "--exclude", "__pycache__",
+    "--exclude", ".pytest_cache", "services/worker", `${host}:/opt/havenspace/services/`]);
+  run("rsync", ["-az", "--delete", "-e", `ssh ${ssh.join(" ")}`, "packages/shared", `${host}:/opt/havenspace/packages/`]);
+  run("rsync", ["-az", "-e", `ssh ${ssh.join(" ")}`, "evals/forbidden_terms.txt", `${host}:/opt/havenspace/evals/`]);
+  run("scp", [...ssh, envFile, `${host}:/opt/havenspace/.env`]);
+  console.log("Installing and (re)starting…");
+  execFileSync("ssh", [...ssh, host, "bash -s"], { stdio: ["pipe", "inherit", "inherit"], input: REMOTE_SETUP });
+  console.log("Worker is running. Logs: ssh -i ~/.ssh/havenspace_hetzner " + host + " journalctl -u havenspace-worker -f");
+}
