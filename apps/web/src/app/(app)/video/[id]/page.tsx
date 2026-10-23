@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { withUser } from "@/lib/db";
 import { isUuid } from "@/lib/ids";
 import { liveResearchAllowed, requireTherapist } from "@/lib/session";
-import { VideoRoom } from "@/components/video/video-room";
+import { CallPage } from "@/components/video/call-host";
 import { loadMyDecks } from "@/lib/decks-server";
 
 export async function generateMetadata() {
@@ -21,5 +21,5 @@ export default async function TherapistVideoPage({ params }: PageProps<"/video/[
        from video_rooms r join clients c on c.id = r.client_id where r.id = $1`, [id])).rows[0]);
   if (!room) notFound();
   const decks = await withUser(therapist.id, loadMyDecks);
-  return <VideoRoom decks={decks.map(({ id, name, refs, key }) => ({ id, name, refs, key }))} key={room.id} roomId={room.id} role="therapist" otherName={room.pseudonym} clientId={room.client_id} consent={room.consent} linked={room.linked} liveAllowed={liveResearchAllowed(session.user.email)} />;
+  return <CallPage path={`/video/${room.id}`} decks={decks.map(({ id, name, refs, key }) => ({ id, name, refs, key }))} roomId={room.id} role="therapist" otherName={room.pseudonym} clientId={room.client_id} consent={room.consent} linked={room.linked} liveAllowed={liveResearchAllowed(session.user.email)} />;
 }

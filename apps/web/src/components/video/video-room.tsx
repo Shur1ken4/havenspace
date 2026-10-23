@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Mic, MicOff, Video, VideoOff, PhoneOff, Circle, ScreenShare, ScreenShareOff, Maximize2, Minimize2, Pause, Play, Square } from "lucide-react";
+import { Mic, MicOff, Video, VideoOff, PhoneOff, Circle, ScreenShare, ScreenShareOff, Maximize2, Minimize2, Pause, Play, Square, CornerUpLeft } from "lucide-react";
 import { RoomEvent, Track } from "livekit-client";
 import {
   LiveKitRoom, RoomAudioRenderer, VideoTrack, useLocalParticipant, useRemoteParticipants, useTracks,
@@ -21,10 +21,11 @@ import { Chip } from "@/components/ui/chip";
 import { LivePanel } from "@/app/(app)/sessions/[id]/capture/live-panel";
 import { endVideo, startVideoRecording } from "@/app/(app)/video/actions";
 import { JoinOptions } from "./join-options";
-import { useTools } from "./tools/use-tools";
+import { forgetTools, useTools } from "./tools/use-tools";
 import { ToolMenu, ToolStage, useNewTool } from "./tools/tool-stage";
 import { CallDecks, type CallDeck } from "./tools/decks-context";
 import { ClientSaveCall, TherapistSaveCall } from "./save-call";
+import { BackgroundButton, useBackground } from "./background";
 
 type Role = "therapist" | "client";
 type Stage = "lobby" | "joining" | "in" | "ended" | "error";
@@ -34,8 +35,14 @@ type Stage = "lobby" | "joining" | "in" | "ended" | "error";
  * is ours. The therapist can record for notes: their microphone and the client's
  * audio are saved as two separate tracks, exactly like an online-call recording.
  */
-export function VideoRoom({ roomId, role, otherName, clientId, consent = false, linked = false, guestToken, liveAllowed = false, decks = [] }: {
+export function VideoRoom({ roomId, role, otherName, clientId, consent = false, linked = false, guestToken, liveAllowed = false, decks = [], mini = false, callPath, onActive }: {
   roomId: string; role: Role; otherName: string; clientId?: string; consent?: boolean;
+  /** Shown small in the corner while the person is elsewhere in the app (CallHost). */
+  mini?: boolean;
+  /** The call's own page, for "Back to the call". */
+  callPath?: string;
+  /** Tells the host whether the call is on (so it stays when the person moves to another page). */
+  onActive?: (on: boolean) => void;
   /** Therapist: their own card decks, for the cards tool. */
   decks?: CallDeck[];
   /** Therapist: live research mode is switched on for this account (ADR-10, role-play only). */
@@ -54,6 +61,16 @@ export function VideoRoom({ roomId, role, otherName, clientId, consent = false, 
   // never automatic: the therapist starts, pauses and finishes it in the call.
   const [liveOn, setLiveOn] = useState(false);
   const leaving = useRef(false);
+  const reportActive = useRef(onActive);
+  useEffect(() => { reportActive.current = onActive; });
+  useEffect(() => { reportActive.current?.(stage === "in"); }, [stage]);
+  // Closing or reloading the tab would drop the call: the browser asks first.
+  useEffect(() => {
+    if (stage !== "in") return;
+    const warn = (e: BeforeUnloadEvent) => { e.preventDefault(); };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [stage]);
 
   async function join() {
     setStage("joining");
@@ -130,15 +147,18 @@ export function VideoRoom({ roomId, role, otherName, clientId, consent = false, 
       options={{ adaptiveStream: true, dynacast: true }}
       onDisconnected={() => { if (!leaving.current) setStage("ended"); }}
       onMediaDeviceFailure={() => setError("noDevices")}
-      className="mx-auto max-w-5xl"
+      className={mini ? "" : "mx-auto max-w-5xl"}
     >
       <CallDecks value={decks}>
       <InCall
         roomId={roomId} role={role} otherName={otherName} consent={consent} clientId={clientId} linked={linked}
         liveOn={liveOn && liveAllowed}
         deviceError={error === "noDevices"}
-        onLeave={(to) => { leaving.current = true; if (to) router.push(to); else setStage("ended"); }}
-        back={back}
+        onLeave={(to) => {
+          leaving.current = true;
+          if (to) { reportActive.current?.(false); router.push(to); } else setStage("ended");
+        }}
+        back={back} mini={mini} callPath={callPath}
       />
       </CallDecks>
       <RoomAudioRenderer />
@@ -148,10 +168,11 @@ export function VideoRoom({ roomId, role, otherName, clientId, consent = false, 
 
 const TIMESLICE_MS = 10_000;
 
-function InCall({ roomId, role, otherName, consent, clientId, linked, liveOn, deviceError, onLeave, back }: {
+function InCall({ roomId, role, otherName, consent, clientId, linked, liveOn, deviceError, onLeave, back, mini, callPath }: {
   roomId: string; role: Role; otherName: string; consent: boolean; clientId?: string; linked: boolean;
   liveOn: boolean;
   deviceError: boolean; onLeave: (to: string | null) => void; back: string | null;
+  mini: boolean; callPath?: string;
 }) {
   const t = useTranslations("video");
   const tc = useTranslations("common");
@@ -172,8 +193,10 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, liveOn, de
   const otherHere = remotes.length > 0;
   const remoteShare = useTracks([Track.Source.ScreenShare]).find((s) => !s.participant.isLocal);
   // Therapy tools shared on the call (ADR-21): opened by the therapist, used by both.
-  const tools = useTools(role);
+  const tools = useTools(role, roomId);
   const freshTool = useNewTool();
+  // Blur or a picture behind your own camera, done in this browser.
+  const bg = useBackground();
 
   // ── Recording for notes (therapist only) ────────────────────────────────
   const [rec, setRec] = useState<{ sessionId: string } | null>(null);
@@ -370,6 +393,7 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, liveOn, de
     const done = rec ? await finishRecording() : finished;
     if (done) to = `/sessions/${done}`;
     await endVideo(roomId).catch(() => {});
+    forgetTools(roomId);
     onLeave(to);
   }
 
@@ -381,9 +405,32 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, liveOn, de
   const minutes = `${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, "0")}`;
 
   return (
-    <div className="space-y-4">
+    <>
+    {mini && (
+      <MiniCall otherName={otherName} callPath={callPath} remoteCam={remoteCam as TrackReference | undefined} otherHere={otherHere}
+        recording={recState === "on" || recState === "paused" || (role === "client" && (otherRecording || otherPaused))} paused={recState === "paused" || otherPaused}
+        time={recState !== "off" ? minutes : null}
+        mic={isMicrophoneEnabled} onMic={() => localParticipant.setMicrophoneEnabled(!isMicrophoneEnabled)}
+        cam={isCameraEnabled} onCam={() => localParticipant.setCameraEnabled(!isCameraEnabled)} />
+    )}
+    {/* Elsewhere in the app the full call stays in place, hidden, so recording, tools and sharing carry on. */}
+    <div className={mini ? "hidden" : "space-y-4"}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-2xl sm:text-3xl">{t("with", { name: otherName })}</h1>
+        {tools.tool && (
+          // With a tool open, both cameras stay in view, small, beside the title (so the tool gets the height).
+          <div className="order-last ml-auto flex gap-2">
+            <div className="flex aspect-video h-16 items-center justify-center overflow-hidden rounded-xl border border-line bg-[#1E2421] sm:h-20">
+              {remoteCam ? <VideoTrack trackRef={remoteCam as TrackReference} className="h-full w-full object-cover" />
+                : <Arch mood={otherHere ? "listening" : "idle"} className="h-10 w-10" />}
+            </div>
+            {localCam && isCameraEnabled && (
+              <div className="aspect-video h-16 overflow-hidden rounded-xl border border-line sm:h-20">
+                <VideoTrack trackRef={localCam as TrackReference} className="h-full w-full -scale-x-100 object-cover" />
+              </div>
+            )}
+          </div>
+        )}
         {role === "client" && (otherRecording || otherPaused) && (
           <p className="flex items-center gap-2 text-sm text-muted" aria-live="polite">
             <span className="breathing-dot" data-paused={otherPaused} /> {otherPaused ? t("recordingPausedOther", { name: otherName }) : t("beingRecorded", { name: otherName })}
@@ -399,20 +446,9 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, liveOn, de
 
       <div className={liveActive ? "grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_360px]" : ""}>
       {tools.tool ? (
-        // A tool takes the stage; both cameras stay in view, small, above it.
-        <div className="space-y-3">
-          <div className="flex justify-end gap-2">
-            <div className="flex aspect-video h-20 items-center justify-center overflow-hidden rounded-xl border border-line bg-[#1E2421] sm:h-24">
-              {remoteCam ? <VideoTrack trackRef={remoteCam as TrackReference} className="h-full w-full object-cover" />
-                : <Arch mood={otherHere ? "listening" : "idle"} className="h-12 w-12" />}
-            </div>
-            {localCam && isCameraEnabled && (
-              <div className="aspect-video h-20 overflow-hidden rounded-xl border border-line sm:h-24">
-                <VideoTrack trackRef={localCam as TrackReference} className="h-full w-full -scale-x-100 object-cover" />
-              </div>
-            )}
-          </div>
-          <div className="h-[min(76dvh,760px)] min-h-[440px] overflow-hidden rounded-panel border border-line bg-surface">
+        // A tool takes the stage, sized to the screen so it's seen whole (the cameras are beside the title).
+        <div>
+          <div className="h-[clamp(440px,calc(100dvh-15rem),820px)] overflow-hidden rounded-panel border border-line bg-surface">
             <ToolStage tool={tools.tool} role={role} roomId={roomId} otherName={otherName} act={tools.act} set={tools.set}
               savedAt={tools.savedAt} notifySaved={tools.notifySaved} />
           </div>
@@ -493,6 +529,7 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, liveOn, de
           {isCameraEnabled ? <Video size={18} aria-hidden /> : <VideoOff size={18} aria-hidden />}
           <span className="sr-only sm:not-sr-only">{isCameraEnabled ? t("cameraOff") : t("cameraOn")}</span>
         </Button>
+        <BackgroundButton bg={bg} />
         {canShare && (
           <Button variant="secondary" onClick={toggleShare} aria-pressed={isScreenShareEnabled} disabled={!!remoteShare && !isScreenShareEnabled}>
             {isScreenShareEnabled ? <ScreenShareOff size={18} aria-hidden /> : <ScreenShare size={18} aria-hidden />}
@@ -500,7 +537,7 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, liveOn, de
           </Button>
         )}
         {role === "therapist" && (
-          <ToolMenu open={tools.tool?.kind ?? null} onOpen={(kind) => tools.set(freshTool(kind))} onClose={() => tools.set(null)} />
+          <ToolMenu open={tools.tool?.kind ?? null} onOpen={(kind) => tools.open(kind, () => freshTool(kind))} onClose={() => tools.set(null)} />
         )}
         {role === "therapist" && recState === "off" && (
           <Button variant="secondary" onClick={startRecording} disabled={!consent || finishing} title={!otherHere ? t("recordNeedsClient") : undefined}>
@@ -535,5 +572,42 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, liveOn, de
         </div>
       </Dialog>
     </div>
+    </>
+  );
+}
+
+/** The call, small in a corner, while the person is on another page of the app. */
+function MiniCall({ otherName, callPath, remoteCam, otherHere, recording, paused, time, mic, onMic, cam, onCam }: {
+  otherName: string; callPath?: string; remoteCam?: TrackReference; otherHere: boolean;
+  recording: boolean; paused: boolean; time: string | null;
+  mic: boolean; onMic: () => void; cam: boolean; onCam: () => void;
+}) {
+  const t = useTranslations("video");
+  return (
+    <section aria-label={t("callContinues", { name: otherName })} className="fade-up overflow-hidden rounded-card border border-line bg-surface shadow-[var(--shadow)]">
+      <div className="relative aspect-video bg-[#1E2421]">
+        {remoteCam ? <VideoTrack trackRef={remoteCam} className="h-full w-full object-cover" />
+          : <div className="flex h-full items-center justify-center"><Arch mood={otherHere ? "listening" : "idle"} className="h-16 w-16" /></div>}
+        {recording && (
+          <span className="absolute left-2 top-2 flex items-center gap-1.5 rounded-full bg-black/45 px-2.5 py-1 text-xs text-white">
+            <span className="breathing-dot" data-paused={paused} /> {paused ? t("recordingPaused") : t("recordingBadge")}{time ? ` · ${time}` : ""}
+          </span>
+        )}
+        <span className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate rounded-full bg-black/45 px-2.5 py-1 text-xs text-white">{t("callContinues", { name: otherName })}</span>
+      </div>
+      <div className="flex items-center justify-end gap-1.5 p-2">
+        <Button size="sm" variant="secondary" onClick={onMic} aria-pressed={!mic} aria-label={mic ? t("mute") : t("unmute")} title={mic ? t("mute") : t("unmute")} className="px-2.5">
+          {mic ? <Mic size={16} aria-hidden /> : <MicOff size={16} aria-hidden />}
+        </Button>
+        <Button size="sm" variant="secondary" onClick={onCam} aria-pressed={!cam} aria-label={cam ? t("cameraOff") : t("cameraOn")} title={cam ? t("cameraOff") : t("cameraOn")} className="px-2.5">
+          {cam ? <Video size={16} aria-hidden /> : <VideoOff size={16} aria-hidden />}
+        </Button>
+        {callPath && (
+          <Link href={callPath} className={buttonClass("primary", "sm", "px-3")}>
+            <CornerUpLeft size={15} aria-hidden /> {t("returnToCall")}
+          </Link>
+        )}
+      </div>
+    </section>
   );
 }

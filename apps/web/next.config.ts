@@ -7,7 +7,8 @@ const isDev = process.env.NODE_ENV !== "production";
 // nothing is loaded from third parties (fonts are self-hosted at build time).
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  // 'wasm-unsafe-eval': background blur in calls runs MediaPipe (WebAssembly, served from our own site).
+  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self'",

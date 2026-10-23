@@ -429,6 +429,8 @@ Build our own video room on **LiveKit Cloud** (project region: EU, Frankfurt; ag
 
 **Update 2026-10-21: screen sharing.** Either person can share the whole screen, any app window or a browser tab from a computer, as in Zoom or Teams: the browser's picker opens on the entire screen and the choice can be switched while sharing (phones can watch but browsers there can't share). One share at a time: while one person shares, the other's button waits. The shared screen takes the stage, shown whole, with both cameras small beside it and a Full screen button. Sound is shared only from a single browser tab ("Share tab audio"), never the whole computer's sound, so the call can't echo back. The HavenSpace tab itself is excluded from the picker. Recording for notes is unchanged: only the two microphones are recorded, never the shared screen or its sound.
 
+**Update 2026-10-23: the call stays on while you move around the app; backgrounds.** Opening Clients, Messages or any other page during a call no longer ends it. The call lives in the app's layout (`CallHost`), which stays in place between pages: on the call's own page it shows in full; elsewhere it shrinks to a small window in the corner (the other person's video, recording badge, mute, camera, "Back to the call"), and recording for notes, tools, screen sharing and "Save to my computer" carry on. Leaving the page before joining simply closes it. Closing or reloading the browser tab still ends the call, so the browser asks first. Both people can choose a **background** for their own camera, as in Zoom: soft or strong blur, one of four calm pictures we generated (`scripts/backgrounds/make.py`), or their own picture. It runs in the browser with MediaPipe (Apache-2.0, via `@livekit/track-processors`); the engine and model are served from our own site, never a third-party CDN, so only the finished picture goes into the call. An own picture is shrunk and kept on that device (browser storage) and is never uploaded.
+
 
 # ADR-18: Accounts with email and password, chosen role at sign-up
 Status: Accepted   Date: 2026-10-21   Deciders: Shurik
@@ -509,6 +511,12 @@ Therapists, especially Russian- and Ukrainian-speaking ones, use hands-on tools 
 - Easier: one place for the session, its tools and its notes; RU/UA therapists get the tools they already use.
 - Harder: the tools' wording is clinical content (review item 19).
 - Revisit: genogram; tools in in-person sessions (on a tablet); a client copy in the client app.
+
+**Update 2026-10-23: no limit, a table that fits, a closer look, words that stay.** Shurik's feedback after a role-play:
+- The client draws **as many cards as they like** (the 1/2/3/5/7 limit is gone; a technical ceiling of 200 only keeps the call's data small).
+- **Everything fits without scrolling**: the face-down spread (10 cards at a time, refilled from the deck) and the cards on the table are sized to the space available, on a computer or a phone. The cameras sit beside the title while a tool is open, so the tool gets the height.
+- **A closer look**: tapping a card on the table opens it large with its own zoom (50–400 %, buttons, slider, Ctrl/⌘+wheel or pinch, arrows for the next card). Each person zooms on their own screen.
+- **Words stay with a card for the whole call**: a card put back in the deck (or a cleared table) gets its words back when drawn again, and every tool keeps what was done in it when the therapist switches tools, closes it or reloads the page. This is kept in the therapist's browser tab only (sessionStorage) and cleared when the call ends or the tab closes; "Start over" empties a tool on purpose. "Shuffle again" now shuffles only the deck; "Clear the table" puts the drawn cards back; each card on the table also has its own "Put back in the deck".
 
 **Update 2026-10-22: six decks, and therapists' own decks.** The cards tool now has a deck picker. Every built-in deck is ours to use:
 | Deck | Cards | Where it comes from |

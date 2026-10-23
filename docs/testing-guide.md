@@ -54,7 +54,9 @@ You need two browsers or devices: one for the **therapist** and one for the **cl
 3. Optional: **Record for notes** (needs consent; it never starts by itself). Try **Pause**, **Resume** and **Finish recording**: the call goes on and the note starts being prepared. Then **End session**.
 4. If the client uses the app, they get an email when you join first ("… is waiting"), and you get one when they join first.
 5. On a computer, either of you clicks **Share screen** and picks a window, a tab or the whole screen. The other person sees it big, with **Full screen**. To share a video's sound, pick a Chrome tab and leave "Share tab audio" on. Phones can watch a shared screen but can't share their own.
-6. After ending, open the one-time link again: it should say the link no longer works.
+6. During the call, open **Clients** (or any other page): the call carries on in a small window in the corner. Use **Back to the call** to return. Recording and an open tool should be just as you left them.
+7. Click **Background** and try **Soft blur**, **Strong blur**, a picture, and **Your picture**. Ask the client what they see.
+8. After ending, open the one-time link again: it should say the link no longer works.
 
 **Tell us:** Was the picture and sound clear? Was it obvious how to join? Was the shared screen readable?
 
@@ -66,7 +68,7 @@ You need two browsers or devices: one for the **therapist** and one for the **cl
 **Tell us:** Was the client's question clear? Is the video and sound good enough to review later?
 
 ## F4. Tools in a video session
-1. In a video session with your client (or a second device using the one-time link), click **Tools** and open each one: **Scale 0–10**, **Wheel of balance**, **Emotion wheel**, **Associative cards**, **Drawing board**. In the cards, try each **Deck**, and draw a picture, then switch to **Words** and draw a word to go with it (set "How many" to 2).
+1. In a video session with your client (or a second device using the one-time link), click **Tools** and open each one: **Scale 0–10**, **Wheel of balance**, **Emotion wheel**, **Associative cards**, **Drawing board**. In the cards, try each **Deck**, and draw a picture, then switch to **Words** and draw a word to go with it. Draw as many cards as you like: all face-down cards and the cards on the table should fit on the screen without scrolling. Tap a card on the table to look closer and zoom in. Write a word under a card, open another tool and come back: the word is still there.
 2. In **Settings → Card decks**, make a deck of your own with a few pictures, then use it in a call.
 3. On the client's side, answer: choose a number, rate the areas, tap feeling words, pick a face-down card and write a word for it, draw a line.
 4. Click **Save to card** after each one, then open the client's page: everything is under **From sessions**.

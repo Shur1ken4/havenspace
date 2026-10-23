@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Check, Shapes, X } from "lucide-react";
+import { Check, RotateCcw, Shapes, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { saveToolResult } from "@/app/(app)/video/tool-actions";
 import { DEFAULT_DECK, deckRefs } from "@/lib/tools/decks";
@@ -95,6 +95,8 @@ export function ToolStage({ tool, role, roomId, otherName, act, set, savedAt, no
   notifySaved?: () => void;
 }) {
   const t = useTranslations("tools");
+  const fresh = useNewTool();
+  const [confirmFresh, setConfirmFresh] = useState(false);
   const Icon = TOOL_ICONS[tool.kind];
   const label = (key: string) => { const [f, w] = key.split("."); return t(`words.${f}.${w}`); };
   const result = role === "therapist" ? resultOf(tool, label) : null;
@@ -142,12 +144,23 @@ export function ToolStage({ tool, role, roomId, otherName, act, set, savedAt, no
                 {saving ? t("saving") : t("save")}
               </Button>
             )}
+            {/* What a tool holds stays for the call; this empties it. Asks once, since it can't be undone. */}
+            {confirmFresh ? (
+              <span className="inline-flex items-center gap-1 text-sm">
+                <Button size="sm" variant="secondary" onClick={() => { set(fresh(tool.kind)); setConfirmFresh(false); }}>{t("startOverYes")}</Button>
+                <Button size="sm" variant="ghost" onClick={() => setConfirmFresh(false)}>{t("startOverNo")}</Button>
+              </span>
+            ) : (
+              <Button size="sm" variant="ghost" onClick={() => setConfirmFresh(true)} title={t("startOverHint")}>
+                <RotateCcw size={15} aria-hidden /> <span className="hidden sm:inline">{t("startOver")}</span><span className="sr-only sm:hidden">{t("startOver")}</span>
+              </Button>
+            )}
             <Button size="sm" variant="ghost" onClick={() => set(null)} aria-label={t("close")}><X size={16} aria-hidden /> <span className="hidden sm:inline">{t("closeShort")}</span></Button>
           </div>
         )}
       </div>
       {error && <p className="border-b border-line bg-attention-soft px-4 py-2 text-sm text-ink" role="alert">{t("saveFailed")}</p>}
-      <div className="min-h-0 flex-1 overflow-auto p-4 sm:p-5">
+      <div className="relative min-h-0 flex-1 overflow-auto p-3 sm:p-4">
         {tool.kind === "scale" && <ScaleTool tool={tool} role={role} act={act} set={set} />}
         {tool.kind === "balance" && <BalanceTool tool={tool} role={role} act={act} set={set} />}
         {tool.kind === "emotions" && <EmotionsTool tool={tool} act={act} />}

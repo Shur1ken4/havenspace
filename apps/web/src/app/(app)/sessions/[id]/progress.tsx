@@ -12,10 +12,14 @@ const MOOD: Record<string, ArchMood> = {
   writing_note: "writing", reflecting: "thinking", timeline: "writing",
 };
 
+/** After this long in the queue, say plainly that processing hasn't started. */
+const SLOW_QUEUE_SECONDS = 5 * 60;
+
 export function Progress({ sessionId, initialStage }: { sessionId: string; initialStage: string | null }) {
   const t = useTranslations("review");
   const router = useRouter();
   const [stage, setStage] = useState(initialStage ?? "queued");
+  const [queuedFor, setQueuedFor] = useState(0);
   useEffect(() => {
     let alive = true;
     const poll = async () => {
@@ -26,6 +30,7 @@ export function Progress({ sessionId, initialStage }: { sessionId: string; initi
         const s = await res.json();
         if (s.status === "ready" || s.status === "failed") { router.refresh(); return; }
         if (s.stage) setStage(s.stage);
+        setQueuedFor(Number(s.queued_seconds ?? 0));
       }
     };
     poll();
@@ -44,6 +49,9 @@ export function Progress({ sessionId, initialStage }: { sessionId: string; initi
       </ol>
       <p className="text-sm text-muted">{t("archWaiting")}</p>
       <p className="text-sm text-muted">{t("progressHint")}</p>
+      {stage === "queued" && queuedFor >= SLOW_QUEUE_SECONDS && (
+        <p className="mx-auto max-w-md rounded-card bg-attention-soft px-4 py-3 text-sm text-ink" role="status">{t("queueSlow")}</p>
+      )}
     </Card>
   );
 }

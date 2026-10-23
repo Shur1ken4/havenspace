@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { apply, newTool, parseMessage, type ToolState } from "../src/lib/tools/model";
+import { apply, fitCards, newTool, parseMessage, type ToolState } from "../src/lib/tools/model";
 import { DECKS, cardView, customRef, deckRefs, isBuiltInRef } from "../src/lib/tools/decks";
 
 // The rules both sides of a call follow for the shared therapy tools (ADR-21).
@@ -29,15 +29,33 @@ describe("therapy tools", () => {
     expect((apply(on, { a: "emotion", word: "joy.grateful", on: false }, "client") as typeof on).picked).toEqual([]);
   });
 
-  it("cards: only real cards, each once, no more than the therapist allows", () => {
+  it("cards: only real cards, each once, as many as the client likes", () => {
     const c = tool("cards");
     const one = apply(c, { a: "draw", id: "02" }, "client") as Extract<ToolState, { kind: "cards" }>;
     expect(one.drawn).toEqual([{ id: "02", note: "" }]);
-    expect(apply(one, { a: "draw", id: "03" }, "client")).toBe(one); // max is 1
-    expect(apply({ ...one, max: 3 }, { a: "draw", id: "02" }, "client")).toEqual({ ...one, max: 3 }); // not twice
+    expect(apply(one, { a: "draw", id: "02" }, "client")).toBe(one); // not twice
+    const all = ["01", "03"].reduce((s, id) => apply(s, { a: "draw", id }, "client"), one as ToolState) as typeof one;
+    expect(all.drawn.map((d) => d.id)).toEqual(["02", "01", "03"]); // no limit
     expect(apply(c, { a: "draw", id: "99" }, "client")).toBe(c);
     expect((apply(one, { a: "note", id: "02", note: "home" }, "client") as typeof one).drawn[0].note).toBe("home");
     expect(apply(one, { a: "note", id: "02", note: "x".repeat(201) }, "client")).toBe(one);
+    expect(apply(one, { a: "note", id: "03", note: "not drawn" }, "client")).toBe(one);
+  });
+
+  it("cards: a card's words stay for the call, even after it goes back to the deck", () => {
+    const one = apply(tool("cards"), { a: "draw", id: "02" }, "client") as Extract<ToolState, { kind: "cards" }>;
+    const noted = apply(one, { a: "note", id: "02", note: "home" }, "therapist") as typeof one;
+    const back = { ...noted, drawn: [] }; // the therapist clears the table
+    expect((apply(back, { a: "draw", id: "02" }, "client") as typeof one).drawn).toEqual([{ id: "02", note: "home" }]);
+  });
+
+  it("cards are sized so the whole spread fits without scrolling", () => {
+    const fit = fitCards(10, 900, 400, { gap: 8 });
+    const rows = Math.ceil(10 / fit.cols);
+    expect(fit.cols * fit.width + (fit.cols - 1) * 8).toBeLessThanOrEqual(900);
+    expect(rows * fit.width * 1.5 + (rows - 1) * 8).toBeLessThanOrEqual(400);
+    expect(fit.width).toBeGreaterThan(60);
+    expect(fitCards(1, 2000, 2000, { max: 220 }).width).toBe(220);
   });
 
   it("decks: built-in and own cards resolve; unknown refs don't", () => {

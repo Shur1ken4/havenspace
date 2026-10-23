@@ -5,6 +5,7 @@ import { AppNav } from "@/components/app/nav";
 import { AccountMenu } from "@/components/account/account-menu";
 import { Arch } from "@/components/arch";
 import { FeedbackWidget } from "@/components/app/feedback-widget";
+import { CallHost } from "@/components/video/call-host";
 import { realDataAllowed, requireTherapist } from "@/lib/session";
 import { withUser } from "@/lib/db";
 
@@ -39,7 +40,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
           </div>
         </div>
       </header>
-      <main id="main" className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">{children}</main>
+      <main id="main" className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10"><CallHost>{children}</CallHost></main>
       <FeedbackWidget />
     </div>
   );

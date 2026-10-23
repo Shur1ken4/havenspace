@@ -20,12 +20,15 @@ export type ToolState =
   | { kind: "balance"; areas: { label: string; value: number | null }[] }
   | { kind: "emotions"; picked: string[] }
   | {
-      kind: "cards"; mode: "blind" | "open"; max: number;
+      kind: "cards"; mode: "blind" | "open";
       /** The deck cards are drawn from now ("pathways", or "u/<uuid>" for the therapist's own). */
       deck: string;
       /** That deck's cards, shuffled (refs, see decks.ts). Drawn cards stay when the deck changes. */
       order: string[];
+      /** Cards on the table, as many as the client likes, each with its words. */
       drawn: { id: string; note: string }[];
+      /** Words written for cards during this call. A card put back in the deck and drawn again gets them back. */
+      memo?: Record<string, string>;
       /** Short-lived keys that let the other person see the therapist's own deck images. */
       keys?: Record<string, string>;
     }
@@ -72,8 +75,10 @@ export const EMOTION_WORDS = new Set<string>(EMOTION_FAMILIES.flatMap((f) => f.w
 
 /** Questions the therapist may ask about a card (shown only to the therapist). */
 export const CARD_PROMPTS = ["see", "first", "feel", "where", "before", "name", "link"] as const;
-/** How many cards the client may draw at once. */
-export const CARD_COUNTS = [1, 2, 3, 5, 7] as const;
+/** Face-down cards laid out at once to choose from (the rest wait in the deck). */
+export const CARD_SPREAD = 10;
+/** A technical ceiling only, so a call's shared state stays small; there is no limit in practice. */
+const MAX_DRAWN = 200;
 
 export const BOARD_COLORS = ["#2F3A35", "#4A6D5B", "#527486", "#7A5C9E", "#A3573F", "#C98A5B"] as const;
 export const BOARD_SIZES = [3, 6, 12] as const;
@@ -96,11 +101,15 @@ export function apply(state: ToolState, act: ToolAction, by: "therapist" | "clie
       if (state.kind !== "emotions" || !EMOTION_WORDS.has(act.word)) return state;
       return { ...state, picked: act.on ? [...new Set([...state.picked, act.word])] : state.picked.filter((w) => w !== act.word) };
     case "draw":
-      if (state.kind !== "cards" || !state.order.includes(act.id) || state.drawn.length >= state.max || state.drawn.some((d) => d.id === act.id)) return state;
-      return { ...state, drawn: [...state.drawn, { id: act.id, note: "" }] };
+      if (state.kind !== "cards" || !state.order.includes(act.id) || state.drawn.length >= MAX_DRAWN || state.drawn.some((d) => d.id === act.id)) return state;
+      return { ...state, drawn: [...state.drawn, { id: act.id, note: state.memo?.[act.id] ?? "" }] };
     case "note":
-      if (state.kind !== "cards" || typeof act.note !== "string" || act.note.length > 200) return state;
-      return { ...state, drawn: state.drawn.map((d) => (d.id === act.id ? { ...d, note: act.note } : d)) };
+      if (state.kind !== "cards" || typeof act.note !== "string" || act.note.length > 200 || !state.drawn.some((d) => d.id === act.id)) return state;
+      return {
+        ...state,
+        drawn: state.drawn.map((d) => (d.id === act.id ? { ...d, note: act.note } : d)),
+        memo: { ...state.memo, [act.id]: act.note },
+      };
     case "stroke": {
       const s = act.stroke;
       if (state.kind !== "board" || state.strokes.length >= MAX_STROKES || !s || typeof s.id !== "string" || s.id.length > 40) return state;
@@ -129,7 +138,7 @@ export function newTool(kind: ToolKind, opts: { deck: string; deckIds: string[];
     case "emotions":
       return { kind, picked: [] };
     case "cards":
-      return { kind, mode: "blind", max: 1, deck: opts.deck, order: shuffle(opts.deckIds), drawn: [] };
+      return { kind, mode: "blind", deck: opts.deck, order: shuffle(opts.deckIds), drawn: [] };
     case "board":
       return { kind, strokes: [] };
   }
@@ -142,6 +151,22 @@ export function shuffle<T>(list: T[]): T[] {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+/**
+ * The largest card width at which `n` cards (2:3, with `extra` px under each, e.g. a
+ * note field) fit in a w×h box without scrolling, and how many columns that takes.
+ */
+export function fitCards(n: number, w: number, h: number, { gap = 8, extra = 0, max = 220 } = {}): { cols: number; width: number } {
+  let best = { cols: 1, width: 0 };
+  for (let cols = 1; cols <= Math.max(1, n); cols++) {
+    const rows = Math.ceil(n / cols);
+    const byWidth = (w - gap * (cols - 1)) / cols;
+    const byHeight = ((h - gap * (rows - 1)) / rows - extra) / 1.5;
+    const width = Math.floor(Math.min(byWidth, byHeight, max));
+    if (width > best.width) best = { cols, width };
+  }
+  return best;
 }
 
 /** A message received from the other side, checked for shape before use. */

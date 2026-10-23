@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Third-party files copied from node_modules (scripts/copy-vendor.mjs).
+    "public/vendor/**",
   ]),
 ]);
 

@@ -8,6 +8,7 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { currentTheme } from "@/lib/theme";
 import { withUser } from "@/lib/db";
 import { switchView } from "@/app/view/actions";
+import { CallHost } from "@/components/video/call-host";
 
 // The client app (ADR-14): deliberately small and separate from the therapist's workspace.
 export default async function ClientLayout({ children }: LayoutProps<"/me">) {
@@ -43,7 +44,7 @@ export default async function ClientLayout({ children }: LayoutProps<"/me">) {
           </p>
         </form>
       )}
-      <main id="main" className="mx-auto max-w-3xl px-4 py-8 sm:px-6">{children}</main>
+      <main id="main" className="mx-auto max-w-3xl px-4 py-8 sm:px-6"><CallHost>{children}</CallHost></main>
     </div>
   );
 }

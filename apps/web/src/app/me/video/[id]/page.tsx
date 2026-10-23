@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { withUser } from "@/lib/db";
 import { isUuid } from "@/lib/ids";
 import { requireClient } from "@/lib/session";
-import { VideoRoom } from "@/components/video/video-room";
+import { CallPage } from "@/components/video/call-host";
 
 export async function generateMetadata() {
   return { title: (await getTranslations("video"))("title") };
@@ -19,5 +19,5 @@ export default async function ClientVideoPage({ params }: PageProps<"/me/video/[
   }));
   const t = await getTranslations("video");
   // A closed room still renders: the join step then says the session has ended.
-  return <VideoRoom key={id} roomId={id} role="client" otherName={data.therapist ?? t("yourTherapist")} />;
+  return <CallPage path={`/me/video/${id}`} roomId={id} role="client" otherName={data.therapist ?? t("yourTherapist")} />;
 }

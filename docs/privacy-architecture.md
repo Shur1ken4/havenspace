@@ -101,3 +101,7 @@ Therapist reviews, edits, approves ◀── Web app ◀── Postgres
 - Recorded in the therapist's browser only after the client agrees in the call; the file goes straight to the therapist's computer and is never sent to HavenSpace. The therapist is the controller of that file.
 - We keep only audit entries (asked, agreed or declined, started, stopped), with no content.
 
+## Video call additions (2026-10-23, ADR-17 and ADR-21 updates)
+- **Backgrounds**: blur or a picture behind a person's own camera is made in their browser (MediaPipe, served from our site). No video is sent anywhere for this. A person's own background picture is shrunk and kept in that browser's storage on their device; it is never uploaded.
+- **What a tool holds during a call** (cards and their words, a drawing, a scale answer) is kept in the therapist's browser tab (sessionStorage) so it survives switching tools or reloading. It is removed when the therapist ends the call or closes the tab, and is never sent to HavenSpace unless the therapist clicks **Save to card**.
+- **Moving around the app during a call** keeps the call in the same browser tab; nothing new is stored.
