@@ -1510,7 +1510,13 @@
     "startOver": "Start over",
     "startOverHint": "Empties this tool. What you did stays until the call ends otherwise.",
     "startOverYes": "Yes, start over",
-    "startOverNo": "Keep it"
+    "startOverNo": "Keep it",
+    "block": "Block",
+    "blockAll": "All blocks",
+    "block_1": "Where things are now",
+    "block_2": "What lies ahead",
+    "block_3": "What I'm striving for",
+    "block_4": "Resources and obstacles"
   },
   "messages": {
     "title": "Messages",
@@ -1596,6 +1602,12 @@
     "deleteDeck": "Delete deck",
     "deleteDeckConfirm": "Delete deck and its cards",
     "cancel": "Cancel",
-    "deleteCard": "Remove this card"
+    "deleteCard": "Remove this card",
+    "name_work": "Pathways: Work & career",
+    "name_family": "Pathways: Family",
+    "about_work": "24 cards in four blocks: where things are now, what lies ahead, what I'm striving for, and resources and obstacles. For questions about changing jobs, burnout, goals and balance. Each card comes with a question for you.",
+    "about_family": "24 cards for family and couple relationships: closeness and distance, roles, conflict, generations and care. The figures have no faces, so the client decides who is who. Four blocks, and each card comes with a question for you.",
+    "credit_work": "Created for HavenSpace by our Clinical Lead. Illustrations and questions © HavenSpace.",
+    "credit_family": "Created for HavenSpace by our Clinical Lead. Illustrations and questions © HavenSpace."
   }
 }

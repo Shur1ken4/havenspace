@@ -23,6 +23,8 @@ export type ToolState =
       kind: "cards"; mode: "blind" | "open";
       /** The deck cards are drawn from now ("pathways", or "u/<uuid>" for the therapist's own). */
       deck: string;
+      /** In a deck split into blocks: the block laid out (1–4); none means the whole deck. */
+      block?: number;
       /** That deck's cards, shuffled (refs, see decks.ts). Drawn cards stay when the deck changes. */
       order: string[];
       /** Cards on the table, as many as the client likes, each with its words. */

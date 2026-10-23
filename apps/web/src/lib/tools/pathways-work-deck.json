@@ -1,0 +1,338 @@
+[
+ {
+  "id": "01",
+  "w": 640,
+  "h": 960,
+  "block": 1,
+  "title": {
+   "ru": "Рабочий стол",
+   "en": "Work desk"
+  },
+  "question": {
+   "ru": "Как выглядит ваш рабочий день сейчас? Чего на этом столе слишком много?",
+   "en": "What does your working day look like now? What is there too much of on this desk?"
+  }
+ },
+ {
+  "id": "02",
+  "w": 640,
+  "h": 960,
+  "block": 1,
+  "title": {
+   "ru": "Беличье колесо",
+   "en": "Hamster wheel"
+  },
+  "question": {
+   "ru": "Где вы бежите по кругу? Что будет, если остановиться?",
+   "en": "Where are you running in circles? What would happen if you stopped?"
+  }
+ },
+ {
+  "id": "03",
+  "w": 640,
+  "h": 960,
+  "block": 1,
+  "title": {
+   "ru": "Сгоревшие спички",
+   "en": "Burnt matches"
+  },
+  "question": {
+   "ru": "Что вас «выжгло»? Что ещё может загореться?",
+   "en": "What has burnt you out? What could still catch fire?"
+  }
+ },
+ {
+  "id": "04",
+  "w": 640,
+  "h": 960,
+  "block": 1,
+  "title": {
+   "ru": "Шахматы",
+   "en": "Chess"
+  },
+  "question": {
+   "ru": "Кто вы в этой игре — пешка или король? Какой ваш следующий ход?",
+   "en": "Who are you in this game — a pawn or a king? What is your next move?"
+  }
+ },
+ {
+  "id": "05",
+  "w": 640,
+  "h": 960,
+  "block": 1,
+  "title": {
+   "ru": "Рюкзак с камнями",
+   "en": "Backpack of stones"
+  },
+  "question": {
+   "ru": "Что вы несёте на себе? Какой камень можно выложить?",
+   "en": "What are you carrying? Which stone could you put down?"
+  }
+ },
+ {
+  "id": "06",
+  "w": 640,
+  "h": 960,
+  "block": 1,
+  "title": {
+   "ru": "Аквариум",
+   "en": "Aquarium"
+  },
+  "question": {
+   "ru": "Тесно ли вам там, где вы сейчас? О каком «море» вы мечтаете?",
+   "en": "Does it feel cramped where you are now? What “sea” do you dream of?"
+  }
+ },
+ {
+  "id": "07",
+  "w": 640,
+  "h": 960,
+  "block": 2,
+  "title": {
+   "ru": "Лестница к двери",
+   "en": "Stairs to a door"
+  },
+  "question": {
+   "ru": "Куда ведёт эта лестница? На какой ступеньке вы сейчас?",
+   "en": "Where do these stairs lead? Which step are you on now?"
+  }
+ },
+ {
+  "id": "08",
+  "w": 640,
+  "h": 960,
+  "block": 2,
+  "title": {
+   "ru": "Поезд на станции",
+   "en": "Train at the station"
+  },
+  "question": {
+   "ru": "Это ваш поезд? Вы успеваете — или он уже уходит?",
+   "en": "Is this your train? Will you make it — or is it already leaving?"
+  }
+ },
+ {
+  "id": "09",
+  "w": 640,
+  "h": 960,
+  "block": 2,
+  "title": {
+   "ru": "Компас",
+   "en": "Compass"
+  },
+  "question": {
+   "ru": "Куда указывает ваш внутренний компас? Что для вас «север»?",
+   "en": "Where does your inner compass point? What is “north” for you?"
+  }
+ },
+ {
+  "id": "10",
+  "w": 640,
+  "h": 960,
+  "block": 2,
+  "title": {
+   "ru": "Чистый лист",
+   "en": "Blank page"
+  },
+  "question": {
+   "ru": "С чего бы вы начали с чистого листа? Что напишете первым?",
+   "en": "If you could start with a blank page, where would you begin? What would you write first?"
+  }
+ },
+ {
+  "id": "11",
+  "w": 640,
+  "h": 960,
+  "block": 2,
+  "title": {
+   "ru": "Три двери",
+   "en": "Three doors"
+  },
+  "question": {
+   "ru": "Какую дверь вы откроете? Что может ждать за каждой?",
+   "en": "Which door will you open? What might be waiting behind each one?"
+  }
+ },
+ {
+  "id": "12",
+  "w": 640,
+  "h": 960,
+  "block": 2,
+  "title": {
+   "ru": "Карта с маршрутом",
+   "en": "Map with a route"
+  },
+  "question": {
+   "ru": "Какой маршрут вы прокладываете? Что отмечено крестиком?",
+   "en": "What route are you planning? What is marked with an X?"
+  }
+ },
+ {
+  "id": "13",
+  "w": 640,
+  "h": 960,
+  "block": 3,
+  "title": {
+   "ru": "Ракета",
+   "en": "Rocket"
+  },
+  "question": {
+   "ru": "Куда вы хотите взлететь? Что нужно для старта?",
+   "en": "Where do you want to soar? What do you need for lift-off?"
+  }
+ },
+ {
+  "id": "14",
+  "w": 640,
+  "h": 960,
+  "block": 3,
+  "title": {
+   "ru": "Мишень",
+   "en": "Target"
+  },
+  "question": {
+   "ru": "В какую цель вы целитесь? Насколько вы близки к «яблочку»?",
+   "en": "What are you aiming for? How close are you to the bullseye?"
+  }
+ },
+ {
+  "id": "15",
+  "w": 640,
+  "h": 960,
+  "block": 3,
+  "title": {
+   "ru": "Кубок",
+   "en": "Trophy"
+  },
+  "question": {
+   "ru": "Какую награду вы хотите получить? Кто должен её вручить?",
+   "en": "What recognition would you like to receive? Who should present it to you?"
+  }
+ },
+ {
+  "id": "16",
+  "w": 640,
+  "h": 960,
+  "block": 3,
+  "title": {
+   "ru": "Недостроенный мост",
+   "en": "Unfinished bridge"
+  },
+  "question": {
+   "ru": "Что уже построено, а что нет? Чего не хватает, чтобы перейти?",
+   "en": "What is already built, and what isn't? What is still missing before you can cross?"
+  }
+ },
+ {
+  "id": "17",
+  "w": 640,
+  "h": 960,
+  "block": 3,
+  "title": {
+   "ru": "Крылья на вешалке",
+   "en": "Wings on a hook"
+  },
+  "question": {
+   "ru": "Что могло бы дать вам крылья? Почему они пока висят на крючке?",
+   "en": "What could give you wings? Why are they still hanging on the hook?"
+  }
+ },
+ {
+  "id": "18",
+  "w": 640,
+  "h": 960,
+  "block": 3,
+  "title": {
+   "ru": "Подзорная труба",
+   "en": "Spyglass"
+  },
+  "question": {
+   "ru": "Что вы видите вдали? Насколько далека ваша звезда?",
+   "en": "What do you see in the distance? How far away is your star?"
+  }
+ },
+ {
+  "id": "19",
+  "w": 640,
+  "h": 960,
+  "block": 4,
+  "title": {
+   "ru": "Стеклянный потолок",
+   "en": "Glass ceiling"
+  },
+  "question": {
+   "ru": "Что ограничивает ваш рост? Это стекло можно разбить — или обойти?",
+   "en": "What is limiting your growth? Can this glass be broken — or is there a way around it?"
+  }
+ },
+ {
+  "id": "20",
+  "w": 640,
+  "h": 960,
+  "block": 4,
+  "title": {
+   "ru": "Ящик с инструментами",
+   "en": "Toolbox"
+  },
+  "question": {
+   "ru": "Какие инструменты у вас уже есть? Какого не хватает?",
+   "en": "Which tools do you already have? Which one is missing?"
+  }
+ },
+ {
+  "id": "21",
+  "w": 640,
+  "h": 960,
+  "block": 4,
+  "title": {
+   "ru": "Батарейка",
+   "en": "Battery"
+  },
+  "question": {
+   "ru": "Насколько вы заряжены? Что вас заряжает, а что разряжает?",
+   "en": "How charged are you? What charges you, and what drains you?"
+  }
+ },
+ {
+  "id": "22",
+  "w": 640,
+  "h": 960,
+  "block": 4,
+  "title": {
+   "ru": "Монеты в банке",
+   "en": "Coins in a jar"
+  },
+  "question": {
+   "ru": "Чем для вас ценна работа — кроме денег? Сколько будет «достаточно»?",
+   "en": "What makes work valuable to you — apart from money? How much would be “enough”?"
+  }
+ },
+ {
+  "id": "23",
+  "w": 640,
+  "h": 960,
+  "block": 4,
+  "title": {
+   "ru": "Шестерёнки",
+   "en": "Gears"
+  },
+  "question": {
+   "ru": "Какое вы колесо в этом механизме? Кто вращается вместе с вами?",
+   "en": "Which cog are you in this machine? Who turns together with you?"
+  }
+ },
+ {
+  "id": "24",
+  "w": 640,
+  "h": 960,
+  "block": 4,
+  "title": {
+   "ru": "Гамак",
+   "en": "Hammock"
+  },
+  "question": {
+   "ru": "Когда вы последний раз отдыхали по-настоящему? Какой для вас баланс работы и жизни?",
+   "en": "When did you last truly rest? What does a balance between work and life look like for you?"
+  }
+ }
+]

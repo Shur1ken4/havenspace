@@ -69,7 +69,9 @@ describe("therapy tools", () => {
     expect(cardView(own, { "11111111-2222-3333-4444-555555555555": "k" })).toMatchObject({ src: expect.stringContaining("?k=k") });
     expect(isBuiltInRef(own)).toBe(false);
     for (const d of DECKS) expect(deckRefs(d.id).every((r) => cardView(r) !== null)).toBe(true);
-    expect(DECKS.map((d) => d.count)).toEqual([48, 56, 48, 40, 60, 36]);
+    expect(DECKS.map((d) => d.count)).toEqual([48, 24, 24, 56, 48, 40, 60, 36]);
+    expect(deckRefs("work", 2)).toEqual(["work/07", "work/08", "work/09", "work/10", "work/11", "work/12"]);
+    expect(cardView("family/24")).toMatchObject({ src: "/cards/pathways-family/24.jpg", block: 4 });
   });
 
   it("the board takes well-formed strokes and undoes only your own", () => {

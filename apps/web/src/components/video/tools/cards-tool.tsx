@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ChevronLeft, ChevronRight, Maximize, MessageCircleQuestion, Minus, Plus, Shuffle, Undo2, X, ZoomIn } from "lucide-react";
-import { DECKS, cardView, deckRefs, isBuiltInDeck, pick } from "@/lib/tools/decks";
+import { DECKS, DECK_BLOCKS, cardView, deckRefs, hasBlocks, isBuiltInDeck, pick } from "@/lib/tools/decks";
 import { CARD_PROMPTS, CARD_SPREAD, fitCards, shuffle, type ToolAction, type ToolState } from "@/lib/tools/model";
 import { LogoMark } from "@/components/illustrations";
 import { CardFace } from "@/components/cards/card-face";
@@ -84,7 +84,11 @@ function DrawnCard({ id, note, width, keys, role, onNote, onZoom, onReturn }: {
         )}
       </div>
       {/* The card's own question, for the therapist only (Pathways and Inner resources). */}
-      {role === "therapist" && card.question && <figcaption className="line-clamp-2 text-xs italic leading-snug text-muted">{pick(card.question, locale)}</figcaption>}
+      {role === "therapist" && card.question && (
+        <figcaption className="line-clamp-2 text-xs italic leading-snug text-muted" title={pick(card.question, locale)}>
+          {card.kind === "image" && card.block ? <span className="not-italic">{t(`block_${card.block}`)} · </span> : null}{pick(card.question, locale)}
+        </figcaption>
+      )}
       <NoteField note={note} onNote={onNote} />
     </figure>
   );
@@ -174,7 +178,11 @@ function CardZoom({ tool, index, role, onIndex, onClose, act }: {
           <NoteField note={d.note} onNote={(note) => act({ a: "note", id: d.id, note })} />
         </div>
       </div>
-      {role === "therapist" && card.question && <p className="text-sm italic text-muted">{pick(card.question, locale)}</p>}
+      {role === "therapist" && card.question && (
+        <p className="text-sm italic text-muted">
+          {card.kind === "image" && card.block ? <span className="not-italic">{t(`block_${card.block}`)} · </span> : null}{pick(card.question, locale)}
+        </p>
+      )}
     </div>
   );
 }
@@ -193,9 +201,9 @@ export function CardsTool({ tool, role, act, set }: { tool: Cards; role: Role; a
   // A drawn card went back to the deck while it was open large.
   const zoomIndex = zoomed !== null && zoomed < tool.drawn.length ? zoomed : null;
 
-  /** Cards of a deck, as refs; the therapist's own decks also hand over their key. */
-  function deckCards(id: string): { refs: string[]; key?: string } {
-    if (isBuiltInDeck(id)) return { refs: deckRefs(id) };
+  /** Cards of a deck (or one of its blocks), as refs; the therapist's own decks also hand over their key. */
+  function deckCards(id: string, block?: number): { refs: string[]; key?: string } {
+    if (isBuiltInDeck(id)) return { refs: deckRefs(id, block) };
     const own = mine.find((d) => `u/${d.id}` === id);
     return { refs: own?.refs ?? [], key: own?.key };
   }
@@ -203,8 +211,10 @@ export function CardsTool({ tool, role, act, set }: { tool: Cards; role: Role; a
     const { refs, key } = deckCards(id);
     const keys = key ? { ...tool.keys, [id.slice(2)]: key } : tool.keys;
     // Drawn cards stay, so a picture and a word can be drawn together.
-    set({ ...tool, deck: id, order: shuffle(refs), keys });
+    set({ ...tool, deck: id, block: undefined, order: shuffle(refs), keys });
   }
+  /** Themed decks: lay out one block at a time, or the whole deck. */
+  const chooseBlock = (block?: number) => set({ ...tool, block, order: shuffle(deckCards(tool.deck, block).refs) });
   // The words stay in `memo`, so a card put back and drawn again keeps them.
   const putBack = (id: string) => set({ ...tool, drawn: tool.drawn.filter((d) => d.id !== id) });
 
@@ -233,6 +243,16 @@ export function CardsTool({ tool, role, act, set }: { tool: Cards; role: Role; a
               )}
             </select>
           </label>
+          {hasBlocks(tool.deck) && (
+            <label className="flex min-h-10 items-center gap-2 rounded-control border border-line px-2">
+              <span className="text-muted">{t("block")}</span>
+              <select value={tool.block ?? ""} onChange={(e) => chooseBlock(e.target.value ? Number(e.target.value) : undefined)}
+                className="min-h-9 max-w-[52vw] bg-transparent font-medium text-ink sm:max-w-none">
+                <option value="">{t("blockAll")}</option>
+                {DECK_BLOCKS.map((b) => <option key={b} value={b}>{b}. {t(`block_${b}`)}</option>)}
+              </select>
+            </label>
+          )}
           <div role="group" aria-label={t("kind_cards")} className="flex rounded-control border border-line p-0.5">
             {(["blind", "open"] as const).map((m) => (
               <button key={m} type="button" aria-pressed={tool.mode === m} onClick={() => set({ ...tool, mode: m })}
@@ -241,7 +261,7 @@ export function CardsTool({ tool, role, act, set }: { tool: Cards; role: Role; a
               </button>
             ))}
           </div>
-          <button type="button" onClick={() => set({ ...tool, order: shuffle(deckCards(tool.deck).refs) })}
+          <button type="button" onClick={() => set({ ...tool, order: shuffle(deckCards(tool.deck, tool.block).refs) })}
             className="inline-flex min-h-9 items-center gap-1.5 rounded-control border border-line px-3 text-muted hover:text-ink">
             <Shuffle size={15} aria-hidden /> {t("reshuffle")}
           </button>

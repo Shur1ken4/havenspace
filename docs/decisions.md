@@ -524,6 +524,8 @@ Therapists, especially Russian- and Ukrainian-speaking ones, use hands-on tools 
 | Deck | Cards | Where it comes from |
 |---|---|---|
 | Pathways / «Тропинки» | 48 | Illustrations and questions made for HavenSpace by our Clinical Lead (each card has a question shown to the therapist only) |
+| Pathways: Work & career / «Тропинки: Работа и карьера» (added 2026-10-23) | 24 | By our Clinical Lead, in four blocks of six: where things are now, what lies ahead, what I'm striving for, resources and obstacles. The therapist can lay out one block at a time |
+| Pathways: Family / «Тропинки: Семья» (added 2026-10-23) | 24 | By our Clinical Lead; figures without faces; same four blocks |
 | Paintings / «Картины» | 56 | Public domain (CC0), Cleveland Museum of Art |
 | Faces / «Лица» | 48 | Public-domain portraits (CC0), Cleveland Museum of Art; no religious scenes, nudity or violence |
 | Colours & shapes / «Цвета и формы» | 40 | Our own generated artwork (`scripts/decks/abstract.py`) |

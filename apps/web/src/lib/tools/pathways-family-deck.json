@@ -1,0 +1,338 @@
+[
+ {
+  "id": "01",
+  "w": 640,
+  "h": 960,
+  "block": 1,
+  "title": {
+   "ru": "Общий стол",
+   "en": "Family table"
+  },
+  "question": {
+   "ru": "Кто сидит за вашим семейным столом? Чьё место пустует?",
+   "en": "Who sits at your family table? Whose seat is empty?"
+  }
+ },
+ {
+  "id": "02",
+  "w": 640,
+  "h": 960,
+  "block": 1,
+  "title": {
+   "ru": "Две чашки",
+   "en": "Two cups"
+  },
+  "question": {
+   "ru": "Что сейчас между этими двумя? О чём они молчат?",
+   "en": "What is happening between these two right now? What are they keeping silent about?"
+  }
+ },
+ {
+  "id": "03",
+  "w": 640,
+  "h": 960,
+  "block": 1,
+  "title": {
+   "ru": "Семейное дерево",
+   "en": "Family tree"
+  },
+  "question": {
+   "ru": "Кто есть на вашем семейном дереве? Где на нём вы?",
+   "en": "Who is on your family tree? Where are you on it?"
+  }
+ },
+ {
+  "id": "04",
+  "w": 640,
+  "h": 960,
+  "block": 1,
+  "title": {
+   "ru": "Обувь у порога",
+   "en": "Shoes by the door"
+  },
+  "question": {
+   "ru": "Кто живёт в этом доме? Кто пришёл, а кто собирается уйти?",
+   "en": "Who lives in this house? Who has arrived, and who is about to leave?"
+  }
+ },
+ {
+  "id": "05",
+  "w": 640,
+  "h": 960,
+  "block": 1,
+  "title": {
+   "ru": "Две лодки",
+   "en": "Two boats"
+  },
+  "question": {
+   "ru": "Что связывает этих двоих? Насколько крепка эта верёвка?",
+   "en": "What connects these two? How strong is this rope?"
+  }
+ },
+ {
+  "id": "06",
+  "w": 640,
+  "h": 960,
+  "block": 1,
+  "title": {
+   "ru": "Пазл",
+   "en": "Puzzle"
+  },
+  "question": {
+   "ru": "Что у вас не сходится? Что поможет найти общее?",
+   "en": "What doesn't fit together for you? What could help you find common ground?"
+  }
+ },
+ {
+  "id": "07",
+  "w": 640,
+  "h": 960,
+  "block": 2,
+  "title": {
+   "ru": "Гроза над домом",
+   "en": "Storm over the house"
+  },
+  "question": {
+   "ru": "Что сейчас происходит в этом доме? Как его жители переживают грозу?",
+   "en": "What is happening in this house right now? How are the people inside getting through the storm?"
+  }
+ },
+ {
+  "id": "08",
+  "w": 640,
+  "h": 960,
+  "block": 2,
+  "title": {
+   "ru": "Стена между креслами",
+   "en": "Wall between armchairs"
+  },
+  "question": {
+   "ru": "Что разделяет этих людей? Хотят ли они друг друга услышать?",
+   "en": "What separates these people? Do they want to hear each other?"
+  }
+ },
+ {
+  "id": "09",
+  "w": 640,
+  "h": 960,
+  "block": 2,
+  "title": {
+   "ru": "Птицы на проводе",
+   "en": "Birds on a wire"
+  },
+  "question": {
+   "ru": "Кто из этих птиц — вы? Почему одна сидит отдельно?",
+   "en": "Which of these birds are you? Why is one sitting apart?"
+  }
+ },
+ {
+  "id": "10",
+  "w": 640,
+  "h": 960,
+  "block": 2,
+  "title": {
+   "ru": "Очаг",
+   "en": "Hearth"
+  },
+  "question": {
+   "ru": "Что согревает вашу семью? Кто поддерживает этот огонь?",
+   "en": "What keeps your family warm? Who keeps this fire burning?"
+  }
+ },
+ {
+  "id": "11",
+  "w": 640,
+  "h": 960,
+  "block": 2,
+  "title": {
+   "ru": "Склеенная чашка",
+   "en": "Mended cup"
+  },
+  "question": {
+   "ru": "Что в отношениях было разбито? Что помогло склеить?",
+   "en": "What was broken in the relationship? What helped to mend it?"
+  }
+ },
+ {
+  "id": "12",
+  "w": 640,
+  "h": 960,
+  "block": 2,
+  "title": {
+   "ru": "Качели-балансир",
+   "en": "Seesaw"
+  },
+  "question": {
+   "ru": "Кто в вашей семье «перевешивает»? Как найти равновесие?",
+   "en": "Who tips the scales in your family? How could balance be found?"
+  }
+ },
+ {
+  "id": "13",
+  "w": 640,
+  "h": 960,
+  "block": 3,
+  "title": {
+   "ru": "Матрёшки",
+   "en": "Nesting dolls"
+  },
+  "question": {
+   "ru": "Что передаётся в вашей семье из поколения в поколение?",
+   "en": "What has been passed down in your family from generation to generation?"
+  }
+ },
+ {
+  "id": "14",
+  "w": 640,
+  "h": 960,
+  "block": 3,
+  "title": {
+   "ru": "Узел",
+   "en": "Knot"
+  },
+  "question": {
+   "ru": "Какой узел нужно развязать? А какой — завязать крепче?",
+   "en": "Which knot needs to be untied? And which one tied tighter?"
+  }
+ },
+ {
+  "id": "15",
+  "w": 640,
+  "h": 960,
+  "block": 3,
+  "title": {
+   "ru": "Фотоальбом",
+   "en": "Photo album"
+  },
+  "question": {
+   "ru": "Какое семейное воспоминание самое тёплое? Какой фотографии не хватает?",
+   "en": "What is your warmest family memory? Which photo is missing?"
+  }
+ },
+ {
+  "id": "16",
+  "w": 640,
+  "h": 960,
+  "block": 3,
+  "title": {
+   "ru": "Плед на диване",
+   "en": "Blanket on the sofa"
+  },
+  "question": {
+   "ru": "Где в вашей семье тепло и уютно? Кто создаёт этот уют?",
+   "en": "Where is it warm and cosy in your family? Who makes it that way?"
+  }
+ },
+ {
+  "id": "17",
+  "w": 640,
+  "h": 960,
+  "block": 3,
+  "title": {
+   "ru": "Записка на двери",
+   "en": "Note on the door"
+  },
+  "question": {
+   "ru": "Что написано в записке? Кто за дверью, а кто снаружи?",
+   "en": "What does the note say? Who is inside, and who is outside the door?"
+  }
+ },
+ {
+  "id": "18",
+  "w": 640,
+  "h": 960,
+  "block": 3,
+  "title": {
+   "ru": "Сад",
+   "en": "Garden"
+  },
+  "question": {
+   "ru": "О ком в семье вы заботитесь? Кому сейчас не хватает внимания?",
+   "en": "Whom in your family do you take care of? Who isn't getting enough attention right now?"
+  }
+ },
+ {
+  "id": "19",
+  "w": 640,
+  "h": 960,
+  "block": 4,
+  "title": {
+   "ru": "Свет в окнах",
+   "en": "Light in the windows"
+  },
+  "question": {
+   "ru": "Что происходит за каждым окном? Где светлее всего?",
+   "en": "What is happening behind each window? Where is it brightest?"
+  }
+ },
+ {
+  "id": "20",
+  "w": 640,
+  "h": 960,
+  "block": 4,
+  "title": {
+   "ru": "Тандем",
+   "en": "Tandem"
+  },
+  "question": {
+   "ru": "Кто ведёт, а кто едет сзади? Куда вы едете вместе?",
+   "en": "Who steers, and who rides behind? Where are you going together?"
+  }
+ },
+ {
+  "id": "21",
+  "w": 640,
+  "h": 960,
+  "block": 4,
+  "title": {
+   "ru": "Ключи на крючках",
+   "en": "Keys on hooks"
+  },
+  "question": {
+   "ru": "Чей ключ пропал? У кого есть доступ в ваш дом и к вашему сердцу?",
+   "en": "Whose key has gone missing? Who has access to your home — and to your heart?"
+  }
+ },
+ {
+  "id": "22",
+  "w": 640,
+  "h": 960,
+  "block": 4,
+  "title": {
+   "ru": "Навстречу",
+   "en": "Towards each other"
+  },
+  "question": {
+   "ru": "Кто тянется навстречу? Что мешает дотянуться?",
+   "en": "Who is reaching out? What keeps them from reaching each other?"
+  }
+ },
+ {
+  "id": "23",
+  "w": 640,
+  "h": 960,
+  "block": 4,
+  "title": {
+   "ru": "Пустое гнездо",
+   "en": "Empty nest"
+  },
+  "question": {
+   "ru": "Кто вылетел из гнезда — или собирается? Что остаётся тем, кто остаётся?",
+   "en": "Who has flown the nest — or is about to? What remains for those who stay?"
+  }
+ },
+ {
+  "id": "24",
+  "w": 640,
+  "h": 960,
+  "block": 4,
+  "title": {
+   "ru": "Зонт на двоих",
+   "en": "Umbrella for two"
+  },
+  "question": {
+   "ru": "Кто укрывает вас в непогоду? Кого укрываете вы?",
+   "en": "Who shelters you in bad weather? Whom do you shelter?"
+  }
+ }
+]

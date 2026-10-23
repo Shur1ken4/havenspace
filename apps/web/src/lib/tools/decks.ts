@@ -1,5 +1,6 @@
 // Card decks for associative card work (ADR-21). Every built-in deck is ours to use:
-//  • Pathways («Тропинки»): illustrations and questions made by our Clinical Lead for HavenSpace.
+//  • Pathways («Тропинки»): illustrations and questions made by our Clinical Lead for HavenSpace,
+//    plus two themed sets of 24 in four blocks of six: Work & career, and Family.
 //  • Paintings and Faces: works in the public domain (CC0), Cleveland Museum of Art Open Access.
 //  • Colours & shapes: our own generated artwork (scripts/decks/abstract.py).
 //  • Words and Inner resources: our own wording (text-decks.ts).
@@ -11,21 +12,40 @@
 import art from "./art-deck.json";
 import faces from "./faces-deck.json";
 import pathways from "./pathways-deck.json";
+import pathwaysWork from "./pathways-work-deck.json";
+import pathwaysFamily from "./pathways-family-deck.json";
 import { RESOURCE_CARDS, WORD_CARDS } from "./text-decks";
 
 export type L = { en: string; ru: string };
-export type BuiltInDeckId = "pathways" | "art" | "faces" | "abstract" | "words" | "resources";
+export type BuiltInDeckId = "pathways" | "work" | "family" | "art" | "faces" | "abstract" | "words" | "resources";
+
+/** The four blocks of the themed Pathways sets, six cards each (CLINICAL-REVIEW item 19). */
+export const DECK_BLOCKS = [1, 2, 3, 4] as const;
 
 export type CardView =
-  | { kind: "image"; src: string; alt: L | string; question?: L }
+  | { kind: "image"; src: string; alt: L | string; question?: L; block?: number }
   | { kind: "word"; word: L; question?: L; tone: "words" | "resources" };
 
-/** `cover`: the card shown for the deck in lists. */
-type Deck = { id: BuiltInDeckId; kind: "image" | "word"; count: number; cover: string; card: (id: string) => CardView | null; ids: string[] };
+/** `cover`: the card shown for the deck in lists. `blocks`: the deck is split into blocks (card → block). */
+type Deck = {
+  id: BuiltInDeckId; kind: "image" | "word"; count: number; cover: string; card: (id: string) => CardView | null; ids: string[];
+  blockOf?: (id: string) => number | undefined;
+};
 
 const pad = (n: number) => String(n).padStart(2, "0");
 const byId = <T extends { id: string }>(list: T[]) => new Map(list.map((c) => [c.id, c]));
 const artById = byId(art), facesById = byId(faces), pathwaysById = byId(pathways);
+
+type BlockCard = { id: string; block: number; title: L; question: L };
+/** A themed Pathways set: pictures in /cards/<folder>/, every card in one of four blocks. */
+function themedPathways(id: BuiltInDeckId, folder: string, cards: BlockCard[], cover: string): Deck {
+  const map = byId(cards);
+  return {
+    id, kind: "image", count: cards.length, cover, ids: cards.map((c) => c.id),
+    card: (n) => { const c = map.get(n); return c ? { kind: "image", src: `/cards/${folder}/${n}.jpg`, alt: c.title, question: c.question, block: c.block } : null; },
+    blockOf: (n) => map.get(n)?.block,
+  };
+}
 const artAlt = (c: { title: string; artist: string }) => `${c.title} — ${c.artist}`;
 
 export const DECKS: Deck[] = [
@@ -33,6 +53,8 @@ export const DECKS: Deck[] = [
     id: "pathways", kind: "image", count: pathways.length, cover: "39", ids: pathways.map((c) => c.id),
     card: (id) => { const c = pathwaysById.get(id); return c ? { kind: "image", src: `/cards/pathways/${id}.jpg`, alt: c.title, question: c.question } : null; },
   },
+  themedPathways("work", "pathways-work", pathwaysWork, "13"),
+  themedPathways("family", "pathways-family", pathwaysFamily, "24"),
   {
     id: "art", kind: "image", count: art.length, cover: "01", ids: art.map((c) => c.id),
     card: (id) => { const c = artById.get(id); return c ? { kind: "image", src: `/cards/art/${id}.jpg`, alt: artAlt(c) } : null; },
@@ -58,8 +80,14 @@ const DECKS_BY_ID = new Map(DECKS.map((d) => [d.id, d]));
 export const DEFAULT_DECK: BuiltInDeckId = "pathways";
 
 export const isBuiltInDeck = (id: string): id is BuiltInDeckId => DECKS_BY_ID.has(id as BuiltInDeckId);
-/** Every card of a built-in deck, as refs. */
-export const deckRefs = (deck: BuiltInDeckId) => DECKS_BY_ID.get(deck)!.ids.map((id) => `${deck}/${id}`);
+/** Every card of a built-in deck (or of one of its blocks), as refs. */
+export function deckRefs(deck: BuiltInDeckId, block?: number): string[] {
+  const d = DECKS_BY_ID.get(deck)!;
+  const ids = block && d.blockOf ? d.ids.filter((id) => d.blockOf!(id) === block) : d.ids;
+  return ids.map((id) => `${deck}/${id}`);
+}
+/** Whether a built-in deck is split into blocks. */
+export const hasBlocks = (deck: string) => isBuiltInDeck(deck) && !!DECKS_BY_ID.get(deck)!.blockOf;
 
 const UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 const CUSTOM_REF = new RegExp(`^u/(${UUID})/(${UUID})$`);
