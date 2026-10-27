@@ -38,54 +38,54 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #1E2421;
-    --surface: #252C28;
-    --surface-2: #2B332E;
-    --ink: #E4E7E2;
-    --muted: #A2ACA5;
-    --primary: #8AAA97;
-    --primary-strong: #9DBBA9;
+    --surface: #2A322E;
+    --surface-2: #323B36;
+    --ink: #F0F2EE;
+    --muted: #BCC5BF;
+    --primary: #9CC0AA;
+    --primary-strong: #B4D4C0;
     --on-primary: #1E2421;
-    --primary-soft: #2D3A33;
-    --brand: #7FB8B0;
-    --brand-ink: #E3EEEA;
-    --accent: #BE9C86;
-    --accent-soft: #3A322C;
-    --calm-blue: #8EA5B2;
-    --calm-blue-soft: #2A343A;
-    --calm-blue-strong: #8EA5B2;
-    --attention: #D2A07A;
-    --attention-soft: #3B3129;
-    --attention-strong: #D2A07A;
-    --destructive: #D08670;
-    --border: #353E39;
-    --focus: #9DBBA9;
+    --primary-soft: #34473D;
+    --brand: #8CC7BF;
+    --brand-ink: #EEF5F2;
+    --accent: #D4B29C;
+    --accent-soft: #43382F;
+    --calm-blue: #A3BDCB;
+    --calm-blue-soft: #2F3B42;
+    --calm-blue-strong: #AFC8D6;
+    --attention: #E0B28C;
+    --attention-soft: #45372B;
+    --attention-strong: #E6BC98;
+    --destructive: #E39A83;
+    --border: #4A5650;
+    --focus: #B4D4C0;
     --shadow: none;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #1E2421;
-  --surface: #252C28;
-  --surface-2: #2B332E;
-  --ink: #E4E7E2;
-  --muted: #A2ACA5;
-  --primary: #8AAA97;
-  --primary-strong: #9DBBA9;
-    --on-primary: #1E2421;
-  --primary-soft: #2D3A33;
-  --brand: #7FB8B0;
-  --brand-ink: #E3EEEA;
-  --accent: #BE9C86;
-  --accent-soft: #3A322C;
-  --calm-blue: #8EA5B2;
-  --calm-blue-soft: #2A343A;
-    --calm-blue-strong: #8EA5B2;
-  --attention: #D2A07A;
-  --attention-soft: #3B3129;
-    --attention-strong: #D2A07A;
-  --destructive: #D08670;
-  --border: #353E39;
-  --focus: #9DBBA9;
+  --surface: #2A322E;
+  --surface-2: #323B36;
+  --ink: #F0F2EE;
+  --muted: #BCC5BF;
+  --primary: #9CC0AA;
+  --primary-strong: #B4D4C0;
+  --on-primary: #1E2421;
+  --primary-soft: #34473D;
+  --brand: #8CC7BF;
+  --brand-ink: #EEF5F2;
+  --accent: #D4B29C;
+  --accent-soft: #43382F;
+  --calm-blue: #A3BDCB;
+  --calm-blue-soft: #2F3B42;
+  --calm-blue-strong: #AFC8D6;
+  --attention: #E0B28C;
+  --attention-soft: #45372B;
+  --attention-strong: #E6BC98;
+  --destructive: #E39A83;
+  --border: #4A5650;
+  --focus: #B4D4C0;
   --shadow: none;
   color-scheme: dark;
 }
@@ -181,14 +181,24 @@ a, button, input, select, textarea, [role="tab"] {
   --arch-body: #F2C6C2; --arch-door: #F8DEDA; --arch-cheek: #E3A9A4; --arch-ink: #2F3A35;
   --arch-feet: #2E6E6A; --arch-light: #FFFFFF; --arch-glow: #FFD9A0; --arch-note: #FFFFFF;
 }
-:root[data-theme="dark"] { --arch-feet: #5FA39B; --arch-glow: #FFC970; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --arch-feet: #5FA39B; --arch-glow: #FFC970; } }
+/* Dark mode: a slightly deeper, softer pink so Arch doesn't glare on charcoal, a soft
+   outline so his shape reads, and a real shadow (a light one looked like a ghost). */
+:root[data-theme="dark"] {
+  --arch-body: #E4B1AC; --arch-door: #EEC9C4; --arch-cheek: #D18E88; --arch-edge: #B9837E;
+  --arch-feet: #6FB0A7; --arch-glow: #FFC970; --arch-note: #F6F1EC; --arch-shadow: #000000; --arch-shadow-opacity: 0.35;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --arch-body: #E4B1AC; --arch-door: #EEC9C4; --arch-cheek: #D18E88; --arch-edge: #B9837E;
+    --arch-feet: #6FB0A7; --arch-glow: #FFC970; --arch-note: #F6F1EC; --arch-shadow: #000000; --arch-shadow-opacity: 0.35;
+  }
+}
 
 .arch { display: block; overflow: visible; }
 .arch * { transform-box: fill-box; }
-.arch-shadow { fill: var(--ink); opacity: 0.1; }
+.arch-shadow { fill: var(--arch-shadow, var(--ink)); opacity: var(--arch-shadow-opacity, 0.1); }
 .arch-feet { fill: var(--arch-feet); }
-.arch-body { fill: var(--arch-body); }
+.arch-body { fill: var(--arch-body); stroke: var(--arch-edge, none); stroke-width: 2; }
 .arch-door { fill: var(--arch-door); }
 .arch-shine { fill: none; stroke: #FFFFFF; stroke-width: 5; stroke-linecap: round; opacity: 0.5; }
 .arch-cheek { fill: var(--arch-cheek); opacity: 0.8; }

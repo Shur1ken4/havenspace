@@ -23,12 +23,18 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#FAF8F5" },
-    { media: "(prefers-color-scheme: dark)", color: "#1E2421" },
-  ],
-};
+// The phone's browser bar matches the page: light unless the person chose otherwise.
+export async function generateViewport(): Promise<Viewport> {
+  const theme = await currentTheme();
+  if (theme === "light") return { themeColor: "#FAF8F5" };
+  if (theme === "dark") return { themeColor: "#1E2421" };
+  return {
+    themeColor: [
+      { media: "(prefers-color-scheme: light)", color: "#FAF8F5" },
+      { media: "(prefers-color-scheme: dark)", color: "#1E2421" },
+    ],
+  };
+}
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const locale = await getLocale();
