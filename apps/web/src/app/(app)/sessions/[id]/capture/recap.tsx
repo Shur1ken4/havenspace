@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Field, Input, Textarea } from "@/components/ui/field";
 import { Notice } from "@/components/ui/notice";
 import { pickMimeType } from "@/lib/client/audio";
+import { openMic } from "@/lib/client/devices";
 import { UploadQueue } from "@/lib/client/upload-queue";
 import { submitRecap } from "../../actions";
 
@@ -30,7 +31,7 @@ export function RecapForm({ sessionId, today }: { sessionId: string; today: stri
       segment.current = Number(status.next_segment ?? 0);
       seq.current = 0;
       queue.current = new UploadQueue(sessionId, () => {});
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+      const stream = await openMic({ echoCancellation: true, noiseSuppression: true });
       const mimeType = pickMimeType();
       const rec = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
       rec.ondataavailable = (e) => queue.current?.push({ track: "dictation", segment: segment.current, seq: seq.current++, blob: e.data });

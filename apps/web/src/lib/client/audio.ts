@@ -1,4 +1,5 @@
 // Browser-side audio helpers shared by the recorder and the voice check.
+import { openMic } from "./devices";
 
 export function pickMimeType(): string {
   const options = ["audio/webm;codecs=opus", "audio/ogg;codecs=opus", "audio/webm", "audio/mp4"];
@@ -26,9 +27,9 @@ export function levelMeter(stream: MediaStream, onLevel: (level: number) => void
   return () => { cancelAnimationFrame(raf); src.disconnect(); ctx.close().catch(() => {}); };
 }
 
-/** Records a short clip from the microphone. */
+/** Records a short clip from the chosen microphone. */
 export async function recordClip(seconds: number, onLevel?: (l: number) => void): Promise<Blob> {
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+  const stream = await openMic({ echoCancellation: true, noiseSuppression: true });
   const mimeType = pickMimeType();
   const rec = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
   const chunks: Blob[] = [];

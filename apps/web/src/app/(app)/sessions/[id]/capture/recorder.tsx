@@ -11,6 +11,8 @@ import { Dialog } from "@/components/ui/dialog";
 import { levelMeter, pickMimeType, recordClip } from "@/lib/client/audio";
 import { canCaptureTabAudio, isMac } from "@/lib/client/browser";
 import { UploadQueue, type QueueState } from "@/lib/client/upload-queue";
+import { openMic } from "@/lib/client/devices";
+import { DevicePicker } from "@/components/app/device-picker";
 import { LiveClipper } from "@/lib/client/live";
 import { Arch } from "@/components/arch";
 import { LivePanel } from "./live-panel";
@@ -132,7 +134,7 @@ export function Recorder({ sessionId, mode, hasSavedVoice, interrupted, liveAllo
       segment.current = await nextSegment();
       if (mode === "online_call") {
         if (!canCaptureTabAudio()) { setError("browser"); return; }
-        const mic = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+        const mic = await openMic({ echoCancellation: true, noiseSuppression: true, autoGainControl: true });
         let display: MediaStream;
         try {
           display = await navigator.mediaDevices.getDisplayMedia({
@@ -160,7 +162,7 @@ export function Recorder({ sessionId, mode, hasSavedVoice, interrupted, liveAllo
         tabAudio[0].addEventListener("ended", () => setError("tabEnded"));
         begin();
       } else {
-        const room = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: true, autoGainControl: true } });
+        const room = await openMic({ echoCancellation: false, noiseSuppression: true, autoGainControl: true });
         addTrack("room", room);
         setPhase("calibrate");
       }
@@ -273,6 +275,7 @@ export function Recorder({ sessionId, mode, hasSavedVoice, interrupted, liveAllo
             </span>
           </label>
         )}
+        <DevicePicker kind="audioinput" />
         {error && <Notice tone="attention">{errorText[error]}</Notice>}
         <Button size="lg" onClick={prepare}>{interrupted ? t("continueRecording") : mode === "online_call" ? t("chooseTab") : t("begin")}</Button>
       </Card>

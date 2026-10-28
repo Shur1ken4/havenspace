@@ -1609,5 +1609,13 @@
     "about_family": "24 cards for family and couple relationships: closeness and distance, roles, conflict, generations and care. The figures have no faces, so the client decides who is who. Four blocks, and each card comes with a question for you.",
     "credit_work": "Created for HavenSpace by our Clinical Lead. Illustrations and questions © HavenSpace.",
     "credit_family": "Created for HavenSpace by our Clinical Lead. Illustrations and questions © HavenSpace."
+  },
+  "mediaDevices": {
+    "title": "Microphone and camera",
+    "microphone": "Microphone",
+    "camera": "Camera",
+    "default": "your computer's default",
+    "chooseMic": "Choose microphone",
+    "chooseCamera": "Choose camera"
   }
 }

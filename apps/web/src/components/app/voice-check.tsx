@@ -5,6 +5,7 @@ import { Mic } from "lucide-react";
 import { recordClip } from "@/lib/client/audio";
 import { Button } from "@/components/ui/button";
 import { Notice } from "@/components/ui/notice";
+import { DevicePicker } from "@/components/app/device-picker";
 
 export function VoiceCheck({ onDone }: { onDone?: () => void }) {
   const t = useTranslations("onboarding");
@@ -40,6 +41,7 @@ export function VoiceCheck({ onDone }: { onDone?: () => void }) {
       )}
       {state === "done" && <Notice tone="success">{t("voiceDone")}</Notice>}
       {state === "error" && <Notice tone="attention">{t("voiceNoMic")}</Notice>}
+      {state !== "recording" && state !== "done" && <DevicePicker kind="audioinput" />}
       {state !== "recording" && state !== "done" && (
         <Button onClick={start} variant={state === "error" ? "secondary" : "primary"}>
           <Mic size={18} aria-hidden /> {state === "error" ? t("voiceRetry") : t("voiceStart")}

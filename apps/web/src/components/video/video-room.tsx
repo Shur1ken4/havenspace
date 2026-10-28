@@ -26,6 +26,9 @@ import { ToolMenu, ToolStage, useNewTool } from "./tools/tool-stage";
 import { CallDecks, type CallDeck } from "./tools/decks-context";
 import { ClientSaveCall, TherapistSaveCall } from "./save-call";
 import { BackgroundButton, useBackground } from "./background";
+import { DeviceButton } from "./devices";
+import { DevicePicker } from "@/components/app/device-picker";
+import { savedDevice } from "@/lib/client/devices";
 
 type Role = "therapist" | "client";
 type Stage = "lobby" | "joining" | "in" | "ended" | "error";
@@ -128,6 +131,10 @@ export function VideoRoom({ roomId, role, otherName, clientId, consent = false, 
             )}
           </div>
         )}
+        <div className="space-y-3">
+          <DevicePicker kind="audioinput" />
+          <DevicePicker kind="videoinput" />
+        </div>
         {error && <Notice tone="attention">{t(error)}</Notice>}
         <Button size="lg" className="w-full" onClick={join} disabled={stage === "joining"}>
           {stage === "joining" ? t("joining") : t("join")}
@@ -144,7 +151,12 @@ export function VideoRoom({ roomId, role, otherName, clientId, consent = false, 
       connect
       audio
       video
-      options={{ adaptiveStream: true, dynacast: true }}
+      options={{
+        adaptiveStream: true, dynacast: true,
+        // The microphone and camera chosen before joining (or last time) on this device.
+        audioCaptureDefaults: { deviceId: savedDevice("audioinput") },
+        videoCaptureDefaults: { deviceId: savedDevice("videoinput") },
+      }}
       onDisconnected={() => { if (!leaving.current) setStage("ended"); }}
       onMediaDeviceFailure={() => setError("noDevices")}
       className={mini ? "" : "mx-auto max-w-5xl"}
@@ -566,6 +578,7 @@ function InCall({ roomId, role, otherName, consent, clientId, linked, liveOn, de
           <span className="sr-only sm:not-sr-only">{isCameraEnabled ? t("cameraOff") : t("cameraOn")}</span>
         </Button>
         <BackgroundButton bg={bg} />
+        <DeviceButton />
         {canShare && (
           <Button variant="secondary" onClick={toggleShare} aria-pressed={isScreenShareEnabled} disabled={!!remoteShare && !isScreenShareEnabled}>
             {isScreenShareEnabled ? <ScreenShareOff size={18} aria-hidden /> : <ScreenShare size={18} aria-hidden />}
