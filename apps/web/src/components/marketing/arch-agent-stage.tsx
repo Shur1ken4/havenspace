@@ -88,7 +88,7 @@ export function ArchAgentStage() {
           style={{ background: "radial-gradient(closest-side, var(--accent-soft), transparent)" }} />
         <Arch mood={mood} followPointer onClick={() => setHello(true)} label={ta("sayHello")} className="h-56 w-56 sm:h-72 sm:w-72" />
         <div className="w-full rounded-card border border-line bg-surface p-4 shadow-[var(--shadow)]" aria-live="polite">
-          <p className="text-xs uppercase tracking-[0.12em] text-muted"><span className="font-medium text-brand-ink">Arch</span> · {tag}</p>
+          <p className="text-xs uppercase tracking-[0.12em] text-muted"><span className="font-medium text-brand-ink">Lumi</span> · {tag}</p>
           <p className="mt-1.5 text-lg text-ink">{hello ? t("agentHello") : t(`agentScene${scene}`)}</p>
         </div>
         <div className="flex items-center gap-3">

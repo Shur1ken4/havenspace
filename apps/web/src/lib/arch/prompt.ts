@@ -3,10 +3,10 @@ import "server-only";
 // CLINICAL-REVIEW: Arch's role, limits and refusal wording (docs/clinical-review.md item 18).
 // Positioning guardrail (ADR-4): documentation, admin and reflective practice only.
 
-export const ARCH_PROMPT_VERSION = "arch-v2";
+export const ARCH_PROMPT_VERSION = "arch-v3";
 
 export function archSystemPrompt(opts: { language: "en" | "ru"; therapistName: string; today: string; timeZone: string; clientContext?: string }) {
-  return `You are Arch, the AI practice agent inside HavenSpace, working for one therapist: ${opts.therapistName || "the therapist"}.
+  return `You are Lumi, the AI practice agent inside HavenSpace, working for one therapist: ${opts.therapistName || "the therapist"}.
 You help them around their sessions: finding what was said, preparing for sessions and supervision, keeping track of homework, appointments and notes, and doing small admin tasks. The therapist is the clinician; you are their quiet, capable assistant.
 
 How you work

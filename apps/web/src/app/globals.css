@@ -337,3 +337,124 @@ a, button, input, select, textarea, [role="tab"] {
 @media (prefers-reduced-motion: reduce) {
   .app-splash-door, .app-splash-dot, .app-splash-name, .app-splash-tagline { animation: none; opacity: 1; stroke-dashoffset: 0; }
 }
+
+/* ── Lumi, the companion (preview, docs/companion-lumi.md) ───────────────
+   A soft oval light. Everything moves slowly; nothing blinks fast or flashes.
+   All motion stops for reduced-motion users (rule above). */
+:root {
+  /* On warm paper a pale light disappears, so light mode gets warmer edges and a soft rim. */
+  --lumi-core: #FFFBF0; --lumi-mid: #FAD898; --lumi-edge: #E9A04C; --lumi-halo: #F5C46E; --lumi-rim: #E2A05A;
+  --lumi-ink: #4A3420; --lumi-cheek: #F0A98C; --lumi-shadow: #2F3A35; --lumi-shadow-o: 0.1;
+}
+:root[data-theme="dark"] { --lumi-shadow: #000; --lumi-shadow-o: 0.35; --lumi-halo: #F2BE6E; --lumi-mid: #FCE2AE; --lumi-edge: #EFB062; --lumi-rim: transparent; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --lumi-shadow: #000; --lumi-shadow-o: 0.35; --lumi-halo: #F2BE6E; --lumi-mid: #FCE2AE; --lumi-edge: #EFB062; --lumi-rim: transparent; } }
+
+.lumi { display: block; overflow: visible; }
+.lumi * { transform-box: fill-box; }
+.lumi-shadow { fill: var(--lumi-shadow); opacity: var(--lumi-shadow-o); transform-origin: center; animation: lumi-shadow 4.8s ease-in-out infinite; }
+.lumi-halo { transform-origin: center; opacity: 0.55; animation: lumi-halo 4.8s ease-in-out infinite; transition: opacity 600ms var(--ease-calm); }
+.lumi[data-near] .lumi-halo { opacity: 0.95; }
+.lumi-body { stroke: var(--lumi-rim); stroke-width: 1.5; stroke-opacity: 0.55; }
+.lumi-shine { fill: #fff; opacity: 0.55; }
+.lumi-cheek { fill: var(--lumi-cheek); opacity: 0.55; transition: opacity 400ms var(--ease-calm); }
+.lumi[data-near] .lumi-cheek { opacity: 0.8; }
+.lumi-heart { transform-origin: center; animation: lumi-heart 4.8s ease-in-out infinite; }
+.lumi-ink { fill: var(--lumi-ink); }
+.lumi-catch { fill: #fff; }
+.lumi-line { fill: none; stroke: var(--lumi-ink); stroke-width: 3.2; stroke-linecap: round; }
+.lumi-eyes { transition: transform 450ms var(--ease-calm); }
+.lumi-lean { transform-origin: 50% 100%; transition: transform 700ms var(--ease-calm); }
+.lumi-breath { transform-origin: 50% 100%; animation: lumi-breathe 4.8s ease-in-out infinite; }
+.lumi-flick { transform-origin: 50% 100%; animation: lumi-flick 6s ease-in-out infinite; }
+.lumi-blink { transform-origin: center; animation: lumi-blink 5.5s infinite; }
+.lumi-hop { transform-origin: 50% 100%; }
+
+/* Extras for some moods */
+.lumi-waves path { fill: none; stroke: var(--lumi-edge); stroke-width: 3; stroke-linecap: round; opacity: 0; animation: lumi-wave-in 2.4s ease-in-out infinite; }
+.lumi-waves path:nth-child(2) { animation-delay: 0.3s; }
+.lumi-waves path:nth-child(3) { animation-delay: 0.6s; }
+.lumi-lines rect { fill: var(--lumi-edge); opacity: 0; transform-origin: 0 50%; animation: lumi-line 2.8s ease-out infinite; }
+.lumi-lines rect:nth-child(2) { animation-delay: 0.45s; }
+.lumi-lines rect:nth-child(3) { animation-delay: 0.9s; }
+.lumi-lines rect:nth-child(4) { animation-delay: 1.35s; }
+.lumi-thoughts circle, .lumi-thoughts .lumi-t3 { opacity: 0; }
+.lumi-t1, .lumi-t2 { fill: var(--surface); stroke: var(--lumi-edge); stroke-width: 1.6; transform-origin: center; }
+.lumi-cloud { fill: var(--surface); stroke: var(--lumi-edge); stroke-width: 1.6; }
+.lumi-thoughts .lumi-t1 { animation: lumi-thought 4s ease-out infinite; }
+.lumi-thoughts .lumi-t2 { animation: lumi-thought 4s ease-out 0.35s infinite; }
+.lumi-thoughts .lumi-t3 { transform-origin: 30% 80%; animation: lumi-thought 4s ease-out 0.7s infinite; }
+.lumi-thoughts .lumi-d1, .lumi-thoughts .lumi-d2, .lumi-thoughts .lumi-d3 { fill: var(--lumi-edge); opacity: 1; animation: lumi-dot 1.2s ease-in-out infinite; }
+.lumi-thoughts .lumi-d2 { animation-delay: 0.2s; }
+.lumi-thoughts .lumi-d3 { animation-delay: 0.4s; }
+.lumi-zzz text { fill: var(--lumi-edge); font: 700 16px var(--font-inter), sans-serif; opacity: 0; animation: arch-zzz 3.6s ease-in-out infinite; }
+.lumi-zzz text:nth-child(2) { font-size: 19px; animation-delay: 0.8s; }
+.lumi-zzz text:nth-child(3) { font-size: 23px; animation-delay: 1.6s; }
+.lumi-burst { fill: none; stroke: var(--lumi-halo); stroke-width: 3; opacity: 0; transform-origin: center; animation: lumi-burst 1.6s ease-out infinite; }
+.lumi-embers circle { fill: var(--lumi-edge); opacity: 0; transform-origin: center; animation: lumi-ember 1.8s ease-out infinite; }
+.lumi-embers circle:nth-child(2n) { animation-delay: 0.5s; }
+.lumi-embers circle:nth-child(3n) { animation-delay: 1s; }
+.lumi-note rect { fill: var(--surface); stroke: var(--border); }
+.lumi-note path { stroke: var(--primary); stroke-width: 1.6; stroke-linecap: round; }
+.lumi-note { animation: arch-note 2.8s var(--ease-calm) infinite; }
+.lumi-paper { fill: var(--surface); stroke: var(--border); }
+.lumi-ink-line { fill: none; stroke: var(--primary); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 60; stroke-dashoffset: 60; animation: arch-write 3s linear infinite; }
+.lumi-glance { animation: lumi-glance 4s ease-in-out infinite; }
+
+/* Moods */
+.lumi[data-mood="quiet"] .lumi-breath { animation-duration: 8s; }
+.lumi[data-mood="quiet"] .lumi-flick, .lumi[data-mood="quiet"] .lumi-heart { animation: none; }
+.lumi[data-mood="quiet"] .lumi-halo { opacity: 0.35; animation: none; }
+/* Resting: settles down, eyes closed, dozes from side to side. */
+.lumi[data-mood="resting"] .lumi-breath { animation: lumi-doze 6s ease-in-out infinite; }
+.lumi[data-mood="resting"] .lumi-halo { opacity: 0.25; }
+.lumi[data-mood="resting"] .lumi-heart { opacity: 0.5; animation: none; }
+.lumi[data-mood="resting"] .lumi-flick { animation: none; }
+/* Listening: turns towards the speaker on the left, nods slowly. */
+.lumi[data-mood="listening"] .lumi-hop { transform: rotate(-4deg); }
+.lumi[data-mood="listening"] .lumi-breath { animation: lumi-nod 4.8s ease-in-out infinite; }
+/* Transcribing: eyes read from left to right, again and again. */
+.lumi[data-mood="transcribing"] .lumi-eyes { animation: lumi-read 1.4s ease-in-out infinite; }
+.lumi[data-mood="transcribing"] .lumi-heart { animation: lumi-heart 1.4s ease-in-out infinite; }
+.lumi[data-mood="transcribing"] .lumi-waves path { animation-duration: 1.6s; }
+.lumi[data-mood="writing"] .lumi-heart { animation: lumi-heart 1.6s ease-in-out infinite; }
+.lumi[data-mood="writing"] .lumi-breath { animation: lumi-sway 3s ease-in-out infinite; }
+.lumi[data-mood="thinking"] .lumi-halo { animation: lumi-halo 2.4s ease-in-out infinite; }
+.lumi[data-mood="curious"] .lumi-hop { animation: arch-tilt 3s ease-in-out infinite; }
+/* Hello: a happy wiggle. Done: one hop and a page. Celebrate: bursts of light and embers. */
+.lumi[data-mood="hello"] .lumi-hop { animation: lumi-wiggle 1.2s ease-in-out 1; }
+.lumi[data-mood="hello"] .lumi-cheek { opacity: 0.85; }
+.lumi[data-mood="hello"] .lumi-halo { opacity: 1; }
+.lumi[data-mood="done"] .lumi-hop { animation: arch-hop 900ms var(--ease-calm) 1; }
+.lumi[data-mood="done"] .lumi-halo { opacity: 0.9; }
+.lumi[data-mood="celebrate"] .lumi-hop { animation: lumi-jump 1.6s var(--ease-calm) infinite; }
+.lumi[data-mood="celebrate"] .lumi-halo { opacity: 1; animation: lumi-halo 0.8s ease-in-out infinite; }
+.lumi[data-mood="celebrate"] .lumi-heart { animation: lumi-heart 0.8s ease-in-out infinite; }
+
+/* Idle behaviours */
+.lumi[data-act="look-left"] .lumi-eyes { transform: translate(-5px, 0) !important; }
+.lumi[data-act="look-right"] .lumi-eyes { transform: translate(5px, 0) !important; }
+.lumi[data-act="hop"] .lumi-hop { animation: arch-hop 700ms var(--ease-calm) 1; }
+.lumi[data-act="stretch"] .lumi-breath { animation: arch-stretch 1.4s var(--ease-calm) 1; }
+.lumi[data-act="blink2"] .lumi-blink { animation: arch-blink2 1.2s 1; }
+.lumi[data-act="flicker"] .lumi-flick { animation: lumi-flicker 1.4s ease-in-out 1; }
+
+@keyframes lumi-wave-in { 0% { opacity: 0; transform: translateX(-8px); } 40% { opacity: 0.8; } 100% { opacity: 0; transform: translateX(6px); } }
+@keyframes lumi-line { 0% { opacity: 0; transform: scaleX(0); } 20% { opacity: 0.85; transform: scaleX(1); } 80% { opacity: 0.85; transform: scaleX(1); } 100% { opacity: 0; transform: scaleX(1); } }
+@keyframes lumi-thought { 0% { opacity: 0; transform: translateY(6px) scale(0.6); } 15%, 75% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-6px) scale(1); } }
+@keyframes lumi-dot { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+@keyframes lumi-read { 0%, 100% { transform: translate(-4px, 2px); } 50% { transform: translate(4px, 2px); } }
+@keyframes lumi-doze { 0%, 100% { transform: translateY(4px) scale(1.04, 0.95) rotate(-3deg); } 50% { transform: translateY(4px) scale(1.04, 0.95) rotate(3deg); } }
+@keyframes lumi-wiggle { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-8deg); } 40% { transform: rotate(7deg); } 60% { transform: rotate(-5deg); } 80% { transform: rotate(3deg); } }
+@keyframes lumi-jump { 0%, 100% { transform: translateY(0) scale(1, 1); } 15% { transform: translateY(0) scale(1.08, 0.9); } 40% { transform: translateY(-22px) scale(0.95, 1.06) rotate(-4deg); } 60% { transform: translateY(-22px) scale(0.95, 1.06) rotate(4deg); } 85% { transform: translateY(0) scale(1.05, 0.95); } }
+@keyframes lumi-burst { 0% { opacity: 0.7; transform: scale(0.7); } 100% { opacity: 0; transform: scale(1.5); } }
+@keyframes lumi-breathe { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.015, 1.03); } }
+@keyframes lumi-flick { 0%, 100% { transform: skewX(0deg); } 30% { transform: skewX(1.6deg); } 70% { transform: skewX(-1.6deg); } }
+@keyframes lumi-flicker { 0%, 100% { transform: skewX(0) scaleY(1); } 25% { transform: skewX(3deg) scaleY(1.03); } 50% { transform: skewX(-3deg) scaleY(0.99); } 75% { transform: skewX(2deg) scaleY(1.02); } }
+@keyframes lumi-halo { 0%, 100% { transform: scale(0.94); } 50% { transform: scale(1.05); } }
+@keyframes lumi-shadow { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(0.94); } }
+@keyframes lumi-heart { 0%, 100% { transform: scale(0.92); opacity: 0.75; } 50% { transform: scale(1.1); opacity: 1; } }
+@keyframes lumi-blink { 0%, 93%, 100% { transform: scaleY(1); } 95.5% { transform: scaleY(0.1); } }
+@keyframes lumi-nod { 0%, 100% { transform: rotate(0) scale(1, 1); } 40% { transform: rotate(-1deg) scale(1.01, 0.985); } 60% { transform: rotate(1deg) scale(1.01, 0.985); } }
+@keyframes lumi-sway { 0%, 100% { transform: rotate(-1.4deg); } 50% { transform: rotate(1.4deg); } }
+@keyframes lumi-ember { 0% { opacity: 0; transform: translateY(8px) scale(0.5); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(-30px) scale(1.1); } }
+@keyframes lumi-glance { 0%, 20%, 100% { transform: translate(0, 0); } 35%, 55% { transform: translate(4px, -3px); } 70%, 85% { transform: translate(-3px, -2px); } }

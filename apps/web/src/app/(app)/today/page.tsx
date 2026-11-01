@@ -76,7 +76,7 @@ export default async function TodayPage() {
           <div className="space-y-2">
             <h1 className="text-4xl">{greeting}</h1>
             <p className="text-muted">{format.dateTime(new Date(), { dateStyle: "full", timeZone: "Europe/Dublin" })}</p>
-            <p className="text-ink" aria-live="polite"><span className="font-medium text-brand-ink">Arch:</span> {archLine}</p>
+            <p className="text-ink" aria-live="polite"><span className="font-medium text-brand-ink">Lumi:</span> {archLine}</p>
           </div>
         </div>
         {data.counts.clients > 0 ? (

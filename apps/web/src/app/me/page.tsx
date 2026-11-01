@@ -52,7 +52,7 @@ export default async function ClientHome({ searchParams }: PageProps<"/me">) {
         <Arch mood={open === 0 ? "done" : "idle"} alive followPointer className="h-24 w-24 shrink-0 sm:h-28 sm:w-28" />
         <div className="space-y-1">
           <h1 className="text-4xl">{t("hello")}</h1>
-          <p className="text-ink"><span className="font-medium text-brand-ink">Arch:</span> {open > 0 ? t("archOpen", { count: open }) : t("archNone")}</p>
+          <p className="text-ink"><span className="font-medium text-brand-ink">Lumi:</span> {open > 0 ? t("archOpen", { count: open }) : t("archNone")}</p>
         </div>
       </section>
 

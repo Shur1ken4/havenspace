@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { Lumi } from "./lumi";
 
 /**
  * Arch, the HavenSpace companion: a soft doorway with a little door on its chest.
@@ -9,7 +10,7 @@ import { useEffect, useRef, useState } from "react";
  * CLINICAL-REVIEW: the mood set and what each one means to a therapist.
  */
 export type ArchMood =
-  | "idle" | "listening" | "transcribing" | "writing" | "working" | "thinking"
+  | "quiet" | "idle" | "listening" | "transcribing" | "writing" | "working" | "thinking"
   | "curious" | "done" | "celebrate" | "resting" | "hello";
 
 const BODY = "M48 180 V96 A22 22 0 0 1 76 66 A30 30 0 0 1 124 66 A22 22 0 0 1 152 96 V180 Q152 186 146 186 H54 Q48 186 48 180 Z";
@@ -24,7 +25,7 @@ function face(mood: ArchMood): "open" | "happy" | "closed" | "focused" | "up" {
   return "open";
 }
 
-export function Arch({ mood: given = "idle", className, label, followPointer = false, alive = false, onClick }: {
+function ArchClassic({ mood: given = "idle", className, label, followPointer = false, alive = false, onClick }: {
   mood?: ArchMood;
   className?: string;
   /** Accessible description; omit when the surrounding text already says it. */
@@ -192,3 +193,7 @@ export function Arch({ mood: given = "idle", className, label, followPointer = f
     </button>
   );
 }
+
+// Lumi stands in for Arch everywhere. Set back to ArchClassic to undo.
+void ArchClassic;
+export const Arch = Lumi;
