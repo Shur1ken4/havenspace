@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "HavenSpace — personal AI assistant for therapists and psychologists",
+    "title": "HavenSpace — the AI workspace for therapists and psychologists",
     "description": "Drafts your session notes and offers gentle, supervisor-style reflection on your own practice. Built in Ireland. Audio deleted after transcription.",
     "client": "Client",
     "session": "Session",
@@ -23,7 +23,7 @@
     "somethingWrong": "Something didn't work. Please try again in a moment.",
     "skipToContent": "Skip to content",
     "language": "Language",
-    "tagline": "AI assistant for therapists",
+    "tagline": "AI workspace for therapists",
     "demoLabel": "Demo mode",
     "website": "HavenSpace website",
     "backToApp": "Back to HavenSpace"
@@ -161,7 +161,7 @@
     "v_step2Body": "A draft note in minutes. You edit and approve.",
     "v_step3": "You reflect",
     "v_step3Body": "Gentle feedback, linked to the exact moment.",
-    "agentTitle": "Lumi, your AI practice agent",
+    "agentTitle": "Lumi, your AI assistant",
     "agentBody": "Ask anything about your practice. Lumi finds it, links the moment, and does the admin. You approve.",
     "agentCap1": "Answers with sources",
     "agentCap2": "Briefs before sessions",
@@ -172,7 +172,7 @@
     "f_video": "Video sessions",
     "f_notes": "Notes in your format",
     "f_reflection": "Reflection on your technique",
-    "f_arch": "Ask Lumi, your AI agent",
+    "f_arch": "Ask Lumi, your AI assistant",
     "f_clientApp": "Client app: homework and diary",
     "f_supervision": "Supervision pack",
     "f_languages": "English and Russian",
@@ -180,7 +180,7 @@
     "soon": "Coming soon",
     "privacyLine": "No advice during sessions · no diagnoses · no risk scores · you decide.",
     "agentDoneTag": "Done",
-    "agentHello": "Hi, I'm Lumi, your practice agent. Ask me anything about your practice.",
+    "agentHello": "Hi, I'm Lumi, your AI assistant. Ask me anything about your practice.",
     "agentScene0": "Client A mentioned sleep twice. Here are both moments, with links.",
     "agentScene1": "Before you see Client A: what happened last time, their goal, and how the homework went.",
     "agentScene2": "I've prepared this week's homework for Client A. It's saved once you approve.",
@@ -1256,7 +1256,7 @@
   "askArch": {
     "button": "Ask Lumi",
     "title": "Ask Lumi",
-    "subtitle": "Your AI practice agent. Ask about your clients, sessions and admin. You decide.",
+    "subtitle": "Your AI assistant. Ask about your clients, sessions and admin. You decide.",
     "about": "About",
     "allClients": "All my clients",
     "briefMe": "Brief me",

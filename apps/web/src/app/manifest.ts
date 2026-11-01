@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "HavenSpace — AI practice agent for therapists",
+    name: "HavenSpace — AI workspace for therapists",
     short_name: "HavenSpace",
     description: "Session notes and reflective practice for therapists.",
     start_url: "/today",
