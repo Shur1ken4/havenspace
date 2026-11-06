@@ -11,7 +11,8 @@ loadEnv();
 
 // List prices in $ per million tokens: [model, input, output, cache read]. Writing to
 // the cache costs 1.25x input. Bedrock EU is assumed 10% higher (check before relying on it).
-const PRICES = [["opus-5-5", 4, 20, 0.2], ["sonnet-5-5", 2, 10, 0.1], ["haiku-5-5", 0.1, 0.5, 0.01], ["opus-5", 5, 25, 0.5], ["opus-4-8", 5, 25, 0.5]];
+// Haiku 5.5 costs 5x more on prompts over 100k tokens; ours are far smaller.
+const PRICES = [["opus-5-5", 4, 20, 0.2], ["sonnet-5-5", 2, 10, 0.2], ["haiku-5-5", 0.1, 0.5, 0.01], ["opus-5", 5, 25, 0.5], ["opus-4-8", 5, 25, 0.5]];
 const EUR_PER_USD = 0.9;
 
 function dollars(r) {

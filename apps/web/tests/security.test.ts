@@ -204,6 +204,23 @@ describe("approved notes", () => {
     await expect(asUser(app, alice, () => app.query("update notes set content_json = '{\"sections\":[{\"key\":\"x\",\"text\":\"y\"}]}' where session_id = $1", [s])))
       .rejects.toThrow(/note_locked/);
   });
+
+  it("approval keeps only the edit share and deletes the AI draft copy (0025)", async () => {
+    const c = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'Client E') returning id", [alice])).rows[0].id;
+    const s = (await su.query("insert into sessions (therapist_id, client_id, capture_mode, status) values ($1, $2, 'recap', 'ready') returning id", [alice, c])).rows[0].id;
+    const draft = '{"sections":[{"key":"summary","text":"drafted"}]}';
+    await su.query("insert into notes (therapist_id, session_id, format, content_json, ai_draft_json) values ($1, $2, 'free', $3, $3)", [alice, s, draft]);
+    // The same two statements as approveNote, as the therapist.
+    await asUser(app, alice, async () => {
+      const { rows: [n] } = await app.query("select ai_draft_json from notes where session_id = $1 and status = 'draft'", [s]);
+      expect(n.ai_draft_json.sections[0].text).toBe("drafted");
+      await app.query("update notes set status = 'approved', approved_at = now(), edit_share = 0.25, ai_draft_json = null where session_id = $1 and status = 'draft'", [s]);
+    });
+    const { rows: [after] } = await su.query("select status, edit_share, ai_draft_json from notes where session_id = $1", [s]);
+    expect(after).toEqual({ status: "approved", edit_share: 0.25, ai_draft_json: null });
+    // Bob cannot see Alice's draft copy.
+    expect((await asUser(app, bob, () => app.query("select ai_draft_json from notes where session_id = $1", [s]))).rows).toHaveLength(0);
+  });
 });
 
 describe("AI usage counts", () => {

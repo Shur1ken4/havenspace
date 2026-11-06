@@ -147,16 +147,21 @@ def reflect(p: LLMProvider, ctx: SessionContext, pack: dict) -> tuple[Reflection
         req = Request(system=_system(), shared_context=transcript_block(ctx), instructions=instructions,
                       schema=ReflectionOut, model=config.LLM_MODEL, effort="high", step="reflect")
         out = p.structured(req)
-        text = " ".join(i.text for i in out.strengths + out.missed_openings + out.try_next)
-        if guardrails.hits(text):
-            log("guardrail.reflection", term_hits=len(guardrails.hits(text)))
     checked, dropped = check_reflection(out, ctx.segment_texts(), dims)
     if not p.is_demo and not _complete(checked):
-        # Sonnet now and then returns fewer points than asked (2 of 27 test runs). Ask once more; keep the fuller one.
+        # Sonnet now and then returns fewer points than asked (2 of 27 test runs). Ask once more and keep the
+        # fuller one; if that second try fails, the first reflection still stands.
         log("step.reflect_short", items=_count(checked))
-        again = check_reflection(p.structured(req), ctx.segment_texts(), dims)
-        if _count(again[0]) > _count(checked):
-            checked, dropped = again
+        try:
+            again = check_reflection(p.structured(req), ctx.segment_texts(), dims)
+            if _count(again[0]) > _count(checked):
+                checked, dropped = again
+        except Exception as err:  # noqa: BLE001
+            log("step.reflect_retry_failed", error=type(err).__name__)
+    if not p.is_demo:
+        text = " ".join(i.text for i in checked.strengths + checked.missed_openings + checked.try_next)
+        if guardrails.hits(text):
+            log("guardrail.reflection", term_hits=len(guardrails.hits(text)))
     log("step.reflect", items=_count(checked), dropped=dropped)
     return checked, dropped
 

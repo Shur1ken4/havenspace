@@ -48,6 +48,13 @@ def test_a_short_reflection_is_asked_again_and_the_fuller_one_kept():
     assert (len(out.strengths), len(out.missed_openings), len(out.try_next)) == (3, 2, 1)
 
 
+def test_a_failed_second_try_keeps_the_first_reflection():
+    p = Fake([reply(1, 0, 0), "not json", "still not json"])
+    out, _ = run(p)
+    assert p.calls == 3  # the first answer, then the retry and its own format retry
+    assert len(out.strengths) == 1
+
+
 def test_a_worse_second_try_does_not_replace_the_first():
     p = Fake([reply(3, 1, 1), reply(1, 0, 0)])
     out, _ = run(p)
