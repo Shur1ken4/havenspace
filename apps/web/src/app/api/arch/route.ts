@@ -58,12 +58,19 @@ export async function POST(req: Request) {
   const stream = new ReadableStream({
     async start(controller) {
       const send = (event: object) => controller.enqueue(enc.encode(`${JSON.stringify(event)}\n`));
+      const used = { model: MODEL, input: 0, output: 0, cacheWrite: 0, cacheRead: 0, calls: 0 };
       try {
         for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
           if (round > 0) send({ type: "break" });
           const turn = client.messages.stream({ model: MODEL, max_tokens: 2048, system, tools: ARCH_TOOLS, messages: convo });
           turn.on("text", (text) => send({ type: "text", text }));
           const msg = await turn.finalMessage();
+          used.model = msg.model;
+          used.input += msg.usage.input_tokens;
+          used.output += msg.usage.output_tokens;
+          used.cacheWrite += msg.usage.cache_creation_input_tokens ?? 0;
+          used.cacheRead += msg.usage.cache_read_input_tokens ?? 0;
+          used.calls += 1;
           convo.push({ role: "assistant", content: msg.content });
           if (msg.stop_reason === "refusal") { send({ type: "error", error: "refusal" }); break; }
           if (msg.stop_reason !== "tool_use") break;
@@ -83,6 +90,13 @@ export async function POST(req: Request) {
         // Never forward provider errors: they could echo session content.
         send({ type: "error", error: "failed" });
       } finally {
+        // Token counts only, one row per question; a failure here must not break the answer.
+        if (used.calls > 0) {
+          await withUser(therapist.id, (db) => db.query(
+            `insert into llm_usage (therapist_id, step, provider, model_id, input_tokens, output_tokens, cache_write_tokens, cache_read_tokens, api_calls)
+             values ($1, 'arch', 'anthropic', $2, $3, $4, $5, $6, $7)`,
+            [therapist.id, used.model, used.input, used.output, used.cacheWrite, used.cacheRead, used.calls])).catch(() => {});
+        }
         controller.close();
       }
     },

@@ -78,12 +78,13 @@ def _system() -> str:
 # ── 1. clean_transcript ──────────────────────────────────────────────────────
 def clean_transcript(p: LLMProvider, ctx: SessionContext) -> list[dict]:
     """Returns segments with obvious ASR errors fixed. A correction is applied only
-    if it stays close to the original — the model cannot rewrite what was said."""
+    if it stays close to the original — the model cannot rewrite what was said.
+    Uses the main model: Haiku missed errors and added speaker labels in tests (ADR-3)."""
     if p.is_demo or ctx.is_recap:
         return ctx.segments
     out = p.structured(Request(
         system=_system(), shared_context=transcript_block(ctx), instructions=load("clean_transcript").body,
-        schema=Corrections, model=config.LLM_MODEL_LIGHT, effort="low",
+        schema=Corrections, model=config.LLM_MODEL, effort="low", step="clean_transcript",
     ))
     by_idx = {s["idx"]: s for s in ctx.segments}
     applied = 0
@@ -107,7 +108,7 @@ def draft_note(p: LLMProvider, ctx: SessionContext) -> NoteOut:
         format_name=ctx.note_format, section_guide=guide, client_label=ctx.client_label, language_name=ctx.language_name,
     )
     req = Request(system=_system(), shared_context=transcript_block(ctx), instructions=instructions,
-                  schema=NoteOut, model=config.LLM_MODEL, effort="medium")
+                  schema=NoteOut, model=config.LLM_MODEL, effort="medium", step="draft_note")
     note = _ensure_sections(p.structured(req), keys)
     found = guardrails.hits(" ".join(s.text for s in note.sections))
     if found:
@@ -125,6 +126,14 @@ def _ensure_sections(note: NoteOut, keys: list[str]) -> NoteOut:
 
 
 # ── 3. reflect ───────────────────────────────────────────────────────────────
+def _count(r: ReflectionOut) -> int:
+    return len(r.strengths) + len(r.missed_openings) + len(r.try_next)
+
+
+def _complete(r: ReflectionOut) -> bool:
+    return (len(r.strengths), len(r.missed_openings), len(r.try_next)) == (3, 2, 1)
+
+
 def reflect(p: LLMProvider, ctx: SessionContext, pack: dict) -> tuple[ReflectionOut, int]:
     dims = {d["id"] for d in pack["dimensions"]}
     if p.is_demo:
@@ -135,13 +144,20 @@ def reflect(p: LLMProvider, ctx: SessionContext, pack: dict) -> tuple[Reflection
         pack_view = {k: pack[k] for k in ("name", "description", "scale", "dimensions")}
         instructions = load("reflect").render(pack_json=json.dumps(pack_view, ensure_ascii=False, indent=1),
                                               growth_history=history, language_name=ctx.language_name)
-        out = p.structured(Request(system=_system(), shared_context=transcript_block(ctx), instructions=instructions,
-                                   schema=ReflectionOut, model=config.LLM_MODEL, effort="high"))
+        req = Request(system=_system(), shared_context=transcript_block(ctx), instructions=instructions,
+                      schema=ReflectionOut, model=config.LLM_MODEL, effort="high", step="reflect")
+        out = p.structured(req)
         text = " ".join(i.text for i in out.strengths + out.missed_openings + out.try_next)
         if guardrails.hits(text):
             log("guardrail.reflection", term_hits=len(guardrails.hits(text)))
     checked, dropped = check_reflection(out, ctx.segment_texts(), dims)
-    log("step.reflect", items=len(checked.strengths) + len(checked.missed_openings) + len(checked.try_next), dropped=dropped)
+    if not p.is_demo and not _complete(checked):
+        # Sonnet now and then returns fewer points than asked (2 of 27 test runs). Ask once more; keep the fuller one.
+        log("step.reflect_short", items=_count(checked))
+        again = check_reflection(p.structured(req), ctx.segment_texts(), dims)
+        if _count(again[0]) > _count(checked):
+            checked, dropped = again
+    log("step.reflect", items=_count(checked), dropped=dropped)
     return checked, dropped
 
 
@@ -153,7 +169,7 @@ def update_timeline(p: LLMProvider, ctx: SessionContext) -> tuple[TimelineOut, i
         existing = "\n".join(f"- {t}" for t in ctx.existing_timeline) or "(nothing yet)"
         instructions = load("update_timeline").render(existing=existing, language_name=ctx.language_name)
         out = p.structured(Request(system=_system(), shared_context=transcript_block(ctx), instructions=instructions,
-                                   schema=TimelineOut, model=config.LLM_MODEL_LIGHT, effort="low"))
+                                   schema=TimelineOut, model=config.LLM_MODEL_LIGHT, effort="low", step="update_timeline"))
     checked, dropped = check_timeline(out, ctx.segment_texts())
     existing_lower = {t.lower() for t in ctx.existing_timeline}
     for kind in ("themes", "goals", "homework", "changes"):
@@ -171,7 +187,7 @@ def supervision_pack(p: LLMProvider, month: str, language: str, material: str) -
         )
     instructions = load("supervision_pack").render(month=month, language_name=LANGUAGE_NAMES.get(language, "English"))
     return p.structured(Request(system=_system(), shared_context=material, instructions=instructions,
-                                schema=PackOut, model=config.LLM_MODEL, effort="medium"))
+                                schema=PackOut, model=config.LLM_MODEL, effort="medium", step="supervision_pack"))
 
 
 # ── Demo outputs (no AI): clearly marked, but real citations so the UI works ──

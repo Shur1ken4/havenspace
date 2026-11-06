@@ -11,7 +11,7 @@ import psycopg
 from . import audio, config, db
 from .agent import steps
 from .agent.prompts import combined_version
-from .agent.providers import LLMProvider
+from .agent.providers import LLMProvider, charge_usage_to
 from .log import log
 from .storage import store
 
@@ -156,6 +156,7 @@ def run_agent(conn: psycopg.Connection, sid: str, provider: LLMProvider) -> None
             where s.id = %s""",
         (sid,),
     ).fetchone()
+    charge_usage_to(conn, s["therapist_id"], sid)
     segments = conn.execute(
         "select idx, speaker, start_ms, end_ms, text, original_text from transcript_segments where session_id = %s order by idx",
         (sid,),
@@ -199,15 +200,14 @@ def run_agent(conn: psycopg.Connection, sid: str, provider: LLMProvider) -> None
     db.set_stage(conn, sid, "writing_note")
     note = steps.draft_note(provider, ctx)
     model_id = provider.model_id(config.LLM_MODEL)
+    draft = db.Jsonb({"format": s["note_format"], "sections": [x.model_dump() for x in note.sections]})
     conn.execute(
-        """insert into notes (therapist_id, session_id, format, content_json, prompt_version, model_id)
-           values (%s, %s, %s, %s, %s, %s)
+        """insert into notes (therapist_id, session_id, format, content_json, ai_draft_json, prompt_version, model_id)
+           values (%s, %s, %s, %s, %s, %s, %s)
            on conflict (session_id) do update set content_json = excluded.content_json, format = excluded.format,
-             prompt_version = excluded.prompt_version, model_id = excluded.model_id
+             ai_draft_json = excluded.ai_draft_json, prompt_version = excluded.prompt_version, model_id = excluded.model_id
            where notes.status = 'draft'""",
-        (s["therapist_id"], sid, s["note_format"],
-         db.Jsonb({"format": s["note_format"], "sections": [x.model_dump() for x in note.sections]}),
-         combined_version("draft_note"), model_id),
+        (s["therapist_id"], sid, s["note_format"], draft, draft, combined_version("draft_note"), model_id),
     )
 
     if not ctx.is_recap:
@@ -293,6 +293,7 @@ def build_supervision_pack(conn: psycopg.Connection, job: dict, provider: LLMPro
     pack = conn.execute("select * from supervision_packs where id = %s", (pack_id,)).fetchone()
     if pack is None:
         return
+    charge_usage_to(conn, pack["therapist_id"])
     t = conn.execute("select language from therapists where id = %s", (pack["therapist_id"],)).fetchone()
     rows = conn.execute(
         """select c.pseudonym, s.started_at, n.content_json as note, r.content_json as reflection

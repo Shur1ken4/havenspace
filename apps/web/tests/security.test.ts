@@ -178,6 +178,22 @@ describe("pilot access", () => {
     const r = await asUser(app, dan, () => app.query("select request_access() as s"));
     expect(r.rows[0].s).toBe("approved");
   });
+
+  it("open sign-up approves anyone, and only an admin can switch it", async () => {
+    const ask = async () => {
+      const t = await makeTherapist(su);
+      await su.query("update therapists set access_status = 'pending' where id = $1", [t]);
+      return (await asUser(app, t, () => app.query("select request_access() as s"))).rows[0].s;
+    };
+    await su.query("update access_settings set auto_approve = false");
+    expect(await ask()).toBe("pending");
+    // A therapist cannot open sign-up themselves.
+    const changed = await asUser(app, bob, async () => (await app.query("update access_settings set auto_approve = true")).rowCount)
+      .catch(() => 0);
+    expect(changed).toBe(0);
+    await su.query("update access_settings set auto_approve = true");
+    expect(await ask()).toBe("approved");
+  });
 });
 
 describe("approved notes", () => {
@@ -187,6 +203,29 @@ describe("approved notes", () => {
     await su.query("insert into notes (therapist_id, session_id, format, content_json, status, approved_at) values ($1, $2, 'SOAP', '{\"sections\":[]}', 'approved', now())", [alice, s]);
     await expect(asUser(app, alice, () => app.query("update notes set content_json = '{\"sections\":[{\"key\":\"x\",\"text\":\"y\"}]}' where session_id = $1", [s])))
       .rejects.toThrow(/note_locked/);
+  });
+});
+
+describe("AI usage counts", () => {
+  const add = (who: string, owner: string) => asUser(app, who, () => app.query(
+    `insert into llm_usage (therapist_id, step, provider, model_id, input_tokens, output_tokens) values ($1, 'arch', 'anthropic', 'm', 1, 1)`, [owner]));
+
+  it("a therapist can only add their own, and nobody but an admin can read them", async () => {
+    await add(alice, alice);
+    await expect(add(bob, alice)).rejects.toThrow(/row-level security/);
+    expect((await asUser(app, alice, () => app.query("select * from llm_usage"))).rows).toHaveLength(0);
+  });
+
+  it("deleting an account keeps the counts but removes the link to the person", async () => {
+    const t = await makeTherapist(su);
+    const c = (await su.query("insert into clients (therapist_id, pseudonym) values ($1, 'Z') returning id", [t])).rows[0].id;
+    const s = (await su.query("insert into sessions (therapist_id, client_id, capture_mode) values ($1, $2, 'recap') returning id", [t, c])).rows[0].id;
+    const row = (await su.query(
+      `insert into llm_usage (therapist_id, session_id, step, provider, model_id, input_tokens, output_tokens)
+       values ($1, $2, 'reflect', 'anthropic', 'm', 1, 1) returning id`, [t, s])).rows[0].id;
+    await su.query('delete from "user" where id = $1', [t]);
+    const { rows } = await su.query("select therapist_id, session_id from llm_usage where id = $1", [row]);
+    expect(rows).toEqual([{ therapist_id: null, session_id: null }]);
   });
 });
 

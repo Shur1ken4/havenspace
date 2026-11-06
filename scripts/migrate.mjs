@@ -21,9 +21,15 @@ if (isTest) {
 
 await client.query(`create table if not exists schema_migrations (name text primary key, applied_at timestamptz not null default now())`);
 const done = new Set((await client.query("select name from schema_migrations")).rows.map((r) => r.name));
-const dir = path.join(ROOT, "db", "migrations");
-for (const file of readdirSync(dir).filter((f) => f.endsWith(".sql")).sort()) {
-  if (done.has(file)) continue;
+// scripts/pilot.mjs points MIGRATIONS_DIR at a copy of the last commit.
+const dir = process.env.MIGRATIONS_DIR || path.join(ROOT, "db", "migrations");
+const pending = readdirSync(dir).filter((f) => f.endsWith(".sql") && !done.has(f)).sort();
+if (process.argv.includes("--plan")) {
+  console.log(pending.length ? `would apply:\n${pending.map((f) => `  ${f}`).join("\n")}` : "nothing to apply");
+  await client.end();
+  process.exit(0);
+}
+for (const file of pending) {
   process.stdout.write(`applying ${file} ... `);
   await client.query("begin");
   try {

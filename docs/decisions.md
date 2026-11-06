@@ -91,6 +91,7 @@ The note, reflection and client-timeline steps use Claude. Transcripts are healt
   - **`BedrockEU`** (Claude via Amazon Bedrock in an EU region, e.g. Frankfurt): **required before any real client data.** AWS keeps processing in the selected EU region(s), does not store prompts/outputs or use them for training, and is covered by the AWS GDPR DPA. Exactly which Claude models are offered in EU regions at the time we switch (M6) will be checked and recorded here.
 - A setting `ALLOW_REAL_CLIENT_DATA` is **`false` by default**. While false, the app shows "Demo mode: use role-play sessions only", and the worker **refuses** to use any provider other than `BedrockEU` when it is true.
 - **Model choice:** start every step on **Claude Opus 5.5** (best quality for the supervisor-style reflection). Once the evals exist (M4), test whether the cheaper **Claude Sonnet 5.5** keeps the Clinical Lead's ratings at ≥ 4/5 for the simpler steps (transcript clean-up, timeline). The final choice is a quality-vs-cost decision for Shurik and the Clinical Lead.
+- **Update 2026-11-05 (Shurik):** the pilot moves to **Sonnet 5.5** for notes, reflections, supervision packs, transcript clean-up and timelines, and **Haiku 5.5** for Lumi. Reason: at about €1.05 per 1-hour session, Opus cost more than a typical therapist pays. The estimate is now about €0.45. Haiku was tried for clean-up and timelines (about €0.28), but on synthetic sessions with planted errors its clean-up was fully correct in only 2 of 6 runs, against 4 of 4 for Sonnet. Sonnet reflections also came back short in 2 of 27 runs (Opus 0 of 27), so the worker now asks once more when a reflection comes back short, and keeps the fuller one. From that update, clean-up always uses the main model and only timelines use `LLM_MODEL_LIGHT` (Haiku), about €0.37. The Clinical Lead has not yet rated these outputs against the ≥ 4/5 goal. Before real client data, Bedrock needs a small code fix to mix models (`BEDROCK_MODEL_ID` overrides every step, and the default name lacks the `eu.` prefix), and Lumi must move to Bedrock.
 - Every saved output records `model_id` and `prompt_version`.
 - Only the transcript text and pseudonymised context are sent, never audio, client names or therapist contact details.
 
@@ -271,6 +272,7 @@ The pilot goes to real therapists through a public link. We want only qualified 
 - **Admins** (named by email with `node scripts/pilot.mjs admin <email>`) see an **Admin** page: approve, decline or remove access, with a link to the relevant public register (IACP, PSI, CORU, BACP…) for a manual check. Admins can also **invite** people from the waiting list; invited emails are approved automatically when they sign up.
 - Emails: admins get "a new request is waiting" (no personal details in the email); therapists get "your account is ready" or "you're invited" in their own language.
 - No ID documents are uploaded. Registration numbers are checked by hand.
+- **Open sign-up switch** (added 2026-10-24 for the first testers): `node scripts/pilot.mjs signup on|off`. While it is on, anyone who finishes onboarding is approved straight away and no "request waiting" email is sent; admins can still remove access on /admin. Turn it off before the link is shared widely.
 
 ## Options considered
 | Option | Complexity | Cost | Privacy | Time |
@@ -555,7 +557,8 @@ Therapists and clients arrange things between sessions (times, homework question
 - Revisit: phone push notifications; attachments; therapist "office hours" setting; switching emails off per person.
 
 # ADR-23: Serving therapists in Russia
-Status: Proposed   Date: 2026-10-22   Deciders: Shurik, a lawyer (Russian data law and EU sanctions)
+Status: Proposed   Date: 2026-10-22, updated 2026-11-02   Deciders: Shurik, a lawyer (Russian data law and EU sanctions)
+**Update 2026-11-02:** full plan, prices and costs are in `docs/russia-infrastructure.md`. Changes to the text below: use Yandex Cloud for everything to start; no Claude or GPT in Russia, even through a Russian aggregator (Anthropic's policy excludes Russia including via resellers, and the transcript would leave the country); Polza only if it confirms Russian-only routing and signs a processing agreement; avoid GigaChat and other Sber-linked services because of EU sanctions on Sberbank (lawyer to confirm). The January 2026 EU guidance names hosted AI access under article 5n, so the sanctions opinion comes first. Start on one Yandex server for role-play testing only, and move to the managed database and separate speech server before any real client data.
 ## Context
 Shurik wants HavenSpace to work for therapists in Russia. Today everything runs in the EU (Frankfurt) with US/EU providers (Vercel, Neon, LiveKit Cloud, Anthropic, Gmail).
 ## Constraints
@@ -594,4 +597,25 @@ Therapists asked to keep session videos, as Zoom allows. HavenSpace records only
 - Easier: therapists get the Zoom-like feature without us storing videos.
 - Harder: a long call is kept in the browser's memory until it's saved; if the browser crashes, that video is lost. The therapist must store the file safely (we say so on screen).
 - Revisit: saving straight to a chosen folder while recording (Chrome), and including the shared tools in the picture.
+
+---
+
+# ADR-25: Measuring AI cost per session
+Status: Accepted   Date: 2026-11-01   Deciders: Shurik
+## Context
+Our cost per session was an estimate, because the app did not record how much AI each session used. The €39 and €59 plans depend on that number.
+## Decision
+Save token counts for every AI call in a new table, `llm_usage`: which step, which model, how many tokens. No prompts, replies or session content. Only admins can read it. `node scripts/pilot.mjs costs [days]` turns the counts into euros using a price list in `scripts/admin.mjs`, so a price change never rewrites history.
+## Options considered
+| Option | Complexity | Cost | Privacy/EU | Notes |
+|---|---|---|---|---|
+| Our own table (chosen) | Low | €0 | Counts only, same EU database | Cost per session and per therapist |
+| Anthropic's console totals | None | €0 | Nothing extra stored | Whole-company totals only; Bedrock is billed elsewhere |
+| Observability service | Medium | Paid | Another sub-processor near session data | Not worth it now |
+## Consequences
+- Easier: real numbers for pricing and fair-use limits; retries and live research are counted too.
+- Harder: the price list must be updated by hand. If a safety check moves a request to a fallback model, the split between the two models may not be exact.
+- Deleting an account or session blanks the link to the person and keeps the anonymous counts.
+- Revisit: show this on the admin page if the command line becomes a nuisance.
+- **Update 2026-11-06:** the same command also reports how much therapists change the AI's note before approving (share of words changed), the clearest quality signal we can measure without reading notes. The worker keeps its draft until approval, then only the number stays. Migrations and worker deploys now use the last commit only (`node scripts/pilot.mjs migrate plan` lists pending changes first), so unfinished work on the Mac cannot go live.
 

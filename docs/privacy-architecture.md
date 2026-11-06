@@ -19,9 +19,10 @@ language first, technical detail second.
 | Consent records | version, method, given/withdrawn dates | Health-adjacent | Postgres | With the client |
 | **Session audio** | mic + meeting-tab tracks, room recording, upload, dictation | **Yes (health)** | Object storage (EU) | **Deleted right after transcription** by default; optional 7 days; abandoned recordings 48 h |
 | **Transcripts** | speaker-labelled text | **Yes** | Postgres | Until the therapist deletes the session/client/account |
-| **Notes, reflections, timeline, supervision packs** | AI drafts edited by the therapist | **Yes** | Postgres | Same as transcripts |
+| **Notes, reflections, timeline, supervision packs** | AI drafts edited by the therapist | **Yes** | Postgres | Same as transcripts. A copy of the AI's note draft is kept only until the note is approved; approving keeps one number, the share of words changed (migration 0025), and deletes the copy |
 | **Therapy tool results** (ADR-21) | a 0–10 answer, a wheel of balance, chosen feeling words, drawn art cards and notes, a drawing (PNG) — saved only when the therapist clicks Save | **Yes** | Postgres | Until the therapist deletes the result/client/account |
 | Audit log | "note.export_pdf by user X at time T" | No content | Postgres | Survives account deletion (no content) |
+| AI usage counts (ADR-25) | step, model, number of tokens, linked to a therapist and session | No content | Postgres (admins read only) | Link blanked when the account or session is deleted; anonymous counts stay |
 | Waiting-list / demo requests | email, name, profession | No | Postgres (write-only for the app) | Until removal requested |
 
 ## 3. How a session flows

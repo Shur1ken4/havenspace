@@ -25,7 +25,7 @@ import psycopg
 from . import asr, audio, config, db, diarization
 from .agent import guardrails
 from .agent.prompts import load
-from .agent.providers import LLMProvider, Request
+from .agent.providers import LLMProvider, Request, charge_usage_to
 from .agent.steps import LANGUAGE_NAMES
 from .log import log
 from .pipeline import _pack
@@ -210,6 +210,7 @@ class LiveRunner(threading.Thread):
             prev_text = "\n".join(f"- {p['content'].get('now', '')} | openings: "
                                   + "; ".join(o["point"] for o in p["content"].get("openings", []))
                                   for p in previous) or "(none yet)"
+            charge_usage_to(conn, s["therapist_id"], sid)
             out = self.provider.structured(Request(
                 system=prompt.render(modality=modality, language=LANGUAGE_NAMES[language], previous=prev_text),
                 shared_context="Last minutes of the session so far:\n" + "\n".join(
@@ -219,6 +220,7 @@ class LiveRunner(threading.Thread):
                 model=config.LIVE_MODEL,
                 effort="low",
                 max_tokens=1500,
+                step="live_insight",
             ))
         content = _checked(out, window)
         if content is None:

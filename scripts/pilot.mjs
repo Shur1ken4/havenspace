@@ -3,13 +3,17 @@
 // once (.env.production.secrets), and then:
 //   node scripts/pilot.mjs check    -> what is still missing
 //   node scripts/pilot.mjs migrate  -> create tables, security rules and logins in Neon
+//   node scripts/pilot.mjs migrate plan -> only list the changes that migrate would make
+// migrate and worker use the last commit only; uncommitted work stays on this Mac.
 //   node scripts/pilot.mjs vercel   -> write .env.vercel (paste into Vercel → Environment Variables)
 //   node scripts/pilot.mjs worker   -> install / update the speech-to-text worker on the Hetzner server
 //   node scripts/pilot.mjs admin <email> -> let that person approve therapists on /admin
+//   node scripts/pilot.mjs signup on|off -> on: new therapists get in without approval
 // Nothing here prints a password or key.
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { randomBytes } from "node:crypto";
 import { execFileSync } from "node:child_process";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { ROOT } from "./env.mjs";
 
@@ -42,10 +46,12 @@ const NEEDED = {
   migrate: ["NEON_OWNER_URL"],
   vercel: ["NEON_OWNER_URL", "GMAIL_ADDRESS", "GMAIL_APP_PASSWORD", "S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"],
   admin: ["NEON_OWNER_URL"],
+  signup: ["NEON_OWNER_URL"],
+  costs: ["NEON_OWNER_URL"],
   worker: ["NEON_OWNER_URL", "WORKER_SERVER_IP", "ANTHROPIC_API_KEY"],
 };
 const cmd = process.argv[2] ?? "check";
-if (!NEEDED[cmd]) { console.error("usage: node scripts/pilot.mjs check|migrate|vercel|worker|admin <email>"); process.exit(1); }
+if (!NEEDED[cmd]) { console.error("usage: node scripts/pilot.mjs check|migrate|vercel|worker|admin <email>|signup on|off|costs [days]"); process.exit(1); }
 const missing = NEEDED[cmd].filter((k) => !p[k]);
 if (cmd === "check") {
   for (const k of NEEDED.check) console.log(`${p[k] ? "✓" : "·"} ${k}${p[k] ? "" : "  (missing)"}`);
@@ -79,15 +85,44 @@ const s3 = !p.S3_BUCKET ? { STORAGE_DRIVER: "db" } : {
 };
 const common = { ALLOW_REAL_CLIENT_DATA: "false", LIVE_RESEARCH_EMAILS: p.LIVE_RESEARCH_EMAILS ?? "" };
 
+// Migrations and the worker go live from the last commit only, so unfinished work
+// on this Mac never reaches the pilot. Returns a temporary copy of those paths.
+function committedCopy(paths) {
+  const dir = mkdtempSync(path.join(tmpdir(), "havenspace-deploy-"));
+  const tar = path.join(dir, "src.tar");
+  execFileSync("git", ["archive", "--format=tar", "-o", tar, "HEAD", ...paths], { cwd: ROOT });
+  execFileSync("tar", ["-xf", tar, "-C", dir]);
+  const git = (...args) => execFileSync("git", args, { cwd: ROOT, encoding: "utf8" }).trim();
+  console.log(`Using the last commit: ${git("log", "-1", "--format=%h %s")}`);
+  const left = git("status", "--porcelain", "--", ...paths);
+  if (left) console.log(`Left out, not committed:\n${left.split("\n").map((l) => `  ${l}`).join("\n")}`);
+  return dir;
+}
+
 if (cmd === "migrate") {
-  execFileSync("node", [path.join(ROOT, "scripts", "migrate.mjs")], {
+  // `migrate plan` only lists what would be applied.
+  const dir = committedCopy(["db/migrations"]);
+  execFileSync("node", [path.join(ROOT, "scripts", "migrate.mjs"), ...(process.argv[3] === "plan" ? ["--plan"] : [])], {
     stdio: "inherit",
-    env: { ...process.env, MIGRATION_DATABASE_URL: owner, APP_DB_PASSWORD: s.APP_DB_PASSWORD, WORKER_DB_PASSWORD: s.WORKER_DB_PASSWORD },
+    env: { ...process.env, MIGRATION_DATABASE_URL: owner, APP_DB_PASSWORD: s.APP_DB_PASSWORD, WORKER_DB_PASSWORD: s.WORKER_DB_PASSWORD,
+      MIGRATIONS_DIR: path.join(dir, "db", "migrations") },
   });
 }
 
 if (cmd === "admin") {
   execFileSync("node", [path.join(ROOT, "scripts", "admin.mjs"), "add", process.argv[3] ?? ""], {
+    stdio: "inherit", env: { ...process.env, MIGRATION_DATABASE_URL: owner },
+  });
+}
+
+if (cmd === "signup") {
+  execFileSync("node", [path.join(ROOT, "scripts", "admin.mjs"), "signup", process.argv[3] ?? ""], {
+    stdio: "inherit", env: { ...process.env, MIGRATION_DATABASE_URL: owner },
+  });
+}
+
+if (cmd === "costs") {
+  execFileSync("node", [path.join(ROOT, "scripts", "admin.mjs"), "costs", process.argv[3] ?? "30"], {
     stdio: "inherit", env: { ...process.env, MIGRATION_DATABASE_URL: owner },
   });
 }
@@ -153,7 +188,7 @@ if (cmd === "worker") {
     ...common, ...s3,
     WORKER_DATABASE_URL: workerDb,
     LLM_PROVIDER: "anthropic", ANTHROPIC_API_KEY: p.ANTHROPIC_API_KEY,
-    LLM_MODEL: "claude-opus-5-5", LIVE_MODEL: "claude-sonnet-5-5", LIVE_WHISPER_MODEL: "small",
+    LLM_MODEL: "claude-sonnet-5-5", LLM_MODEL_LIGHT: "claude-haiku-5-5", LIVE_MODEL: "claude-sonnet-5-5", LIVE_WHISPER_MODEL: "small",
     WHISPER_MODEL: "large-v3-turbo", WHISPER_DEVICE: "cpu", WHISPER_COMPUTE_TYPE: "int8",
     MODELS_DIR: "/opt/havenspace/.data/models",
   };
@@ -161,7 +196,8 @@ if (cmd === "worker") {
   write(envFile, env, "# Settings for the worker on the Hetzner server. Private.");
   const host = `root@${p.WORKER_SERVER_IP}`;
   const ssh = ["-i", SSH_KEY, "-o", "StrictHostKeyChecking=accept-new"];
-  const run = (c, a) => execFileSync(c, a, { stdio: "inherit", cwd: ROOT });
+  const src = committedCopy(["services/worker", "packages/shared", "evals/forbidden_terms.txt"]);
+  const run = (c, a) => execFileSync(c, a, { stdio: "inherit", cwd: src });
   console.log("Copying the worker to the server…");
   run("ssh", [...ssh, host, "mkdir -p /opt/havenspace/services /opt/havenspace/packages /opt/havenspace/evals"]);
   run("rsync", ["-az", "--delete", "-e", `ssh ${ssh.join(" ")}`, "--exclude", ".venv", "--exclude", ".data", "--exclude", "__pycache__",

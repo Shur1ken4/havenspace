@@ -4,6 +4,7 @@ import { z } from "zod";
 import { isDbError, withUser } from "@/lib/db";
 import { requireUser } from "@/lib/session";
 import { audit } from "@/lib/audit";
+import { editShare } from "@/lib/note-edits";
 
 const sectionsSchema = z.array(z.object({ key: z.string().max(40), text: z.string().max(20000) })).max(12);
 
@@ -30,7 +31,13 @@ export async function approveNote(sessionId: string) {
   const session = await requireUser();
   z.uuid().parse(sessionId);
   await withUser(session.user.id, async (db) => {
-    await db.query("update notes set status = 'approved', approved_at = now() where session_id = $1 and status = 'draft'", [sessionId]);
+    const { rows: [note] } = await db.query(
+      "select ai_draft_json, content_json from notes where session_id = $1 and status = 'draft'", [sessionId]);
+    const share = note ? editShare(note.ai_draft_json, note.content_json) : null;
+    await db.query(
+      `update notes set status = 'approved', approved_at = now(), edit_share = $2, ai_draft_json = null
+        where session_id = $1 and status = 'draft'`,
+      [sessionId, share]);
     await audit(db, session.user.id, "note.approve", "session", sessionId);
   });
   revalidatePath(`/sessions/${sessionId}`);
