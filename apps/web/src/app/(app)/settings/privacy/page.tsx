@@ -48,7 +48,7 @@ export default async function PrivacySettings() {
           <ul className="divide-y divide-line text-ui">
             {log.map((l, i) => (
               <li key={i} className="flex justify-between gap-4 py-2">
-                <span>{ta.has(l.action.replace(".", "__")) ? ta(l.action.replace(".", "__")) : l.action}</span>
+                <span>{ta.has(l.action.replace(".", "__")) ? ta(l.action.replace(".", "__")) : ta("other")}</span>
                 <span className="shrink-0 text-muted">{format.dateTime(l.at, { dateStyle: "medium", timeStyle: "short" })}</span>
               </li>
             ))}
